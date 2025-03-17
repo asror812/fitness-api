@@ -1,0 +1,16 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:  
+  jpa:
+    show-sql: true
+    hibernate:
+        ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect 
+  h2:
+    console:
+      enabled: true  # Enables H2 database web console
+      path: /h2-console

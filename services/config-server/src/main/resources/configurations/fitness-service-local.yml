@@ -1,0 +1,21 @@
+server:
+    port: 8080
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+  jpa:
+    show-sql: true
+    hibernate:
+        ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect 
+  h2:
+    console:
+      enabled: true  # Enables H2 database web console
+      path: /h2-console 
+
+security:
+  jwt:
+     duration: 86400
+     signing-key: fitness-rest-application-local-secret-key

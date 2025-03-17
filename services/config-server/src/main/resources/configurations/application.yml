@@ -1,0 +1,10 @@
+eureka:
+  instance:
+    hostname: localhost
+spring:
+  cloud:
+    config:
+      override-system-properties: false
+      
+integration:
+  secret-key: microservice-application-secret-key
