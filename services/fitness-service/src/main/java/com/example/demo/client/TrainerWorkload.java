@@ -52,7 +52,6 @@ public class TrainerWorkload {
     public void increaseTrainerWorkloadFallback(TrainerWorkloadRequestDTO requestDTO, Throwable t) {
         LOGGER.error("Fallback triggered for increaseTrainerWorkload. Request: {}. Error: {}", requestDTO,
                 t.toString());
-        // Дополнительная логика: отложенная обработка, уведомление админа и т.д.
     }
 
     @CircuitBreaker(name = "trainerWorkload", fallbackMethod = "decreaseTrainerWorkloadFallback")
@@ -62,19 +61,12 @@ public class TrainerWorkload {
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         HttpEntity<TrainerWorkloadRequestDTO> requetEntity = new HttpEntity<>(requestDTO, headers);
-        restTemplate.exchange(trainerWorkloadUrl, HttpMethod.DELETE, jwtService.createRequest(requestDTO), Void.class);
+
+        restTemplate.exchange(trainerWorkloadUrl, HttpMethod.DELETE, requetEntity, Void.class);
     }
 
     public static void decreaseTrainerWorkloadFallback(TrainerWorkloadRequestDTO requestDTO, Throwable t) {
-        System.out.println("Fallback method called");
-
         LOGGER.error("Error while decreasing trainer workload", t);
     }
 
-    @CircuitBreaker(name = "trainerWorkload", fallbackMethod = "getWorkingHoursFallback")
-    public Integer getWorkingHours() {
-        ResponseEntity<Integer> response = restTemplate.exchange(trainerWorkloadUrl + "/workingHours", HttpMethod.GET,
-                null, Integer.class);
-        return response.getBody();
-    }
 }

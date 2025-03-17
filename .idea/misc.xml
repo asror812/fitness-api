@@ -5,10 +5,21 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/calculate_working_hours/pom.xml" />
+        <option value="$PROJECT_DIR$/services/config-server/pom.xml" />
+        <option value="$PROJECT_DIR$/fitness-service/pom.xml" />
+        <option value="$PROJECT_DIR$/services/discovery-server/pom.xml" />
+        <option value="$PROJECT_DIR$/services/fitness-servic/pom.xml" />
+        <option value="$PROJECT_DIR$/services/fitness-server/pom.xml" />
+        <option value="$PROJECT_DIR$/services/spring-core/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/services/fitness-server/pom.xml" />
+      </set>
+    </option>
   </component>
-  <component name="ProjectRootManager">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_23" default="true" project-jdk-name="openjdk-23" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
