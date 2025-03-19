@@ -25,4 +25,4 @@ resilience4j:
         automaticTransitionFromOpenToHalfOpenEnabled: true
 service:
   trainer-workload:
-    url:  http://trainer-workload-calculator-service  
+    url: http://trainer-workload-calculator-service 

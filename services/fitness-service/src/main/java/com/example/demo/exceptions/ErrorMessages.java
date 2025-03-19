@@ -11,7 +11,7 @@ public class ErrorMessages {
 
     public static final String RESPONSE_WRITE_ERROR = "Error writing response";
 
-    public static final String ALREADY_EXISTS_ERROR = "%s  with %s : %s already exists";
+    public static final String ALREADY_EXISTS_ERROR = "The requested resource already exists.";
 
     private ErrorMessages() {}
 }

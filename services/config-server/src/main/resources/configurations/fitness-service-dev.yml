@@ -11,6 +11,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true 
+
 security:
   jwt:
      duration: 86400

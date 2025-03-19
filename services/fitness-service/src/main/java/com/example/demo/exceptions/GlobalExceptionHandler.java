@@ -59,8 +59,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<ErrorResponseDTO> handleAlreadyExistException(AlreadyExistException ex) {
-        ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.BAD_REQUEST, ErrorMessages.ALREADY_EXISTS_ERROR);
-        
+        ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ErrorMessages.ALREADY_EXISTS_ERROR);
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     private Map<String, List<String>> getErrorsMap(List<String> errors) {
