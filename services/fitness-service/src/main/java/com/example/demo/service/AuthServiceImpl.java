@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.request.ChangePasswordRequestDTO;
@@ -21,15 +20,14 @@ public class AuthServiceImpl implements AuthService {
     private final UserDAO userDAO;
     private final UsernameGeneratorService usernameGeneratorService;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
 
-    private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password: %s | %s";
+    private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username and password: %s | %s";
 
     public SignUpResponseDTO register(SignUpRequestDTO requestDTO) {
         String username = usernameGeneratorService.generateUsername(requestDTO.getFirstName(),
                 requestDTO.getLastName());
         String token = jwtService.generateToken(username);
-        String password = passwordEncoder.encode(PasswordGeneratorUtil.generate());
+        String password = PasswordGeneratorUtil.generate();
 
         return new SignUpResponseDTO(username, password, token);
     }

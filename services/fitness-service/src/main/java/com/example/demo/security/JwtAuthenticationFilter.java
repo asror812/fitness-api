@@ -45,8 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
         if (EXCLUDED_URLS.stream().anyMatch(path::contains)) {
@@ -80,9 +80,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .orElseThrow(
                             () -> new ResourceNotFoundException("User not found with username %s".formatted(username)));
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,
+                    null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
 
             filterChain.doFilter(request, response);
 
@@ -99,7 +99,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write(gson.toJson(errorResponse));
     }
 
-    private void handleFailedAttempt(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
+    private void handleFailedAttempt(HttpServletRequest request, HttpServletResponse response, String message)
+            throws IOException {
         String ip = request.getRemoteAddr();
         bruteForceProtectorService.incrementFailureCount(ip, response);
         sendErrorResponse(response, message);

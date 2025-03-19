@@ -57,6 +57,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(AlreadyExistException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAlreadyExistException(AlreadyExistException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.BAD_REQUEST, ErrorMessages.ALREADY_EXISTS_ERROR);
+        
+    }
+
     private Map<String, List<String>> getErrorsMap(List<String> errors) {
         Map<String, List<String>> errorResponse = new HashMap<>();
         errorResponse.put("errors", errors);

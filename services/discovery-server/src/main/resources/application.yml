@@ -5,7 +5,3 @@ spring:
     name: discovery-service
   profiles:
     active: dev  
-security:
-  jwt:
-     duration: 86400
-     signing-key: fitness-rest-application-dev-secret-key    

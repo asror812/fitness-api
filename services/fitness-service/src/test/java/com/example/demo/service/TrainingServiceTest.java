@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.demo.client.TrainerWorkload;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
@@ -50,13 +51,16 @@ class TrainingServiceTest {
     @Mock
     private TrainingMapper mapper;
 
+    @Mock
+    private TrainerWorkload workloadClient;
+
     private Trainer trainer;
     private Trainee trainee;
     private User user;
     private TrainingType trainingType;
 
     @BeforeEach
-    public void initialize() {
+    void initialize() {
         user = new User("asror", "r", "asror.r", "password1234", true);
         trainee = new Trainee();
         trainee.setUser(user);
@@ -69,7 +73,7 @@ class TrainingServiceTest {
     }
 
     @Test
-    void create_ShouldBe_Ok() {
+    void create() {
         TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
                 "asror.r", "abror.r", "Swimming", new Date(),
                 1.5);

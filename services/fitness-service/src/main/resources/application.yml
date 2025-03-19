@@ -3,7 +3,6 @@ spring:
     import: optional:configserver:http://localhost:8888
   application:
     name: fitness-service
-security:
-  jwt:
-    duration: 86400
-    signing-key: fitness-rest-application-dev-secret-key
+  profiles:
+    active:
+    - dev  

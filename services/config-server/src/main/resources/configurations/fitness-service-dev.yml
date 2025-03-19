@@ -9,8 +9,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create-drop # Change to 'none' or 'validate' in production
-    show-sql: true  # Enable SQL logging (optional)
+      ddl-auto: create-drop
+    show-sql: true 
 security:
   jwt:
      duration: 86400

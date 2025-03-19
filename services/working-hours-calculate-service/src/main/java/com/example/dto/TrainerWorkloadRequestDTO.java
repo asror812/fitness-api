@@ -14,6 +14,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class TrainerWorkloadRequestDTO {
+
     @NotNull
     private String trainerUsername;
 
@@ -24,7 +25,7 @@ public class TrainerWorkloadRequestDTO {
     private String trainerLastName;
 
     @NotNull
-    private Boolean isActive;
+    private Boolean active;
 
     @NotNull
     private LocalDate trainingDate;

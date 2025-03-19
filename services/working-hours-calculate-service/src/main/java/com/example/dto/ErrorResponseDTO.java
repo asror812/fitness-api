@@ -1,4 +1,4 @@
-package com.example.model;
+package com.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,11 +7,9 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class WorkingMonth {
+@Getter@Setter
+public class ErrorResponseDTO {
 
-    private Integer month;
-
-    private Double totalHours;
+    private int status;
+    private String message;
 }

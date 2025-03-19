@@ -10,4 +10,19 @@ management:
     web:
       exposure:
         include: health, info , prometheus
-  
+resilience4j:
+  circuitbreaker:
+    instances:
+      workloadService:
+        failureRateThreshold: 50
+        slowCallRateThreshold: 60
+        slowCallDurationThreshold: 2s
+        permittedNumberOfCallsInHalfOpenState: 2
+        maxWaitDurationInHalfOpenState: 5s
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 10s
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+service:
+  trainer-workload:
+    url:  http://trainer-workload-calculator-service  

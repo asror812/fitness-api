@@ -18,16 +18,16 @@ public class TrainerWorkloadController {
 
     private final TrainerWorkloadService workloadService;
 
-    @PostMapping("/working-hours")
+    @PostMapping
     public ResponseEntity<Void> increaseWorkload(@Valid @RequestBody TrainerWorkloadRequestDTO requestDTO) {
         workloadService.increaseWorkload(requestDTO);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/working-hours")
+    @DeleteMapping
     public ResponseEntity<Void> decreaseWorkload(@Valid @RequestBody TrainerWorkloadRequestDTO requestDTO) {
         workloadService.decreaseWorkload(requestDTO);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
