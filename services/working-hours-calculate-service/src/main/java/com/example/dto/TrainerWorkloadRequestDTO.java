@@ -32,4 +32,6 @@ public class TrainerWorkloadRequestDTO {
 
     @NotNull
     private Double duration;
+
+    private ActionType type;
 }

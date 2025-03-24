@@ -13,5 +13,9 @@ public class ErrorMessages {
 
     public static final String ALREADY_EXISTS_ERROR = "The requested resource already exists.";
 
+    public static final String DUPLICATE_ENTRY_ERROR = "This value already exists";
+
+    public static final String TOO_MANY_REQUESTS = "Too many requests";
+
     private ErrorMessages() {}
 }

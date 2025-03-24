@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.example.demo.dao.UserDAO;
-import com.example.demo.exceptions.ErrorResponseDTO;
-import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.dto.response.ErrorResponseDTO;
+import com.example.demo.exceptions.AuthenticationFailureException;
 import com.example.demo.model.User;
-import com.example.demo.utils.BruteForceProtectorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
     private final UserDAO userDAO;
-    private final BruteForceProtectorService bruteForceProtectorService;
+
+    private static final String USER_NOT_FOUND = "User not found with username %s";
+    private static final String INVALID_TOKEN = "Invalid or expired token";
+    private static final String INVALID_USERNAME = "Invalid username";
+    private static final String INVALID_OR_MISSING_AUTH_HEAD = "Missing or invalid Authorization header";
 
     private final Gson gson;
 
@@ -57,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HEADER_NAME);
 
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            handleFailedAttempt(request, response, "Missing or invalid Authorization header");
+            sendErrorResponse(response, INVALID_OR_MISSING_AUTH_HEAD);
             return;
         }
 
@@ -66,19 +69,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtService.claims(token);
             if (claims == null) {
-                handleFailedAttempt(request, response, "Invalid or expired token");
+                sendErrorResponse(response, INVALID_TOKEN);
                 return;
             }
 
             String username = claims.getSubject();
             if (username == null || username.isBlank()) {
-                handleFailedAttempt(request, response, "Invalid username");
+                sendErrorResponse(response, INVALID_USERNAME);
                 return;
             }
 
             User user = userDAO.findByUsername(username)
                     .orElseThrow(
-                            () -> new ResourceNotFoundException("User not found with username %s".formatted(username)));
+                            () -> new AuthenticationFailureException(USER_NOT_FOUND.formatted(username)));
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,
                     null, user.getAuthorities());
@@ -86,9 +89,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
+        } catch (AuthenticationFailureException e) {
+            LOGGER.warn("Authentication failed for token: {} - {}", token, e.getMessage());
+            sendErrorResponse(response, e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("Authentication error: ", e.getCause());
-            handleFailedAttempt(request, response, "Authentication failed");
+            LOGGER.error("Unexpected authentication error: {}", e.getMessage(), e);
+            sendErrorResponse(response, "Authentication failed");
         }
     }
 
@@ -97,12 +103,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(HttpStatus.UNAUTHORIZED.value(), message);
         response.getWriter().write(gson.toJson(errorResponse));
-    }
-
-    private void handleFailedAttempt(HttpServletRequest request, HttpServletResponse response, String message)
-            throws IOException {
-        String ip = request.getRemoteAddr();
-        bruteForceProtectorService.incrementFailureCount(ip, response);
-        sendErrorResponse(response, message);
     }
 }

@@ -18,7 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.demo.client.TrainerWorkload;
+import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
@@ -52,7 +52,7 @@ class TrainingServiceTest {
     private TrainingMapper mapper;
 
     @Mock
-    private TrainerWorkload workloadClient;
+    private TrainerWorkloadClient workloadClient;
 
     private Trainer trainer;
     private Trainee trainee;

@@ -11,6 +11,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.demo.dto.response.ErrorResponseDTO;
+
+import jakarta.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -22,12 +26,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    //TODO: Optimize DataAccessException
+    //TODO: Correct test coverage
+    //write excption handler for Authenticate Failure Exception
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponseDTO> handleDataAccessException(DataAccessException e) {
-        ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.CONFLICT.value(),
-                ErrorMessages.INVALID_CREDENTIALS);
 
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        if (e.getCause() instanceof ConstraintViolationException) {
+            ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.CONFLICT.value(),
+                    ErrorMessages.DUPLICATE_ENTRY_ERROR);
+
+            return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        }
+        else {
+            ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.CONFLICT.value(),
+                    ErrorMessages.INVALID_CREDENTIALS);
+
+            return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        }
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
@@ -49,19 +65,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ErrorResponseWriteException.class)
-    public ResponseEntity<ErrorResponseDTO> handleErrorResponseWriteException(ErrorResponseWriteException ex) {
-        ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ErrorMessages.RESPONSE_WRITE_ERROR);
-
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<ErrorResponseDTO> handleAlreadyExistException(AlreadyExistException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ErrorMessages.ALREADY_EXISTS_ERROR);
-
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTooManyRequestsException(TooManyRequestsException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(429, ErrorMessages.TOO_MANY_REQUESTS);
+        return new ResponseEntity<>(error, HttpStatus.TOO_MANY_REQUESTS);
     }
 
     private Map<String, List<String>> getErrorsMap(List<String> errors) {

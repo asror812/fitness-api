@@ -23,4 +23,5 @@ public class TrainerWorkloadRequestDTO {
     private boolean isActive;
     private Date trainingDate;
     private Double duration;
+    private ActionType actionType;
 }

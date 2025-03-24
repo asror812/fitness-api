@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.client.TrainerWorkload;
+import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
@@ -36,7 +36,7 @@ public class TrainingService extends
     private final Class<Training> entityClass = Training.class;
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
-    private final TrainerWorkload workload;
+    private final TrainerWorkloadClient workloadClient;
 
     @Transactional
     public void create(TrainingCreateRequestDTO createDTO) {
@@ -73,7 +73,7 @@ public class TrainingService extends
                 .trainingDate(training.getTrainingDate())
                 .build();
 
-        workload.increaseTrainerWorkload(trainerWorkloadRequestDTO);
+        workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);
     }
 
     public List<TrainingResponseDTO> getTraineeTrainings(String username, Date from, Date to, String trainerName,
@@ -109,10 +109,11 @@ public class TrainingService extends
                 .trainerFirstName(trainer.getUser().getFirstName())
                 .trainerLastName(trainer.getUser().getLastName())
                 .duration(training.getDuration())
-                .trainingDate(training.getTrainingDate())
+                        .trainingDate(training
+                                        .getTrainingDate())
                 .build();
 
-        workload.decreaseTrainerWorkload(trainerWorkloadRequestDTO);
+        workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);
         dao.delete(id);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +16,6 @@ public class WorkingYear {
 
     private Integer year;
 
-    private List<WorkingMonth> monthsWorkload;
+    private List<WorkingMonth> monthsWorkload = new ArrayList<>();
 
 }

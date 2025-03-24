@@ -17,7 +17,6 @@ public class UserDAOImpl extends AbstractHibernateDAO<User> implements UserDAO {
     private static final String HQL_FIND_USER_BY_USERNAME_AND_PASSWORD = "FROM User WHERE username = :username AND password = :password";
     private static final String USER_NOT_FOUND_WITH_USERNAME = "User not found with username {}";
     private static final String USER_NOT_FOUND_WITH_USERNAME_AND_PASSWORD = "User not found with username {} and password {}";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDAOImpl.class);
 
     public UserDAOImpl() {
@@ -31,7 +30,7 @@ public class UserDAOImpl extends AbstractHibernateDAO<User> implements UserDAO {
             query.setParameter("username", username);
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
-            LOGGER.warn(USER_NOT_FOUND_WITH_USERNAME, username);
+            LOGGER.error(USER_NOT_FOUND_WITH_USERNAME, username);
             return Optional.empty();
         }
     }
@@ -44,7 +43,7 @@ public class UserDAOImpl extends AbstractHibernateDAO<User> implements UserDAO {
             query.setParameter("password", password);
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
-            LOGGER.warn(USER_NOT_FOUND_WITH_USERNAME_AND_PASSWORD, username, password);
+            LOGGER.error(USER_NOT_FOUND_WITH_USERNAME_AND_PASSWORD, username, password);
             return Optional.empty();
         }
     }

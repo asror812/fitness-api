@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IpAddressInfo {
+public class FailureCount {
 
     private Integer count;
     private LocalDateTime dateTime;
