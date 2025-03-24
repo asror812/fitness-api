@@ -45,6 +45,9 @@ public class BruteForceProtectorService {
             return false;
         }
 
+
+        LOGGER.warn("User '{}' has reached max login attempts. Account is blocked until {}.", username,
+                info.getDateTime().plusSeconds(blockTime));
         return true;
     }
 
@@ -61,11 +64,14 @@ public class BruteForceProtectorService {
         }
 
         else if (info.getCount() < maxFailureCounts) {
+            info.setCount(info.getCount() + 1);
+            info.setDateTime(LocalDateTime.now());
             LOGGER.info("Failed login attempt {} for user: {}", info.getCount(), username);
         }
 
         else{
-            LOGGER.warn("User '{}' has reached max login attempts. Account is temporarily blocked.", username);
+            LOGGER.warn("User '{}' has reached max login attempts. Account is blocked until {}.", username,
+                    info.getDateTime().plusSeconds(blockTime));
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
         }
     }

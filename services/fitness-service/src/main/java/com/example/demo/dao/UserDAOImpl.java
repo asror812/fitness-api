@@ -30,7 +30,7 @@ public class UserDAOImpl extends AbstractHibernateDAO<User> implements UserDAO {
             query.setParameter("username", username);
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
-            LOGGER.error(USER_NOT_FOUND_WITH_USERNAME, username);
+            LOGGER.warn(USER_NOT_FOUND_WITH_USERNAME, username);
             return Optional.empty();
         }
     }

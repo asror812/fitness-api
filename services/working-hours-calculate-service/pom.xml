@@ -35,11 +35,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
             <version>2.3.2</version>
@@ -67,13 +62,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-
-        <!-- JPA -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
+        
         <!-- Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -86,12 +75,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <!-- H2 -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
         </dependency>
 
         <dependency>
@@ -128,14 +111,6 @@
             <scope>runtime</scope>
         </dependency>
 
-
-        <!-- Spring Hibernate -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-hibernate</artifactId>
-            <version>1.2.9</version>
-        </dependency>
-
         <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -148,13 +123,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.12.1</version>
-        </dependency>
-
-        <!-- PostgresQL-->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.3.1</version>
         </dependency>
     </dependencies>
 

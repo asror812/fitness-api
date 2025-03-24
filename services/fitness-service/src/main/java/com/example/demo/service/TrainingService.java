@@ -4,6 +4,7 @@ import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
+import com.example.demo.dto.request.ActionType;
 import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.request.TrainingUpdateRequestDTO;
@@ -71,6 +72,7 @@ public class TrainingService extends
                 .trainerLastName(trainer.getUser().getLastName())
                 .duration(training.getDuration())
                 .trainingDate(training.getTrainingDate())
+                .actionType(ActionType.ADD)
                 .build();
 
         workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);
@@ -100,7 +102,8 @@ public class TrainingService extends
     @Transactional
     public void delete(UUID id) {
         Training training = dao.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Training with ID %s not found".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Training with ID %s not found".formatted(id)));
 
         Trainer trainer = training.getTrainer();
 
@@ -109,8 +112,8 @@ public class TrainingService extends
                 .trainerFirstName(trainer.getUser().getFirstName())
                 .trainerLastName(trainer.getUser().getLastName())
                 .duration(training.getDuration())
-                        .trainingDate(training
-                                        .getTrainingDate())
+                .trainingDate(training
+                        .getTrainingDate())
                 .build();
 
         workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);

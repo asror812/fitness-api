@@ -58,14 +58,13 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         String username = requestDTO.getTrainerUsername();
 
-        TrainerWorkload workload = trainersWorkload.computeIfAbsent(username, key -> {
-            TrainerWorkload newWorkload = new TrainerWorkload();
-            newWorkload.setUsername(username);
-            newWorkload.setFirstName(requestDTO.getTrainerFirstName());
-            newWorkload.setLastName(requestDTO.getTrainerLastName());
-            newWorkload.setActive(requestDTO.getActive());
-            return newWorkload;
-        });
+        TrainerWorkload workload = trainersWorkload.get(username); 
+        if(workload == null){
+            workload = new TrainerWorkload();
+            workload.setUsername(username);
+            workload.setFirstName(requestDTO.getTrainerFirstName());
+            workload.setLastName(requestDTO.getTrainerLastName());
+        }
 
         LocalDate trainingDate = requestDTO.getTrainingDate();
         List<WorkingYear> years = workload.getYears() == null ? new ArrayList<>() : workload.getYears();
