@@ -41,10 +41,10 @@ class TraineeDAOImplTest {
     private Trainee trainee;
 
     @BeforeEach
-    public void initialize() {
+    void initialize() {
         trainee = new Trainee(
                 new Date(), "T", new User("asror", "r", "asror.r", "1234567890", true),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptySet());
     }
 
     @Test

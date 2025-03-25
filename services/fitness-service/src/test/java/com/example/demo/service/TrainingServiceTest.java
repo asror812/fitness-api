@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +70,7 @@ class TrainingServiceTest {
 
         trainingType = new TrainingType("Swimming", Collections.emptyList(), Collections.emptyList());
         user.setUsername("abror.r");
-        trainer = new Trainer(user, trainingType, new ArrayList<>(), new ArrayList<>());
+        trainer = new Trainer(user, trainingType, new ArrayList<>(), new HashSet<>());
     }
 
     @Test

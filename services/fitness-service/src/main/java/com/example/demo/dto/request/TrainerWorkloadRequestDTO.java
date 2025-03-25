@@ -1,7 +1,6 @@
 package com.example.demo.dto.request;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +16,14 @@ import lombok.ToString;
 @ToString
 public class TrainerWorkloadRequestDTO {
     private String trainerUsername;
+
     private String trainerFirstName;
+
     private String trainerLastName;
-    private Date trainingDate;
+
+    private LocalDate trainingDate;
+
     private Double duration;
+
     private ActionType actionType;
 }

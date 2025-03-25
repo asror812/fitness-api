@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.client.TrainerWorkloadResponseDTO;
+import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dao.UserDAO;
@@ -37,6 +39,7 @@ public class TrainerService extends
     private final UserDAO userDAO;
     private final TrainingTypeDAO trainingTypeDAO;
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerService.class);
+    private final TrainerWorkloadClient client;
 
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
     private static final String TRAINING_TYPE_NOT_FOUND_WITH_ID = "Training type with id %s not found";
@@ -92,6 +95,11 @@ public class TrainerService extends
         dao.update(trainer);
 
         return mapper.toUpdateResponseDTO(trainer);
+    }
+
+
+    public TrainerWorkloadResponseDTO getTrainerMonthlyWorkloadSummary(String username, int year, int month) {
+        return client.getTrainerMonthlyWorkloadSummary(username, year, month);
     }
 
 }

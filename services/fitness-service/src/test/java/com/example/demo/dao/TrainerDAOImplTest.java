@@ -38,8 +38,8 @@ class TrainerDAOImplTest {
     private Trainer trainer;
 
     @BeforeEach
-    public void initialize() {
-        trainer = new Trainer(new User(), new TrainingType(), Collections.emptyList(), Collections.emptyList());
+    void initialize() {
+        trainer = new Trainer(new User(), new TrainingType(), Collections.emptyList(), Collections.emptySet());
     }
 
     @Test

@@ -46,7 +46,7 @@ class UserControllerTest {
     private Gson gson;
 
     @BeforeEach
-    public void initialize() {
+    void initialize() {
         requestDTO = new StatusRequestDTO();
         requestDTO.setUsername("asror");
         requestDTO.setStatus(false);

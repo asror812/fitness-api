@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +39,8 @@ public class TrainingService extends
     private final Class<Training> entityClass = Training.class;
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     private final TrainerWorkloadClient workloadClient;
 
     @Transactional
@@ -58,20 +62,20 @@ public class TrainingService extends
         training.setTrainingType(trainer.getSpecialization());
         training.setTrainingName(createDTO.getTrainingName());
 
-        dao.create(training);
-
         trainee.getTrainers().add(trainer);
         trainer.getTrainees().add(trainee);
 
         traineeDAO.update(trainee);
         trainerDAO.update(trainer);
 
+        dao.create(training);
+
         TrainerWorkloadRequestDTO trainerWorkloadRequestDTO = TrainerWorkloadRequestDTO.builder()
                 .trainerUsername(trainer.getUser().getUsername())
                 .trainerFirstName(trainer.getUser().getFirstName())
                 .trainerLastName(trainer.getUser().getLastName())
                 .duration(training.getDuration())
-                .trainingDate(training.getTrainingDate())
+                .trainingDate(LocalDate.parse(dateFormat.format(training.getTrainingDate())))
                 .actionType(ActionType.ADD)
                 .build();
 
@@ -112,8 +116,8 @@ public class TrainingService extends
                 .trainerFirstName(trainer.getUser().getFirstName())
                 .trainerLastName(trainer.getUser().getLastName())
                 .duration(training.getDuration())
-                .trainingDate(training
-                        .getTrainingDate())
+                .trainingDate(LocalDate.parse(dateFormat.format(training.getTrainingDate())))
+                .actionType(ActionType.DELETE)
                 .build();
 
         workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);

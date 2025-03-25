@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class TrainerWorkload {
 
     private String username;
@@ -19,8 +21,6 @@ public class TrainerWorkload {
     private String firstName;
 
     private String lastName;
-
-    private boolean active;
 
     private List<WorkingYear> years = new ArrayList<>();
 }

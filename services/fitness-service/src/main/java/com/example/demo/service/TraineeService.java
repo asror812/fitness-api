@@ -23,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -123,7 +122,7 @@ public class TraineeService
         Trainee trainee = dao.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
 
-        List<Trainer> trainers = new ArrayList<>();
+        Set<Trainer> trainers = new HashSet<>();
         for (TrainerDTO dto : requestDTO.getTrainers()) {
             Trainer trainer = trainerDAO.findByUsername(dto.getUsername()).orElseThrow(
                     () -> new ResourceNotFoundException(

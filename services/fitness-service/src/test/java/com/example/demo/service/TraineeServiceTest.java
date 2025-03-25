@@ -11,8 +11,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -135,10 +137,10 @@ class TraineeServiceTest {
 
     @Test
     void getNotAssignedTrainers_ShouldReturnTrainers() {
-        Trainer trainer1 = new Trainer(user, trainingType, new ArrayList<>(), new ArrayList<>());
-        Trainer trainer2 = new Trainer(user, trainingType, new ArrayList<>(), new ArrayList<>());
+        Trainer trainer1 = new Trainer(user, trainingType, new ArrayList<>(), new HashSet<>());
+        Trainer trainer2 = new Trainer(user, trainingType, new ArrayList<>(), new HashSet<>());
 
-        List<Trainer> assignedTrainers = List.of(trainer1);
+        Set<Trainer> assignedTrainers = Set.of(trainer1);
         List<Trainer> allTrainers = List.of(trainer1, trainer2);
 
         trainee.setTrainers(assignedTrainers);

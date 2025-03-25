@@ -6,7 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -36,7 +39,7 @@ public class Trainer extends BaseEntity  {
 
 
     @ManyToMany(mappedBy = "trainers")
-    private List<Trainee> trainees = new ArrayList<>();
+    private Set<Trainee> trainees = new HashSet<>();
 
     @Override
     public String toString() {

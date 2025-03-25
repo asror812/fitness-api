@@ -52,7 +52,7 @@ public class JwtService {
                 .subject("fitness-microservice")
                 .issuedAt(now)
                 .expiration(expiration)
-                .claim("transactionId", MDC.get("transactionId"))
+                .claim("transactionId", MDC.get("transactionID"))
                 .signWith(microserviceSecretKey)
                 .compact();
     }

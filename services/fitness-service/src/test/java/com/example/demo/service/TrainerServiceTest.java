@@ -56,10 +56,10 @@ class TrainerServiceTest {
     private TrainingType trainingType;
 
     @BeforeEach
-    public void initialize() {
+    void initialize() {
         user = new User("asror", "r", "asror.r", "password", true);
         trainingType = new TrainingType("Swimming", Collections.emptyList(), Collections.emptyList());
-        trainer = new Trainer(user, trainingType, Collections.emptyList(), Collections.emptyList());
+        trainer = new Trainer(user, trainingType, Collections.emptyList(), Collections.emptySet());
     }
 
     @Test

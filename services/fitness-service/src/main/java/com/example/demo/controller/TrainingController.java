@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+
 import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
 import com.example.demo.service.TrainingService;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
