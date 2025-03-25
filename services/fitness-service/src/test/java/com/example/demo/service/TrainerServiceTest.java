@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.client.TrainerWorkloadClient;
+import com.example.demo.client.TrainerWorkloadResponseDTO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dao.UserDAO;
@@ -51,6 +53,9 @@ class TrainerServiceTest {
     @InjectMocks
     private TrainerService trainerService;
 
+    @Mock
+    private TrainerWorkloadClient client;
+
     private Trainer trainer;
     private User user;
     private TrainingType trainingType;
@@ -87,7 +92,7 @@ class TrainerServiceTest {
 
     @Test
     void setStatus_ShouldReturn_IllegalStateException() {
-      
+
         when(trainerDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainer));
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -113,13 +118,30 @@ class TrainerServiceTest {
         verify(trainerDAO, times(1)).create(any(Trainer.class));
     }
 
-     @Test
+    @Test
     void internalUpdate_ShouldBe_Ok() {
-        TrainerUpdateRequestDTO requestDTO = new TrainerUpdateRequestDTO("asror.r", "asror", "r", true, UUID.randomUUID());
+        TrainerUpdateRequestDTO requestDTO = new TrainerUpdateRequestDTO("asror.r", "asror", "r", true,
+                UUID.randomUUID());
 
         when(trainerDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainer));
 
         trainerService.update(requestDTO);
         verify(trainerDAO, times(1)).update(trainer);
     }
+
+    @Test
+    void getTrainerMonthlyWorkloadSummary_ShouldReturnResponse() {
+        String username = "asror.r";
+        int year = 2023;
+        int month = 10;
+        TrainerWorkloadResponseDTO workloadResponse = new TrainerWorkloadResponseDTO();
+
+        when(client.getTrainerMonthlyWorkloadSummary(username, year, month)).thenReturn(workloadResponse);
+
+        TrainerWorkloadResponseDTO response = trainerService.getTrainerMonthlyWorkloadSummary(username, year, month);
+
+        assertNotNull(response);
+        verify(client, times(1)).getTrainerMonthlyWorkloadSummary(username, year, month);
+    }
+
 }

@@ -36,8 +36,7 @@ public class TrainerController {
     }
 
     @GetMapping("/{username}/{year}/{month}")
-    public ResponseEntity<TrainerWorkloadResponseDTO> getMethodName(@PathVariable String username, @PathVariable int year, @PathVariable int month) {
-        TrainerWorkloadResponseDTO summary = trainerService.getTrainerMonthlyWorkloadSummary(username, year, month);
-        return new ResponseEntity<>(summary, HttpStatus.OK);
+    public ResponseEntity<TrainerWorkloadResponseDTO> getTrainerMonthlyWorkload(@PathVariable String username, @PathVariable int year, @PathVariable int month) {
+        return new ResponseEntity<>(trainerService.getTrainerMonthlyWorkloadSummary(username, year, month), HttpStatus.OK);
     }
 }

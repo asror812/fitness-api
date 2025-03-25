@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
@@ -108,15 +110,27 @@ class TraineeControllerTest {
 
     @Test
     void update_ShouldReturn_200() throws Exception {
-        TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO(
-                "a.a", "a", "a", true, new Date(), "T");
+            TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO(
+                            "a.a", "a", "a", true, new Date(), "T");
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put(endpoint)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(updateDTO)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+            mockMvc.perform(MockMvcRequestBuilders
+                            .put(endpoint)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(updateDTO)))
+                            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+    
+    @Test
+    void updateTraineeAssignedTrainers() throws Exception {
+            TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(Collections.emptyList());
+
+            mockMvc.perform(MockMvcRequestBuilders
+                            .put(endpoint + "/{username}/trainers" , "asror.r")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(requestDTO)))
+                            .andExpect(MockMvcResultMatchers.status().isOk()); 
     }
 
     private List<TrainerResponseDTO> getNotAssignedTrainers() {
@@ -131,4 +145,5 @@ class TraineeControllerTest {
 
         return trainerResponseDTOs;
     }
+
 }

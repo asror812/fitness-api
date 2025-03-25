@@ -3,7 +3,7 @@ package com.example.demo.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,11 +27,15 @@ import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
+import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
+import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
+import com.example.demo.dto.response.UserUpdateResponseDTO;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
@@ -162,5 +166,108 @@ class TraineeServiceTest {
         when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
         traineeService.update(requestDTO);
         verify(traineeDAO, times(1)).update(trainee);
+    }
+
+    @Test
+    void updateTraineeTrainers_ShouldUpdateTrainersSuccessfully() {
+        String username = "asror.r";
+        TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
+                List.of(new TraineeTrainersUpdateRequestDTO.TrainerDTO("trainer1"),
+                        new TraineeTrainersUpdateRequestDTO.TrainerDTO("trainer2")));
+
+        Trainer trainer1 = new Trainer(new User("trainer1", "last1", "trainer1", "password", true), trainingType,
+                new ArrayList<>(), new HashSet<>());
+        Trainer trainer2 = new Trainer(new User("trainer2", "last2", "trainer2", "password", true), trainingType,
+                new ArrayList<>(), new HashSet<>());
+
+        when(traineeDAO.findByUsername(username)).thenReturn(Optional.of(trainee));
+        when(trainerDAO.findByUsername("trainer1")).thenReturn(Optional.of(trainer1));
+        when(trainerDAO.findByUsername("trainer2")).thenReturn(Optional.of(trainer2));
+        when(trainerMapper.toResponseDTO(trainer1)).thenReturn(new TrainerResponseDTO());
+        when(trainerMapper.toResponseDTO(trainer2)).thenReturn(new TrainerResponseDTO());
+
+        List<TrainerResponseDTO> result = traineeService.updateTraineeTrainers(username, requestDTO);
+
+        assertEquals(2, result.size());
+        verify(traineeDAO, times(1)).findByUsername(username);
+        verify(trainerDAO, times(1)).findByUsername("trainer1");
+        verify(trainerDAO, times(1)).findByUsername("trainer2");
+        verify(traineeDAO, times(1)).update(trainee);
+    }
+
+    @Test
+    void updateTraineeTrainers_ShouldThrowResourceNotFoundException_WhenTraineeNotFound() {
+        String username = "nonexistent";
+        TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
+                List.of(new TraineeTrainersUpdateRequestDTO.TrainerDTO("trainer1")));
+
+        when(traineeDAO.findByUsername(username)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> traineeService.updateTraineeTrainers(username, requestDTO));
+
+        assertEquals("Trainee with username nonexistent not found", exception.getMessage());
+        verify(traineeDAO, times(1)).findByUsername(username);
+        verify(trainerDAO, never()).findByUsername(any());
+        verify(traineeDAO, never()).update(any());
+    }
+
+    @Test
+    void updateTraineeTrainers_ShouldThrowResourceNotFoundException_WhenTrainerNotFound() {
+        String username = "asror.r";
+        TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
+                List.of(new TraineeTrainersUpdateRequestDTO.TrainerDTO("nonexistentTrainer")));
+
+        when(traineeDAO.findByUsername(username)).thenReturn(Optional.of(trainee));
+        when(trainerDAO.findByUsername("nonexistentTrainer")).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> traineeService.updateTraineeTrainers(username, requestDTO));
+
+        assertEquals("Trainer with username nonexistentTrainer not found", exception.getMessage());
+        verify(traineeDAO, times(1)).findByUsername(username);
+        verify(trainerDAO, times(1)).findByUsername("nonexistentTrainer");
+        verify(traineeDAO, never()).update(any());
+    }
+
+    @Test
+    void internalUpdate_ShouldUpdateTraineeSuccessfully() {
+        TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO("asror.r", "asror", "r", true, new Date(), "T");
+
+        TraineeUpdateResponseDTO responseDTO = new TraineeUpdateResponseDTO();
+        responseDTO.setUser(new UserUpdateResponseDTO("asror.r", "asror", "r", true));
+        responseDTO.setDateOfBirth(new Date());
+        responseDTO.setAddress("T");
+        responseDTO.setTrainers(List.of());
+
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
+        when(traineeMapper.toUpdateResponseDTO(trainee))
+                .thenReturn(responseDTO);
+
+        TraineeUpdateResponseDTO result = traineeService.update(updateDTO);
+
+        assertNotNull(result);
+        assertEquals("asror.r", result.getUser().getUsername());
+        verify(traineeDAO, times(1)).findByUsername("asror.r");
+        verify(traineeMapper, times(1)).toEntity(updateDTO, trainee);
+        verify(traineeDAO, times(1)).update(trainee);
+        verify(traineeMapper, times(1)).toUpdateResponseDTO(trainee);
+    }
+
+    @Test
+    void internalUpdate_ShouldThrowResourceNotFoundException_WhenTraineeNotFound() {
+        TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO("nonexistent", "asror", "r", true, new Date(),
+                "T");
+
+        when(traineeDAO.findByUsername("nonexistent")).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> traineeService.update(updateDTO));
+
+        assertEquals("Trainee with username nonexistent not found", exception.getMessage());
+        verify(traineeDAO, times(1)).findByUsername("nonexistent");
+        verify(traineeMapper, never()).toEntity(any(), any());
+        verify(traineeDAO, never()).update(any());
+        verify(traineeMapper, never()).toUpdateResponseDTO(any());
     }
 }

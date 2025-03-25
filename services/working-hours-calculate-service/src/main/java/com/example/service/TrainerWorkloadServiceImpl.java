@@ -80,8 +80,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         month.setTotalHours(month.getTotalHours() + duration);
 
-        LOGGER.info("Successfully added training session: duration={}, trainer={}, year={}, month={}", duration,
-                username, yearValue, monthValue);
+        LOGGER.info(SUCCESSFULLY_TRAINING_SESSION_ADDED, duration, username, yearValue, monthValue);
     }
 
     public void removeTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
@@ -156,18 +155,14 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         WorkingYear workingYear = trainerWorkload.getYears().stream().filter(y -> y.getYear().equals(year)).findFirst()
                 .orElse(null);
-        if (workingYear == null) {
-            LOGGER.error("2");
-            return responseDTO;
-        }
+        if (workingYear == null) return responseDTO;
+        
 
         WorkingMonth workingMonth = workingYear.getMonthsWorkload().stream().filter(m -> m.getMonth().equals(month))
                 .findFirst().orElse(null);
 
-        if (workingMonth == null) {
-            LOGGER.error("3");
-            return responseDTO;
-        }
+        if (workingMonth == null) return responseDTO;
+        
 
         responseDTO.setTotalHours(workingMonth.getTotalHours());
 

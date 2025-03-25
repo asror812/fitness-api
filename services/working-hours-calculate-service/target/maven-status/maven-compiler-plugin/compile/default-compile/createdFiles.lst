@@ -2,7 +2,6 @@ com/example/dto/TrainerWorkloadRequestDTO.class
 com/example/dto/ErrorResponseDTO.class
 com/example/model/WorkingMonth.class
 com/example/model/WorkingYear.class
-com/example/utils/GlobalExceptionHandler.class
 com/example/dto/ActionType.class
 com/example/dto/TrainerWorkloadResponseDTO$TrainerWorkloadResponseDTOBuilder.class
 com/example/model/TrainerWorkload.class

@@ -49,10 +49,8 @@ public class TraineeController {
     }
 
     @PutMapping("/{username}/trainers")
-    public ResponseEntity<List<TrainerResponseDTO>> putMethodName(@PathVariable String username,
+    public ResponseEntity<List<TrainerResponseDTO>> updateTraineeAssignedTrainers(@PathVariable String username,
             @RequestBody TraineeTrainersUpdateRequestDTO requestDTO) {
-
-        List<TrainerResponseDTO> trainerResponseDTOs = traineeService.updateTraineeTrainers(username, requestDTO);
-        return new ResponseEntity<>(trainerResponseDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(traineeService.updateTraineeTrainers(username, requestDTO), HttpStatus.OK);
     }
 }

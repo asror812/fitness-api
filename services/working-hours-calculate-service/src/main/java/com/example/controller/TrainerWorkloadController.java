@@ -4,8 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dto.TrainerWorkloadRequestDTO;
 import com.example.dto.TrainerWorkloadResponseDTO;
-import com.example.service.TrainerWorkloadService;
-import jakarta.validation.Valid;
+import com.example.service.TrainerWorkloadService;  
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;

@@ -21,6 +21,10 @@ public class TraineeTrainersUpdateRequestDTO {
         @NotBlank(message = "Trainer username is required")
         private String username;
 
+        public TrainerDTO(String username) {
+            this.username = username;
+        }
+        
         public String getUsername() {
             return username;
         }

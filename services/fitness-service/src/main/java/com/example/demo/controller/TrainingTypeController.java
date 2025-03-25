@@ -31,7 +31,7 @@ public class TrainingTypeController {
 
     @PostMapping
     public ResponseEntity<TrainingTypeResponseDTO> createTrainingType(@Valid @RequestBody TrainingTypeCreateDTO createDTO) {
-        return new ResponseEntity<>(trainingTypeService.create(createDTO), HttpStatus.OK);
+        return new ResponseEntity<>(trainingTypeService.create(createDTO), HttpStatus.CREATED);
     }
     
 
