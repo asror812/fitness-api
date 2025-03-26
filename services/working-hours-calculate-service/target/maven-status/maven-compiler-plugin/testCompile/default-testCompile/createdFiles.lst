@@ -1,4 +1,3 @@
 com/example/service/TrainerWorkloadServiceImplTest.class
 com/example/security/JwtAuthenticationFilterTest.class
 com/example/controller/TrainerWorkloadControllerTest.class
-com/example/security/JwtServiceTest.class

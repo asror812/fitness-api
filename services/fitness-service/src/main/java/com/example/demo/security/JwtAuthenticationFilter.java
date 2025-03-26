@@ -7,6 +7,8 @@ import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.response.ErrorResponseDTO;
 import com.example.demo.exceptions.AuthenticationFailureException;
 import com.example.demo.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,7 +17,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String INVALID_USERNAME = "Invalid username";
     private static final String INVALID_OR_MISSING_AUTH_HEAD = "Missing or invalid Authorization header";
 
-    private final Gson gson;
+    private final ObjectMapper objectMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     public static final Set<String> EXCLUDED_URLS = Set.of(
@@ -102,6 +103,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(HttpStatus.UNAUTHORIZED.value(), message);
-        response.getWriter().write(gson.toJson(errorResponse));
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

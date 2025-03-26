@@ -23,7 +23,7 @@ public class BruteForceProtectorService {
     private Integer blockTime;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BruteForceProtectorService.class);
-    public static final Map<String, FailureCount> FAILURE_COUNTS = new ConcurrentHashMap<>();
+    protected static final Map<String, FailureCount> FAILURE_COUNTS = new ConcurrentHashMap<>();
     private static final String TOO_MANY_REQUESTS = "You have exceeded the maximum number of login attempts. Please try again after some time";
 
     public boolean isBlocked(String username) {
@@ -44,7 +44,6 @@ public class BruteForceProtectorService {
             FAILURE_COUNTS.remove(username);
             return false;
         }
-
 
         LOGGER.warn("User '{}' has reached max login attempts. Account is blocked until {}.", username,
                 info.getDateTime().plusSeconds(blockTime));
@@ -69,7 +68,7 @@ public class BruteForceProtectorService {
             LOGGER.info("Failed login attempt {} for user: {}", info.getCount(), username);
         }
 
-        else{
+        else {
             LOGGER.warn("User '{}' has reached max login attempts. Account is blocked until {}.", username,
                     info.getDateTime().plusSeconds(blockTime));
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);

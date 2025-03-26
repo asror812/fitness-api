@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import com.example.demo.dao.UserDAO;
 import com.example.demo.utils.BruteForceProtectorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,7 +32,6 @@ import com.example.demo.dto.response.UserResponseDTO;
 import com.example.demo.dto.response.UserUpdateResponseDTO;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.TraineeService;
-import com.google.gson.Gson;
 import io.jsonwebtoken.lang.Collections;
 
 @WebMvcTest(TraineeController.class)
@@ -51,9 +52,8 @@ class TraineeControllerTest {
     @MockitoBean
     private BruteForceProtectorService bruteForceProtectorService;
 
-
     @Autowired
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private JwtService jwtService;
@@ -61,8 +61,8 @@ class TraineeControllerTest {
     @Test
     void delete_ShouldReturn_200() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete(endpoint + "/{username}", "qwerty")
-                        .accept(MediaType.APPLICATION_JSON))
+                .delete(endpoint + "/{username}", "qwerty")
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -71,7 +71,7 @@ class TraineeControllerTest {
         when(traineeService.getNotAssignedTrainers("a.a")).thenReturn(getNotAssignedTrainers());
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get(endpoint + "/{username}/not-assigned-trainers", "a.a"))
+                .get(endpoint + "/{username}/not-assigned-trainers", "a.a"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(2));
@@ -85,7 +85,7 @@ class TraineeControllerTest {
         when(traineeService.findByUsername("q.q")).thenReturn(Optional.of(traineeResponseDTO));
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get(endpoint + "/profiles/{username}", "q.q"))
+                .get(endpoint + "/profiles/{username}", "q.q"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user.firstName").value("q"))
@@ -101,36 +101,38 @@ class TraineeControllerTest {
                 "a.a", "", "", null, new Date(), "T");
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put(endpoint)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(updateDTO)))
+                .put(endpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     void update_ShouldReturn_200() throws Exception {
-            TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO(
-                            "a.a", "a", "a", true, new Date(), "T");
+        TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO(
+                "a.a", "a", "a", true, new Date(), "T");
 
-            mockMvc.perform(MockMvcRequestBuilders
-                            .put(endpoint)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(updateDTO)))
-                            .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(endpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDTO)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
-    
+
     @Test
     void updateTraineeAssignedTrainers() throws Exception {
-            TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(Collections.emptyList());
+        TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
+                Collections.emptyList());
 
-            mockMvc.perform(MockMvcRequestBuilders
-                            .put(endpoint + "/{username}/trainers" , "asror.r")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(requestDTO)))
-                            .andExpect(MockMvcResultMatchers.status().isOk()); 
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(endpoint + "/{username}/trainers", "asror.r")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(
+                        requestDTO)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     private List<TrainerResponseDTO> getNotAssignedTrainers() {

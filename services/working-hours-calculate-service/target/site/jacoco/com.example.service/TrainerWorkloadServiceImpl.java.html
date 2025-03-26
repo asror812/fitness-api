@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TrainerWorkloadServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.example.service</a> &gt; <span class="el_source">TrainerWorkloadServiceImpl.java</span></div><h1>TrainerWorkloadServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.example.dto.ActionType;
+import com.example.dto.TrainerWorkloadRequestDTO;
+import com.example.dto.TrainerWorkloadResponseDTO;
+import com.example.model.TrainerWorkload;
+import com.example.model.WorkingMonth;
+import com.example.model.WorkingYear;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
+
+<span class="fc" id="L25">    private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadServiceImpl.class);</span>
+    private static final String NO_WORKLOAD = &quot;No workload found for trainer '{}' in year {} and month {}&quot;;
+    private static final String SUCCESSFULLY_TRAINING_SESSION_ADDED = &quot;Added {} hours to trainer: {} for year: {} month: {}&quot;;
+    private static final String SUCCESSFULLY_TRAINING_SESSION_REMOVED = &quot;Removed {} hours from trainer: {} for year: {} month: {}&quot;;
+    private static final String NOT_ENOUGH_HOURS = &quot;Trainer: {} does not have enough hours to remove {} hours for year: {} month: {}&quot;;
+
+    private final Map&lt;String, TrainerWorkload&gt; trainersWorkload = new HashMap&lt;&gt;();
+
+    public void saveTrainer(TrainerWorkload trainer) {
+<span class="nc" id="L34">        trainersWorkload.put(trainer.getUsername(), trainer);</span>
+<span class="nc" id="L35">    }</span>
+
+    public TrainerWorkload getTrainer(String username) {
+<span class="fc" id="L38">        return trainersWorkload.get(username);</span>
+    }
+
+    public List&lt;TrainerWorkload&gt; getAllTrainers() {
+<span class="nc" id="L42">        return new ArrayList&lt;&gt;(trainersWorkload.values());</span>
+    }
+
+    public void deleteTrainer(String username) {
+<span class="nc" id="L46">        trainersWorkload.remove(username);</span>
+<span class="nc" id="L47">    }</span>
+
+    public void addTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
+<span class="fc" id="L50">        String username = requestDTO.getTrainerUsername();</span>
+
+<span class="fc" id="L52">        TrainerWorkload workload = trainersWorkload.get(username);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (workload == null) {</span>
+<span class="fc" id="L54">            workload = new TrainerWorkload();</span>
+<span class="fc" id="L55">            workload.setUsername(username);</span>
+<span class="fc" id="L56">            workload.setFirstName(requestDTO.getTrainerFirstName());</span>
+<span class="fc" id="L57">            workload.setLastName(requestDTO.getTrainerLastName());</span>
+<span class="fc" id="L58">            trainersWorkload.put(username, workload);</span>
+        }
+
+<span class="fc" id="L61">        LocalDate trainingDate = requestDTO.getTrainingDate();</span>
+<span class="fc" id="L62">        int yearValue = trainingDate.getYear();</span>
+<span class="fc" id="L63">        int monthValue = trainingDate.getMonthValue();</span>
+<span class="fc" id="L64">        double duration = requestDTO.getDuration();</span>
+
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        WorkingYear year = workload.getYears().stream().filter(y -&gt; y.getYear() == yearValue).findFirst().orElse(null);</span>
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (year == null) {</span>
+<span class="fc" id="L69">            year = new WorkingYear(yearValue, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L70">            workload.getYears().add(year);</span>
+        }
+
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        WorkingMonth month = year.getMonthsWorkload().stream().filter(m -&gt; m.getMonth() == monthValue).findFirst()</span>
+<span class="fc" id="L74">                .orElse(null);</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (month == null) {</span>
+<span class="fc" id="L77">            month = new WorkingMonth(monthValue, 0.0);</span>
+<span class="fc" id="L78">            year.getMonthsWorkload().add(month);</span>
+        }
+
+<span class="fc" id="L81">        month.setTotalHours(month.getTotalHours() + duration);</span>
+
+<span class="fc" id="L83">        LOGGER.info(SUCCESSFULLY_TRAINING_SESSION_ADDED, duration, username, yearValue, monthValue);</span>
+<span class="fc" id="L84">    }</span>
+
+    public void removeTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
+
+<span class="fc" id="L88">        LocalDate trainingDate = requestDTO.getTrainingDate();</span>
+
+<span class="fc" id="L90">        String username = requestDTO.getTrainerUsername();</span>
+<span class="fc" id="L91">        int yearValue = trainingDate.getYear();</span>
+<span class="fc" id="L92">        int monthValue = trainingDate.getMonthValue();</span>
+<span class="fc" id="L93">        double duration = requestDTO.getDuration();</span>
+
+<span class="fc" id="L95">        TrainerWorkload workload = trainersWorkload.get(username);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (workload == null) {</span>
+<span class="fc" id="L97">            LOGGER.warn(NO_WORKLOAD, username);</span>
+<span class="fc" id="L98">            return;</span>
+        }
+
+<span class="fc" id="L101">        WorkingYear year = workload.getYears().stream().filter(y -&gt; y.getYear().equals(yearValue)).findFirst()</span>
+<span class="fc" id="L102">                .orElse(null);</span>
+
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (year == null) {</span>
+<span class="nc" id="L105">            LOGGER.warn(NO_WORKLOAD, username, yearValue);</span>
+<span class="nc" id="L106">            return;</span>
+        }
+
+<span class="fc" id="L109">        WorkingMonth month = year.getMonthsWorkload().stream()</span>
+<span class="fc" id="L110">                .filter(m -&gt; m.getMonth().equals(trainingDate.getMonthValue())).findFirst().orElse(null);</span>
+
+<span class="pc bpc" id="L112" title="1 of 4 branches missed.">        if (month == null || month.getTotalHours() &lt; duration) {</span>
+<span class="fc" id="L113">            LOGGER.warn(NOT_ENOUGH_HOURS, requestDTO.getTrainerUsername(), duration, yearValue, monthValue);</span>
+<span class="fc" id="L114">            return;</span>
+        }
+
+<span class="fc" id="L117">        month.setTotalHours(month.getTotalHours() - duration);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (month.getTotalHours() &lt;= 0)</span>
+<span class="nc" id="L119">            year.getMonthsWorkload().remove(month);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (year.getMonthsWorkload().isEmpty())</span>
+<span class="nc" id="L121">            workload.getYears().remove(year);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        if (workload.getYears().isEmpty())</span>
+<span class="nc" id="L123">            trainersWorkload.remove(requestDTO.getTrainerUsername());</span>
+
+<span class="fc" id="L125">        LOGGER.info(SUCCESSFULLY_TRAINING_SESSION_REMOVED, duration, requestDTO.getTrainerUsername(), yearValue,</span>
+<span class="fc" id="L126">                monthValue);</span>
+<span class="fc" id="L127">    }</span>
+
+    @Override
+    public void processWorkload(TrainerWorkloadRequestDTO requestDTO) {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (requestDTO.getActionType().equals(ActionType.ADD)) {</span>
+<span class="fc" id="L132">            addTrainingSession(requestDTO);</span>
+        }
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        else if (requestDTO.getActionType().equals(ActionType.DELETE)) {</span>
+<span class="fc" id="L135">            removeTrainingSession(requestDTO);</span>
+        }
+        else {
+<span class="nc" id="L138">            throw new IllegalArgumentException(&quot;Invalid action type&quot;);</span>
+        }
+<span class="fc" id="L140">    }</span>
+
+    @Override
+    public TrainerWorkloadResponseDTO getTrainerWorkload(String username, int year, int month) {
+<span class="fc" id="L144">        TrainerWorkload trainerWorkload = trainersWorkload.get(username);</span>
+
+<span class="fc" id="L146">        LOGGER.warn(&quot;{}&quot;, trainerWorkload);</span>
+<span class="fc" id="L147">        TrainerWorkloadResponseDTO responseDTO = TrainerWorkloadResponseDTO.builder().username(username).month(month)</span>
+<span class="fc" id="L148">                .year(year).totalHours(0).build();</span>
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (trainerWorkload == null) {</span>
+<span class="fc" id="L151">            LOGGER.warn(NO_WORKLOAD, username, year, month);</span>
+<span class="fc" id="L152">            LOGGER.error(&quot;1&quot;);</span>
+<span class="fc" id="L153">            return responseDTO;</span>
+        }
+
+<span class="fc" id="L156">        WorkingYear workingYear = trainerWorkload.getYears().stream().filter(y -&gt; y.getYear().equals(year)).findFirst()</span>
+<span class="fc" id="L157">                .orElse(null);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">        if (workingYear == null) return responseDTO;</span>
+        
+
+<span class="fc" id="L161">        WorkingMonth workingMonth = workingYear.getMonthsWorkload().stream().filter(m -&gt; m.getMonth().equals(month))</span>
+<span class="fc" id="L162">                .findFirst().orElse(null);</span>
+
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (workingMonth == null) return responseDTO;</span>
+        
+
+<span class="fc" id="L167">        responseDTO.setTotalHours(workingMonth.getTotalHours());</span>
+
+<span class="fc" id="L169">        return responseDTO;</span>
+    }
+}
+
+// List&lt;WorkingYear&gt; years = workload.getYears() == null ? new ArrayList&lt;&gt;() :
+// workload.getYears();
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

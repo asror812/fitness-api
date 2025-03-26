@@ -7,6 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.google.gson.Gson;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -32,10 +35,14 @@ class JwtAuthenticationFilterTest {
     @InjectMocks
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+
+    @Mock
+    private Gson gson;
+
     @Test
     void testDoFilter_MissingAuthorizationHeader() throws IOException, ServletException {
         when(request.getHeader("Authorization")).thenReturn(null);
-
+        when(response.getWriter()).thenReturn(mock(java.io.PrintWriter.class));
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -46,7 +53,7 @@ class JwtAuthenticationFilterTest {
     void testDoFilter_InvalidToken() throws IOException, ServletException {
         when(request.getHeader("Authorization")).thenReturn("Bearer invalid_token");
         when(jwtService.claims("invalid_token")).thenThrow(new JwtException("Invalid token"));
-
+        when(response.getWriter()).thenReturn(mock(java.io.PrintWriter.class));
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -59,6 +66,7 @@ class JwtAuthenticationFilterTest {
         Claims claims = mock(Claims.class);
         when(jwtService.claims("valid_token")).thenReturn(claims);
         when(claims.get("transactionId")).thenReturn(null);
+        when(response.getWriter()).thenReturn(mock(java.io.PrintWriter.class));
 
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
