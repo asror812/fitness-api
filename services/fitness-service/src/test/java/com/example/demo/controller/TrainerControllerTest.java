@@ -18,13 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import com.example.demo.client.TrainerWorkloadResponseDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
 import com.example.demo.dto.request.TrainerUpdateRequestDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
-import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.TrainerService;
@@ -108,20 +107,6 @@ class TrainerControllerTest {
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDTO)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    void getTrainerMonthlyWorkload_ShouldReturn_200() throws Exception {
-
-        when(trainerService.getTrainerMonthlyWorkloadSummary("asror.r", 2025, 3))
-                .thenReturn(new TrainerWorkloadResponseDTO());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .get(endpoint + "/{username}/{year}/{month}", "asror.r", 2025, 3)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
-                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

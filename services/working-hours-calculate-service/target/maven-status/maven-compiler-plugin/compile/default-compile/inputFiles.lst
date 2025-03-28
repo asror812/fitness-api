@@ -3,7 +3,10 @@
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/dto/ActionType.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/dto/ErrorResponseDTO.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/dto/TrainerWorkloadRequestDTO.java
-/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/dto/TrainerWorkloadResponseDTO.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/exception/ErrorMessages.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/exception/ErrorResponse.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/exception/GlobalExceptionHandler.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/exception/ResourceNotFoundException.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/model/TrainerWorkload.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/model/WorkingMonth.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/model/WorkingYear.java

@@ -20,7 +20,7 @@ import org.mockito.quality.Strictness;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dto.request.TrainingTypeCreateDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
-import com.example.demo.exceptions.AlreadyExistException;
+import com.example.demo.exception.AlreadyExistException;
 import com.example.demo.mapper.TrainingTypeMapper;
 import com.example.demo.model.TrainingType;
 

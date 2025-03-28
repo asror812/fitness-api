@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.dto.ActionType;
 import com.example.dto.TrainerWorkloadRequestDTO;
-import com.example.dto.TrainerWorkloadResponseDTO;
+import com.example.model.TrainerWorkload;
 import com.example.security.JwtService;
 import com.example.service.TrainerWorkloadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,17 +42,16 @@ class TrainerWorkloadControllerTest {
                 1.5, ActionType.ADD);
 
         objectMapper.registerModule(new JavaTimeModule());
-        mockMvc.perform(
-                MockMvcRequestBuilders.post("/workload/addOrRemoveWorkload").contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDTO)))
+        mockMvc.perform(MockMvcRequestBuilders.post("/workload").contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     void getMonthlyWorkload_Shouldreturn_200() throws Exception {
-        
-        when(workloadService.getTrainerWorkload("asror.r", 2024, 3)).thenReturn(new TrainerWorkloadResponseDTO());
-        mockMvc.perform(MockMvcRequestBuilders.get("/workload/{username}/{year}/{month}", "asror.r", 2024, 3)
+
+        when(workloadService.getTrainerWorkload("asror.r")).thenReturn(new TrainerWorkload());
+        mockMvc.perform(MockMvcRequestBuilders.get("/workload/{username}", "asror.r")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }

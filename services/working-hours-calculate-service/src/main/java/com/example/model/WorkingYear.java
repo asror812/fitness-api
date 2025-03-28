@@ -16,6 +16,6 @@ public class WorkingYear {
 
     private Integer year;
 
-    private List<WorkingMonth> monthsWorkload = new ArrayList<>();
+    private List<WorkingMonth> monthlyWorkload = new ArrayList<>();
 
 }

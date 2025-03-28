@@ -9,10 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,13 +30,7 @@ public class TrainingController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteTraining(@RequestBody UUID id) {
-        trainingService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/trainer/{username}")
+    @GetMapping("/trainer/{username}")  
     public ResponseEntity<List<TrainingResponseDTO>> getTrainerTrainers(@PathVariable String username,
             @RequestParam(required = false) Date from,
             @RequestParam(required = false) Date to,

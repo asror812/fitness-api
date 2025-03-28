@@ -1,7 +1,7 @@
-package com.example.demo.exceptions;
+package com.example.demo.exception;
 
 public class DataAccessException extends RuntimeException {
-    
+
     public DataAccessException(String message) {
         super(message);
     }

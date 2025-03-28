@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.exceptions.DataAccessException;
+import com.example.demo.exception.DataAccessException;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

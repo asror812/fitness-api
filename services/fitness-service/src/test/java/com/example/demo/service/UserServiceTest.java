@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.UserDAO;
-import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exception.ResourceNotFoundException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

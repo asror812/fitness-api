@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.exceptions.TooManyRequestsException;
+import com.example.demo.exception.TooManyRequestsException;
 
 import java.time.LocalDateTime;
 import java.util.Map;

@@ -30,7 +30,7 @@ public class TraineeController {
     public ResponseEntity<TraineeResponseDTO> getProfile(@PathVariable String username) {
         return ResponseEntity.ok(traineeService.findByUsername(username).orElse(null));
     }
-
+    
     @PutMapping
     public ResponseEntity<TraineeUpdateResponseDTO> update(@Valid @RequestBody TraineeUpdateRequestDTO requestDTO) {
         TraineeUpdateResponseDTO update = traineeService.update(requestDTO);

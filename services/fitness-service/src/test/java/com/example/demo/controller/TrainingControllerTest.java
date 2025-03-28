@@ -58,16 +58,6 @@ class TrainingControllerTest {
     }
 
     @Test
-    void deleteTraining_ShouldReturn_200() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/trainings")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
-                .content(objectMapper.writeValueAsString(UUID.randomUUID())))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
     void getTraineeTrainings_ShouldReturn_200() throws Exception {
         when(trainingService.getTraineeTrainings("asror.r", null, null, null, null))
                 .thenReturn(getAllTraineeTrainings());

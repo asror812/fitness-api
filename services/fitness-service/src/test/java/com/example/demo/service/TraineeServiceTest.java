@@ -35,7 +35,7 @@ import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
 import com.example.demo.dto.response.UserUpdateResponseDTO;
-import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;

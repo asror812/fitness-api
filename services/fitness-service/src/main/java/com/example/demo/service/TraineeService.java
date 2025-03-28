@@ -1,28 +1,36 @@
 package com.example.demo.service;
 
+import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.UserDAO;
+import com.example.demo.dto.request.ActionType;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
+import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO.TrainerDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
+import com.example.demo.model.Training;
 import com.example.demo.model.User;
-import com.example.demo.exceptions.ResourceNotFoundException;
+
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -44,9 +52,11 @@ public class TraineeService
     private final TrainerMapper trainerMapper;
     private final Class<Trainee> entityClass = Trainee.class;
     private static final Logger LOGGER = LoggerFactory.getLogger(TraineeService.class);
+    private final TrainerWorkloadClient client;
 
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Transactional
     public SignUpResponseDTO register(TraineeSignUpRequestDTO requestDTO) {
@@ -89,7 +99,21 @@ public class TraineeService
         Trainee trainee = dao.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
-        dao.delete(trainee);
+
+        List<Training> trainings = trainee.getTrainings();
+
+        for (Training training : trainings) {
+            TrainerWorkloadRequestDTO requestDTO = TrainerWorkloadRequestDTO.builder()
+                    .trainerUsername(training.getTrainer().getUser().getUsername())
+                    .trainerFirstName(training.getTrainer().getUser().getFirstName())
+                    .trainerLastName(training.getTrainer().getUser().getLastName())
+                    .duration(training.getDuration())
+                    .trainingDate(LocalDate.parse(dateFormat.format(training.getTrainingDate())))
+                    .actionType(ActionType.DELETE)
+                    .build();
+
+            client.updateTrainingSession(requestDTO);
+        }
     }
 
     @Transactional

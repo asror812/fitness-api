@@ -1,10 +1,7 @@
 package com.example.demo.security;
 
-
-
 import java.util.Date;
 import javax.crypto.SecretKey;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
@@ -52,7 +49,6 @@ public class JwtService {
                 .subject("fitness-microservice")
                 .issuedAt(now)
                 .expiration(expiration)
-                .claim("transactionId", MDC.get("transactionID"))
                 .signWith(microserviceSecretKey)
                 .compact();
     }

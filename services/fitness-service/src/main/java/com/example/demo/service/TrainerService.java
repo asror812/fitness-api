@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.client.TrainerWorkloadResponseDTO;
 import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
@@ -10,11 +9,12 @@ import com.example.demo.dto.request.TrainerUpdateRequestDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainerUpdateResponseDTO;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
-import com.example.demo.exceptions.ResourceNotFoundException;
+
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -96,10 +96,4 @@ public class TrainerService extends
 
         return mapper.toUpdateResponseDTO(trainer);
     }
-
-
-    public TrainerWorkloadResponseDTO getTrainerMonthlyWorkloadSummary(String username, int year, int month) {
-        return client.getTrainerMonthlyWorkloadSummary(username, year, month);
-    }
-
 }

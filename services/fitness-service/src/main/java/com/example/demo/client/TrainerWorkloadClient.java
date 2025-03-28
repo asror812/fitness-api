@@ -2,6 +2,7 @@ package com.example.demo.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -28,65 +29,36 @@ public class TrainerWorkloadClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadClient.class);
 
     private static final String FALLBACK_UPDATE_TRAINING_SESSION = "Fallback triggered for updateTrainingSession. RequestDTO: {} Error: {}";
-    private static final String FALLBACK_GET_TRAINER_MONTHLY_WORKLOAD = "Fallback triggered for getTrainerMonthlyWorkloadSummary. Username: {} Year: {} Month {}. Error: {}";
 
     @Value("${service.trainer-workload.url}")
     private String trainerWorkloadUrl;
 
     @CircuitBreaker(name = "workloadService", fallbackMethod = "updateTrainingSessionFallback")
     public void updateTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
+        String transactionId = MDC.get("transactionID");
+
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("Authorization", "Bearer " + jwtService.generateTokenForMicroservice());
         headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        headers.add("Transaction-ID", transactionId);
 
         HttpEntity<TrainerWorkloadRequestDTO> entity = new HttpEntity<>(requestDTO, headers);
 
         LOGGER.info("Url: {} Request Entity: {}", trainerWorkloadUrl, entity);
 
         ResponseEntity<Void> response = restTemplate.exchange(
-                trainerWorkloadUrl + "addOrRemoveWorkload", HttpMethod.POST,
+                trainerWorkloadUrl, HttpMethod.POST,
                 entity, Void.class);
         LOGGER.info("{}", response);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             LOGGER.error("Proccess workload returned : {}", response);
         }
-
     }
 
     public void updateTrainingSessionFallback(TrainerWorkloadRequestDTO requestDTO, Throwable throwable) {
         LOGGER.error(FALLBACK_UPDATE_TRAINING_SESSION, requestDTO, throwable);
-    }
-
-    @CircuitBreaker(name = "workloadSummary", fallbackMethod = "workloadSummaryCalculateFallback")
-    public TrainerWorkloadResponseDTO getTrainerMonthlyWorkloadSummary(String username, int year, int month) {
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.add("Authorization", "Bearer " + jwtService.generateTokenForMicroservice());
-        headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers); 
-
-        ResponseEntity<TrainerWorkloadResponseDTO> response = restTemplate.exchange(
-                trainerWorkloadUrl + username + "/" + year + "/" + month,
-                HttpMethod.GET,
-                entity,
-                TrainerWorkloadResponseDTO.class);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            LOGGER.error("Workload summary returned : {}", response.getBody());
-        }
-
-        LOGGER.info("Trainer monthly workload for user: {}. Workload: {}", username, response.getBody());
-
-        return response.getBody();
-    }
-
-    public TrainerWorkloadResponseDTO workloadSummaryCalculateFallback(String username, int year, int month,
-            Throwable throwable) {
-        LOGGER.error(FALLBACK_GET_TRAINER_MONTHLY_WORKLOAD, username, year, month, throwable);
-        return null;
     }
 
 }

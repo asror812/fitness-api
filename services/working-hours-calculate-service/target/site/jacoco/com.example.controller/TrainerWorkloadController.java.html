@@ -3,7 +3,7 @@
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dto.TrainerWorkloadRequestDTO;
-import com.example.dto.TrainerWorkloadResponseDTO;
+import com.example.model.TrainerWorkload;
 import com.example.service.TrainerWorkloadService;  
 import lombok.RequiredArgsConstructor;
 
@@ -23,15 +23,15 @@ public class TrainerWorkloadController {
 
     private final TrainerWorkloadService workloadService;
 
-    @PostMapping(&quot;/addOrRemoveWorkload&quot;)
+    @PostMapping
     public ResponseEntity&lt;Void&gt; processWorkload(@RequestBody TrainerWorkloadRequestDTO requestDTO) {
 <span class="fc" id="L28">        workloadService.processWorkload(requestDTO);</span>
 <span class="fc" id="L29">        return new ResponseEntity&lt;&gt;(HttpStatus.OK);</span>
     }
 
-    @GetMapping(&quot;/{username}/{year}/{month}&quot;)
-    public TrainerWorkloadResponseDTO getMonthlyWorkload(@PathVariable String username, @PathVariable int year, @PathVariable int month) {
-<span class="fc" id="L34">        return workloadService.getTrainerWorkload(username, year, month);   </span>
+    @GetMapping(&quot;/{username}&quot;)
+    public TrainerWorkload getMonthlyWorkload(@PathVariable String username) {
+<span class="fc" id="L34">        return workloadService.getTrainerWorkload(username);   </span>
     }
     
 

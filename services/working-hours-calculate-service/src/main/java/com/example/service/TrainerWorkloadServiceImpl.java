@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.dto.ActionType;
 import com.example.dto.TrainerWorkloadRequestDTO;
-import com.example.dto.TrainerWorkloadResponseDTO;
+import com.example.exception.ResourceNotFoundException;
 import com.example.model.TrainerWorkload;
 import com.example.model.WorkingMonth;
 import com.example.model.WorkingYear;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadServiceImpl.class);
-    private static final String NO_WORKLOAD = "No workload found for trainer '{}' in year {} and month {}";
+    private static final String NO_WORKLOAD = "No workload found for trainer '{}'";
     private static final String SUCCESSFULLY_TRAINING_SESSION_ADDED = "Added {} hours to trainer: {} for year: {} month: {}";
     private static final String SUCCESSFULLY_TRAINING_SESSION_REMOVED = "Removed {} hours from trainer: {} for year: {} month: {}";
     private static final String NOT_ENOUGH_HOURS = "Trainer: {} does not have enough hours to remove {} hours for year: {} month: {}";
@@ -70,12 +70,12 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
             workload.getYears().add(year);
         }
 
-        WorkingMonth month = year.getMonthsWorkload().stream().filter(m -> m.getMonth() == monthValue).findFirst()
+        WorkingMonth month = year.getMonthlyWorkload().stream().filter(m -> m.getMonth() == monthValue).findFirst()
                 .orElse(null);
 
         if (month == null) {
             month = new WorkingMonth(monthValue, 0.0);
-            year.getMonthsWorkload().add(month);
+            year.getMonthlyWorkload().add(month);
         }
 
         month.setTotalHours(month.getTotalHours() + duration);
@@ -94,7 +94,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         TrainerWorkload workload = trainersWorkload.get(username);
         if (workload == null) {
-            LOGGER.warn(NO_WORKLOAD, username);
+            LOGGER.warn(NO_WORKLOAD, username, yearValue, monthValue);
             return;
         }
 
@@ -102,11 +102,11 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
                 .orElse(null);
 
         if (year == null) {
-            LOGGER.warn(NO_WORKLOAD, username, yearValue);
+            LOGGER.warn(NO_WORKLOAD, username, yearValue, monthValue);
             return;
         }
 
-        WorkingMonth month = year.getMonthsWorkload().stream()
+        WorkingMonth month = year.getMonthlyWorkload().stream()
                 .filter(m -> m.getMonth().equals(trainingDate.getMonthValue())).findFirst().orElse(null);
 
         if (month == null || month.getTotalHours() < duration) {
@@ -115,9 +115,10 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
         }
 
         month.setTotalHours(month.getTotalHours() - duration);
+
         if (month.getTotalHours() <= 0)
-            year.getMonthsWorkload().remove(month);
-        if (year.getMonthsWorkload().isEmpty())
+            year.getMonthlyWorkload().remove(month);
+        if (year.getMonthlyWorkload().isEmpty())
             workload.getYears().remove(year);
         if (workload.getYears().isEmpty())
             trainersWorkload.remove(requestDTO.getTrainerUsername());
@@ -140,35 +141,17 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     }
 
     @Override
-    public TrainerWorkloadResponseDTO getTrainerWorkload(String username, int year, int month) {
+    public TrainerWorkload getTrainerWorkload(String username) {
         TrainerWorkload trainerWorkload = trainersWorkload.get(username);
 
         LOGGER.warn("{}", trainerWorkload);
-        TrainerWorkloadResponseDTO responseDTO = TrainerWorkloadResponseDTO.builder().username(username).month(month)
-                .year(year).totalHours(0).build();
 
         if (trainerWorkload == null) {
-            LOGGER.warn(NO_WORKLOAD, username, year, month);
-            LOGGER.error("1");
-            return responseDTO;
+            LOGGER.warn(NO_WORKLOAD, username);
+            throw new ResourceNotFoundException("No workload found for trainer: " + username);
         }
 
-        WorkingYear workingYear = trainerWorkload.getYears().stream().filter(y -> y.getYear().equals(year)).findFirst()
-                .orElse(null);
-        if (workingYear == null) return responseDTO;
-        
-
-        WorkingMonth workingMonth = workingYear.getMonthsWorkload().stream().filter(m -> m.getMonth().equals(month))
-                .findFirst().orElse(null);
-
-        if (workingMonth == null) return responseDTO;
-        
-
-        responseDTO.setTotalHours(workingMonth.getTotalHours());
-
-        return responseDTO;
+        return trainerWorkload;
     }
-}
 
-// List<WorkingYear> years = workload.getYears() == null ? new ArrayList<>() :
-// workload.getYears();
+}

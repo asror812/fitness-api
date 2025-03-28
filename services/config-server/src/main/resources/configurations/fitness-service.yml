@@ -1,7 +1,3 @@
-spring:
-  mvc:
-    converters:
-      preferred-json-mapper: gson
 management:
   endpoint:
     health:
@@ -25,4 +21,4 @@ resilience4j:
         automaticTransitionFromOpenToHalfOpenEnabled: true
 service:
   trainer-workload:
-    url: http://localhost:8080/workload/       
+    url: http://localhost:8080/workload     

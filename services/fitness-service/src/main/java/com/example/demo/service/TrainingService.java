@@ -10,11 +10,12 @@ import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.request.TrainingUpdateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
 import com.example.demo.dto.response.TrainingUpdateResponseDTO;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.TrainingMapper;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
-import com.example.demo.exceptions.ResourceNotFoundException;
+
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Getter
@@ -103,24 +103,4 @@ public class TrainingService extends
         throw new UnsupportedOperationException("Unimplemented method 'internalUpdate'");
     }
 
-    @Transactional
-    public void delete(UUID id) {
-        Training training = dao.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Training with ID %s not found".formatted(id)));
-
-        Trainer trainer = training.getTrainer();
-
-        TrainerWorkloadRequestDTO trainerWorkloadRequestDTO = TrainerWorkloadRequestDTO.builder()
-                .trainerUsername(trainer.getUser().getUsername())
-                .trainerFirstName(trainer.getUser().getFirstName())
-                .trainerLastName(trainer.getUser().getLastName())
-                .duration(training.getDuration())
-                .trainingDate(LocalDate.parse(dateFormat.format(training.getTrainingDate())))
-                .actionType(ActionType.DELETE)
-                .build();
-
-        workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);
-        dao.delete(id);
-    }
 }

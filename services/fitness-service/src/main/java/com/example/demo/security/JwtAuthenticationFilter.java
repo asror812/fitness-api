@@ -1,11 +1,12 @@
 package com.example.demo.security;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Set;
 
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.response.ErrorResponseDTO;
-import com.example.demo.exceptions.AuthenticationFailureException;
+import com.example.demo.exception.AuthenticationFailureException;
 import com.example.demo.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String INVALID_TOKEN = "Invalid or expired token";
     private static final String INVALID_USERNAME = "Invalid username";
     private static final String INVALID_OR_MISSING_AUTH_HEAD = "Missing or invalid Authorization header";
+    private static final String AUTHENTICATION_FAILED = "Authentication failed";
 
     private final ObjectMapper objectMapper;
 
@@ -61,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HEADER_NAME);
 
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            sendErrorResponse(response, INVALID_OR_MISSING_AUTH_HEAD);
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, INVALID_OR_MISSING_AUTH_HEAD);
             return;
         }
 
@@ -70,13 +73,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtService.claims(token);
             if (claims == null) {
-                sendErrorResponse(response, INVALID_TOKEN);
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, INVALID_TOKEN);
                 return;
             }
 
             String username = claims.getSubject();
             if (username == null || username.isBlank()) {
-                sendErrorResponse(response, INVALID_USERNAME);
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, INVALID_USERNAME);
                 return;
             }
 
@@ -90,19 +93,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } catch (AuthenticationFailureException e) {
-            LOGGER.warn("Authentication failed for token: {} - {}", token, e.getMessage());
-            sendErrorResponse(response, e.getMessage());
+        } catch (JwtException e) {
+            LOGGER.warn("Invalid or expired token: {} - {}", token, e.getMessage());
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, INVALID_TOKEN);
         } catch (Exception e) {
             LOGGER.error("Unexpected authentication error: {}", e.getMessage(), e);
-            sendErrorResponse(response, "Authentication failed");
+            sendErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, AUTHENTICATION_FAILED);
         }
     }
 
-    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    private void sendErrorResponse(HttpServletResponse response, HttpStatus httpStatus, String message)
+            throws IOException {
+        response.setStatus(httpStatus.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(HttpStatus.UNAUTHORIZED.value(), message);
+
+        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message(message)
+                .timestamp(Instant.now()).build();
+
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

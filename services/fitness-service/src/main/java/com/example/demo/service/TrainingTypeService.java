@@ -7,10 +7,11 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dto.request.TrainingTypeCreateDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
+import com.example.demo.exception.AlreadyExistException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.TrainingTypeMapper;
 import com.example.demo.model.TrainingType;
-import com.example.demo.exceptions.AlreadyExistException;
-import com.example.demo.exceptions.ResourceNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service

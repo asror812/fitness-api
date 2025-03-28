@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.client.TrainerWorkloadClient;
-import com.example.demo.client.TrainerWorkloadResponseDTO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dao.UserDAO;
@@ -97,7 +96,6 @@ class TrainerServiceTest {
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> trainerService.setStatus("asror.r", true));
-
         assertEquals("'asror.r' is already true", exception.getMessage());
 
         verify(userDAO, never()).update(any(User.class));
@@ -128,20 +126,4 @@ class TrainerServiceTest {
         trainerService.update(requestDTO);
         verify(trainerDAO, times(1)).update(trainer);
     }
-
-    @Test
-    void getTrainerMonthlyWorkloadSummary_ShouldReturnResponse() {
-        String username = "asror.r";
-        int year = 2023;
-        int month = 10;
-        TrainerWorkloadResponseDTO workloadResponse = new TrainerWorkloadResponseDTO();
-
-        when(client.getTrainerMonthlyWorkloadSummary(username, year, month)).thenReturn(workloadResponse);
-
-        TrainerWorkloadResponseDTO response = trainerService.getTrainerMonthlyWorkloadSummary(username, year, month);
-
-        assertNotNull(response);
-        verify(client, times(1)).getTrainerMonthlyWorkloadSummary(username, year, month);
-    }
-
 }

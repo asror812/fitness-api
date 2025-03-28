@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.example.demo.exceptions.DataAccessException;
+
+import com.example.demo.exception.DataAccessException;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 

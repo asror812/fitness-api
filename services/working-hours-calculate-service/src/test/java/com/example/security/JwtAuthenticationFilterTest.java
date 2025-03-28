@@ -40,7 +40,7 @@ class JwtAuthenticationFilterTest {
     private Gson gson;
 
     @Test
-    void testDoFilter_MissingAuthorizationHeader() throws IOException, ServletException {
+    void doFilter_MissingAuthorizationHeader() throws IOException, ServletException {
         when(request.getHeader("Authorization")).thenReturn(null);
         when(response.getWriter()).thenReturn(mock(java.io.PrintWriter.class));
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
@@ -50,7 +50,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void testDoFilter_InvalidToken() throws IOException, ServletException {
+    void doFilter_InvalidToken() throws IOException, ServletException {
         when(request.getHeader("Authorization")).thenReturn("Bearer invalid_token");
         when(jwtService.claims("invalid_token")).thenThrow(new JwtException("Invalid token"));
         when(response.getWriter()).thenReturn(mock(java.io.PrintWriter.class));
@@ -61,7 +61,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void testDoFilter_ValidToken_MissingTransactionId() throws IOException, ServletException {
+    void doFilter_ValidToken_MissingTransactionId() throws IOException, ServletException {
         when(request.getHeader("Authorization")).thenReturn("Bearer valid_token");
         Claims claims = mock(Claims.class);
         when(jwtService.claims("valid_token")).thenReturn(claims);
@@ -75,7 +75,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void testDoFilter_SuccessfulAuthentication() throws IOException, ServletException {
+    void doFilter_SuccessfulAuthentication() throws IOException, ServletException {
         when(request.getHeader("Authorization")).thenReturn("Bearer valid_token");
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("/api/test");
