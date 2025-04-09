@@ -46,7 +46,8 @@ public class TrainingTypeService {
             throw new AlreadyExistException(TRAINING_TYPE_ALREADY_EXISTS_WITH_NAME.formatted(createDTO.getName()));
         }
 
-        TrainingType trainingType = trainingTypeDAO.create(new TrainingType(createDTO.getName(), Collections.emptyList(), Collections.emptyList()));
+        TrainingType trainingType = trainingTypeDAO
+                .create(new TrainingType(createDTO.getName(), Collections.emptyList(), Collections.emptyList()));
 
         return new TrainingTypeResponseDTO(trainingType.getId(), name);
     }

@@ -36,7 +36,7 @@ import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
 import com.example.demo.dto.response.UserUpdateResponseDTO;
 import com.example.demo.exception.EntityNotFoundException;
-import com.example.demo.jms.TrainerWorkloadJmsConsumer;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
@@ -67,7 +67,7 @@ class TraineeServiceTest {
     private TrainerMapper trainerMapper;
 
     @Mock
-    private TrainerWorkloadJmsConsumer consumer;
+    private TrainerWorkloadJmsProducer consumer;
 
     @InjectMocks
     private TraineeService traineeService;

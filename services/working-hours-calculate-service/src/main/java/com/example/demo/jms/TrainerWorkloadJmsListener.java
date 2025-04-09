@@ -31,7 +31,7 @@ public class TrainerWorkloadJmsListener {
     @Value("${spring.activemq.password}")
     private String brokerPassword;
 
-    @JmsListener(destination = "${${jms.workload_queue.update}}", containerFactory = "jmsListenerContainerFactory")
+    @JmsListener(destination = "${jms.workload_queue.update}", containerFactory = "jmsListenerContainerFactory")
     public void consume(TrainerWorkloadRequestDTO dto, @Headers Map<String, Object> headers) {
         String transactionId = (String) headers.get("transactionId");
         try {

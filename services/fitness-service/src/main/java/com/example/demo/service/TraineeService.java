@@ -12,7 +12,7 @@ import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.exception.EntityNotFoundException;
-import com.example.demo.jms.TrainerWorkloadJmsConsumer;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
@@ -50,7 +50,7 @@ public class TraineeService
     private final TrainerMapper trainerMapper;
     private final Class<Trainee> entityClass = Trainee.class;
     private static final Logger LOGGER = LoggerFactory.getLogger(TraineeService.class);
-    private final TrainerWorkloadJmsConsumer consumer;
+    private final TrainerWorkloadJmsProducer consumer;
 
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";

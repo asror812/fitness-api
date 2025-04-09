@@ -10,7 +10,7 @@ import com.example.demo.dto.request.TrainingUpdateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
 import com.example.demo.dto.response.TrainingUpdateResponseDTO;
 import com.example.demo.exception.EntityNotFoundException;
-import com.example.demo.jms.TrainerWorkloadJmsConsumer;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainingMapper;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
@@ -41,7 +41,7 @@ public class TrainingService extends
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final TrainerWorkloadJmsConsumer consumer;
+    private final TrainerWorkloadJmsProducer consumer;
 
     @Transactional
     public void create(TrainingCreateRequestDTO createDTO) {

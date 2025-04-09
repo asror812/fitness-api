@@ -10,7 +10,7 @@ import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainerUpdateResponseDTO;
 import com.example.demo.exception.EntityNotFoundException;
-import com.example.demo.jms.TrainerWorkloadJmsConsumer;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.TrainingType;
@@ -40,7 +40,7 @@ public class TrainerService extends
     private final UserDAO userDAO;
     private final TrainingTypeDAO trainingTypeDAO;
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerService.class);
-    private final TrainerWorkloadJmsConsumer consumer;
+    private final TrainerWorkloadJmsProducer consumer;
 
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
     private static final String TRAINING_TYPE_NOT_FOUND_WITH_ID = "Training type with id %s not found";

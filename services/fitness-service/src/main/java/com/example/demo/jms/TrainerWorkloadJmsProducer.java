@@ -15,15 +15,15 @@ import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.model.Training;
 
 @Component
-public class TrainerWorkloadJmsConsumer {
+public class TrainerWorkloadJmsProducer {
 
-    @Value("{jms.workload_queue_name.update}")
+    @Value("${jms.workload_queue.update}")
     private String updateTrainerWorkloadQueue;
 
     @Autowired
     private JmsTemplate jmsTemplate;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadJmsConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadJmsProducer.class);
 
     public void updateTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
         String transactionId = MDC.get("transactionID");

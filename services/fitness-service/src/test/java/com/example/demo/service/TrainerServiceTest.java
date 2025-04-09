@@ -9,7 +9,7 @@ import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
-import com.example.demo.jms.TrainerWorkloadJmsConsumer;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.TrainingType;
@@ -53,7 +53,7 @@ class TrainerServiceTest {
     private TrainerService trainerService;
 
     @Mock
-    private TrainerWorkloadJmsConsumer consumer;
+    private TrainerWorkloadJmsProducer consumer;
 
     private Trainer trainer;
     private User user;

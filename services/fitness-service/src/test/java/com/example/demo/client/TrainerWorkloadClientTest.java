@@ -4,7 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
-import com.example.demo.jms.TrainerWorkloadJmsConsumer;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ class TrainerWorkloadClientTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private TrainerWorkloadJmsConsumer consumer;
+    private TrainerWorkloadJmsProducer consumer;
 
     private final String trainerWorkloadUrl = "http://localhost:8080/workload";
 
