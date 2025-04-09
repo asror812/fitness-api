@@ -22,7 +22,7 @@ import com.example.demo.dto.request.TrainerUpdateRequestDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.TrainerService;
@@ -70,7 +70,7 @@ class TrainerControllerTest {
     @Test
     void getProfile_ShouldReturn_404() throws Exception {
         when(trainerService.findByUsername("asror.r"))
-                .thenThrow(new ResourceNotFoundException("Trainer with username asror.r not found"));
+                .thenThrow(new EntityNotFoundException("Trainer with username asror.r not found"));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get(endpoint + "/profiles/{username}", "asror.r")

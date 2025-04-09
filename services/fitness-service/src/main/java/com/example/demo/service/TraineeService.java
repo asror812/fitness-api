@@ -11,7 +11,7 @@ import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
@@ -78,7 +78,7 @@ public class TraineeService
         String username = updateDTO.getUsername();
 
         Trainee trainee = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
 
         mapper.toEntity(updateDTO, trainee);
@@ -91,7 +91,7 @@ public class TraineeService
         Optional<Trainee> existingTrainee = dao.findByUsername(username);
 
         if(existingTrainee.isEmpty()){
-            throw new ResourceNotFoundException(TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username));
+            throw new EntityNotFoundException(TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username));
         }
         return  mapper.toResponseDTO(existingTrainee.get());
     }
@@ -99,7 +99,7 @@ public class TraineeService
     @Transactional
     public void delete(String username) {
         Trainee trainee = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
 
         List<Training> trainings = trainee.getTrainings();
@@ -118,7 +118,7 @@ public class TraineeService
     @Transactional
     public void setStatus(String username, Boolean status) {
         Trainee trainee = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
 
         User user = trainee.getUser();
@@ -134,7 +134,7 @@ public class TraineeService
 
     public List<TrainerResponseDTO> getNotAssignedTrainers(String username) {
         Trainee trainee = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
 
         Set<Trainer> traineeTrainers = Set.copyOf(trainee.getTrainers());
@@ -148,13 +148,13 @@ public class TraineeService
     public List<TrainerResponseDTO> updateTraineeTrainers(String username,
             TraineeTrainersUpdateRequestDTO requestDTO) {
         Trainee trainee = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));
 
         Set<Trainer> trainers = new HashSet<>();
         for (TrainerDTO dto : requestDTO.getTrainers()) {
             Trainer trainer = trainerDAO.findByUsername(dto.getUsername()).orElseThrow(
-                    () -> new ResourceNotFoundException(
+                    () -> new EntityNotFoundException(
                             TRAINER_NOT_FOUND_WITH_USERNAME.formatted(dto.getUsername())));
 
             trainers.add(trainer);

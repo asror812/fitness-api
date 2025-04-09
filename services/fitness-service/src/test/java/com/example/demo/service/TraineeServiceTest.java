@@ -35,7 +35,7 @@ import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
 import com.example.demo.dto.response.UserUpdateResponseDTO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
@@ -193,14 +193,14 @@ class TraineeServiceTest {
     }
 
     @Test
-    void updateTraineeTrainers_ShouldThrowResourceNotFoundException_WhenTraineeNotFound() {
+    void updateTraineeTrainers_ShouldThrowEntityNotFoundException_WhenTraineeNotFound() {
         String username = "nonexistent";
         TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
                 List.of(new TraineeTrainersUpdateRequestDTO.TrainerDTO("trainer1")));
 
         when(traineeDAO.findByUsername(username)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> traineeService.updateTraineeTrainers(username, requestDTO));
 
         assertEquals("Trainee with username nonexistent not found", exception.getMessage());
@@ -210,7 +210,7 @@ class TraineeServiceTest {
     }
 
     @Test
-    void updateTraineeTrainers_ShouldThrowResourceNotFoundException_WhenTrainerNotFound() {
+    void updateTraineeTrainers_ShouldThrowEntityNotFoundException_WhenTrainerNotFound() {
         String username = "asror.r";
         TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
                 List.of(new TraineeTrainersUpdateRequestDTO.TrainerDTO("nonexistentTrainer")));
@@ -218,7 +218,7 @@ class TraineeServiceTest {
         when(traineeDAO.findByUsername(username)).thenReturn(Optional.of(trainee));
         when(trainerDAO.findByUsername("nonexistentTrainer")).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> traineeService.updateTraineeTrainers(username, requestDTO));
 
         assertEquals("Trainer with username nonexistentTrainer not found", exception.getMessage());
@@ -252,13 +252,13 @@ class TraineeServiceTest {
     }
 
     @Test
-    void internalUpdate_ShouldThrowResourceNotFoundException_WhenTraineeNotFound() {
+    void internalUpdate_ShouldThrowEntityNotFoundException_WhenTraineeNotFound() {
         TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO("nonexistent", "asror", "r", true, new Date(),
                 "T");
 
         when(traineeDAO.findByUsername("nonexistent")).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> traineeService.update(updateDTO));
 
         assertEquals("Trainee with username nonexistent not found", exception.getMessage());

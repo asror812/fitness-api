@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.UserDAO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,12 +33,12 @@ class UserServiceTest {
     }
 
     @Test
-    void loadUserByUsername_ShouldThrowResourceNotFoundException() {
+    void loadUserByUsername_ShouldThrowEntityNotFoundException() {
         String username = "asror.r";
 
         when(userDAO.findByUsername(username)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             userService.loadUserByUsername(username);
         });
 

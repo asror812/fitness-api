@@ -9,7 +9,7 @@ import com.example.demo.dto.request.TrainerUpdateRequestDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainerUpdateResponseDTO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
@@ -49,7 +49,7 @@ public class TrainerService extends
         Optional<Trainer> existingTrainer = dao.findByUsername(username);
 
         if (existingTrainer.isEmpty()) {
-            throw new ResourceNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username));
+            throw new EntityNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username));
         }
 
         return mapper.toResponseDTO(existingTrainer.get());
@@ -58,7 +58,7 @@ public class TrainerService extends
     @Transactional
     public void setStatus(String username, Boolean status) {
         Trainer trainer = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username)));
+                .orElseThrow(() -> new EntityNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username)));
         User user = trainer.getUser();
 
         if (user.getActive().equals(status)) {
@@ -81,7 +81,7 @@ public class TrainerService extends
 
         TrainingType trainingType = trainingTypeDAO.findById(specialization)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException(TRAINING_TYPE_NOT_FOUND_WITH_ID.formatted(specialization)));
+                        () -> new EntityNotFoundException(TRAINING_TYPE_NOT_FOUND_WITH_ID.formatted(specialization)));
 
         Trainer trainer = new Trainer();
         trainer.setSpecialization(trainingType);
@@ -96,7 +96,7 @@ public class TrainerService extends
     protected TrainerUpdateResponseDTO internalUpdate(TrainerUpdateRequestDTO updateDTO) {
         String username = updateDTO.getUsername();
         Trainer trainer = dao.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username)));
+                .orElseThrow(() -> new EntityNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username)));
         mapper.toEntity(updateDTO, trainer);
         dao.update(trainer);
 

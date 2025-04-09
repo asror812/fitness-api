@@ -12,20 +12,20 @@ import com.example.demo.dto.response.ErrorResponseDTO;
 import jakarta.validation.ConstraintViolationException;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(ResourceNotFoundException e) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(EntityNotFoundException e) {
         LOGGER.warn("Resource not found: {}", e.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .status(HttpStatus.NOT_FOUND.value())
                 .message(ErrorMessages.RESOURCE_NOT_FOUND_ERROR)
-                .timestamp(Instant.now())
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
         return ResponseEntity
@@ -39,18 +39,16 @@ public class GlobalExceptionHandler {
 
         if (e.getCause() instanceof ConstraintViolationException) {
             ErrorResponseDTO error = ErrorResponseDTO.builder()
-                    .status(HttpStatus.CONFLICT.value())
                     .message(ErrorMessages.DUPLICATE_ENTRY_ERROR)
-                    .timestamp(Instant.now())
+                    .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                     .build();
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(ErrorMessages.DATA_ACCESS_ERROR)
-                .timestamp(Instant.now())
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
@@ -61,9 +59,8 @@ public class GlobalExceptionHandler {
         LOGGER.warn("Authentication failed: {}", ex.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .status(HttpStatus.UNAUTHORIZED.value())
                 .message(ErrorMessages.INVALID_CREDENTIALS)
-                .timestamp(Instant.now())
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
@@ -80,10 +77,10 @@ public class GlobalExceptionHandler {
         LOGGER.warn("Validation errors: {}", errors);
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
                 .message(ErrorMessages.VALIDATION_ERROR)
                 .details(errors)
-                .timestamp(Instant.now()).build();
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+                .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -93,8 +90,7 @@ public class GlobalExceptionHandler {
         LOGGER.warn("Resource already exists: {}", ex.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .status(HttpStatus.CONFLICT.value())
-                .timestamp(Instant.now())
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .message(ErrorMessages.ALREADY_EXISTS_ERROR)
                 .build();
 
@@ -107,9 +103,8 @@ public class GlobalExceptionHandler {
         LOGGER.warn("REquest rate limit exceeded: {}", ex.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .status(HttpStatus.TOO_MANY_REQUESTS.value())
                 .message(ErrorMessages.TOO_MANY_REQUESTS)
-                .timestamp(Instant.now())
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);

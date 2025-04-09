@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -15,8 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ErrorResponseDTO {
-    private int status;
     private String message;
     private List<String> details;
-    private Instant timestamp;
+    private String timestamp;
 }

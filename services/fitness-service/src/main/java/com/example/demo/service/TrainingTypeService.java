@@ -8,7 +8,7 @@ import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dto.request.TrainingTypeCreateDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.exception.AlreadyExistException;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.mapper.TrainingTypeMapper;
 import com.example.demo.model.TrainingType;
 
@@ -26,7 +26,7 @@ public class TrainingTypeService {
 
     public TrainingType findByName(String name) {
         return trainingTypeDAO.findByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException(TRAINING_TYPE_NOT_FOUND_WITH_NAME.formatted(name)));
+                .orElseThrow(() -> new EntityNotFoundException(TRAINING_TYPE_NOT_FOUND_WITH_NAME.formatted(name)));
     }
 
     public List<TrainingTypeResponseDTO> getAll() {

@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.UserDAO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +19,6 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userDAO.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_WITH_USERNAME.formatted(username)));
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_WITH_USERNAME.formatted(username)));
     }
 }

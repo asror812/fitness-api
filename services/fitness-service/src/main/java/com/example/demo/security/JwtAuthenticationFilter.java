@@ -2,6 +2,8 @@ package com.example.demo.security;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.response.ErrorResponseDTO;
 import com.example.demo.exception.AuthenticationFailureException;
@@ -99,9 +101,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                .status(HttpStatus.UNAUTHORIZED.value())
                 .message(message)
-                .timestamp(Instant.now()).build();
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+                .build();
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }

@@ -9,7 +9,7 @@ import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.request.TrainingUpdateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
 import com.example.demo.dto.response.TrainingUpdateResponseDTO;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TrainingMapper;
 import com.example.demo.model.Trainee;
@@ -46,11 +46,11 @@ public class TrainingService extends
     @Transactional
     public void create(TrainingCreateRequestDTO createDTO) {
         Trainee trainee = traineeDAO.findByUsername(createDTO.getTraineeUsername())
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME
                                 .formatted(createDTO.getTraineeUsername())));
         Trainer trainer = trainerDAO.findByUsername(createDTO.getTrainerUsername())
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         TRAINER_NOT_FOUND_WITH_USERNAME
                                 .formatted(createDTO.getTrainerUsername())));
 
