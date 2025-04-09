@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.model.TrainerWorkload;
 import com.example.demo.service.TrainerWorkloadService;
 import lombok.RequiredArgsConstructor;
@@ -22,4 +21,5 @@ public class TrainerWorkloadController {
     public TrainerWorkload getTrainerWorkload(@PathVariable String username) {
         return workloadService.getTrainerWorkload(username);
     }
+
 }
