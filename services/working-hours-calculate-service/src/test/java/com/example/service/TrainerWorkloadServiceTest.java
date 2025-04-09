@@ -4,12 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.dto.ActionType;
-import com.example.dto.TrainerWorkloadRequestDTO;
-import com.example.exception.ResourceNotFoundException;
-import com.example.model.TrainerWorkload;
-import com.example.model.WorkingMonth;
-import com.example.model.WorkingYear;
+import com.example.demo.dto.ActionType;
+import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.TrainerWorkload;
+import com.example.demo.model.WorkingMonth;
+import com.example.demo.model.WorkingYear;
+import com.example.demo.service.TrainerWorkloadServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -13,11 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.example.dto.ActionType;
-import com.example.dto.TrainerWorkloadRequestDTO;
-import com.example.model.TrainerWorkload;
-import com.example.security.JwtService;
-import com.example.service.TrainerWorkloadService;
+import com.example.demo.controller.TrainerWorkloadController;
+import com.example.demo.dto.ActionType;
+import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
+import com.example.demo.model.TrainerWorkload;
+import com.example.demo.security.JwtService;
+import com.example.demo.service.TrainerWorkloadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 

@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dao.UserDAO;
@@ -10,6 +9,7 @@ import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.TrainingType;
@@ -53,7 +53,7 @@ class TrainerServiceTest {
     private TrainerService trainerService;
 
     @Mock
-    private TrainerWorkloadClient client;
+    private TrainerWorkloadJmsConsumer consumer;
 
     private Trainer trainer;
     private User user;
@@ -73,7 +73,7 @@ class TrainerServiceTest {
                 new TrainerResponseDTO(new UserResponseDTO("asror", "r", true),
                         new TrainingTypeResponseDTO(UUID.randomUUID(), "Swimming")));
 
-        TrainerResponseDTO response = trainerService.findByUsername("asror.r").get();
+        TrainerResponseDTO response = trainerService.findByUsername("asror.r");
 
         assertNotNull(response);
         verify(trainerDAO).findByUsername("asror.r");

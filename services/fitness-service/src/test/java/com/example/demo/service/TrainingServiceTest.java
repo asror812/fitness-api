@@ -22,13 +22,13 @@ import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
 import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TrainingMapper;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
-import com.example.demo.client.*;
 import io.jsonwebtoken.lang.Collections;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +50,7 @@ class TrainingServiceTest {
     private TrainingMapper mapper;
 
     @Mock
-    private TrainerWorkloadClient workloadClient;
+    private TrainerWorkloadJmsConsumer workloadClient;
 
     private Trainer trainer;
     private Trainee trainee;

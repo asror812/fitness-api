@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.demo.security.JwtAuthenticationFilter;
+import com.example.demo.security.JwtService;
 import com.google.gson.Gson;
 
 import io.jsonwebtoken.Claims;

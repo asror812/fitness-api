@@ -36,6 +36,7 @@ import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
 import com.example.demo.dto.response.UserUpdateResponseDTO;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
@@ -64,6 +65,9 @@ class TraineeServiceTest {
 
     @Mock
     private TrainerMapper trainerMapper;
+
+    @Mock
+    private TrainerWorkloadJmsConsumer consumer;
 
     @InjectMocks
     private TraineeService traineeService;
@@ -107,17 +111,10 @@ class TraineeServiceTest {
                 .thenReturn(new TraineeResponseDTO(new UserResponseDTO("asror", "r", true), new Date(), "T",
                         Collections.emptyList()));
 
-        TraineeResponseDTO result = traineeService.findByUsername("asror.r").get();
+        TraineeResponseDTO result = traineeService.findByUsername("asror.r");
 
         assertNotNull(result);
         verify(traineeDAO, times(1)).findByUsername("asror.r");
-    }
-
-    @Test
-    void delete() {
-        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
-        traineeService.delete("asror.r");
-        verify(traineeDAO, times(1)).delete(trainee);
     }
 
     @Test

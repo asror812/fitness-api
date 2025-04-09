@@ -2,8 +2,6 @@ package com.example.demo.security;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Set;
-
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.response.ErrorResponseDTO;
 import com.example.demo.exception.AuthenticationFailureException;
@@ -35,31 +33,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
     private final UserDAO userDAO;
-
     private static final String USER_NOT_FOUND = "User not found with username %s";
     private static final String INVALID_TOKEN = "Invalid or expired token";
     private static final String INVALID_USERNAME = "Invalid username";
     private static final String INVALID_OR_MISSING_AUTH_HEAD = "Missing or invalid Authorization header";
     private static final String AUTHENTICATION_FAILED = "Authentication failed";
-
     private final ObjectMapper objectMapper;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    public static final Set<String> EXCLUDED_URLS = Set.of(
-            "/auth/trainers/sign-up",
-            "/auth/trainees/sign-up",
-            "/auth/sign-in");
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-
-        if (EXCLUDED_URLS.stream().anyMatch(path::contains)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String authHeader = request.getHeader(HEADER_NAME);
 
@@ -100,6 +85,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             LOGGER.error("Unexpected authentication error: {}", e.getMessage(), e);
             sendErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, AUTHENTICATION_FAILED);
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/auth/") || path.startsWith("/management/");
     }
 
     private void sendErrorResponse(HttpServletResponse response, HttpStatus httpStatus, String message)

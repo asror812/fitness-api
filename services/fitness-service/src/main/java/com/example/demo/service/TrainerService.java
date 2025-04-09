@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.client.TrainerWorkloadClient;
+
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dao.UserDAO;
@@ -10,6 +10,7 @@ import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainerUpdateResponseDTO;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.TrainingType;
@@ -39,16 +40,20 @@ public class TrainerService extends
     private final UserDAO userDAO;
     private final TrainingTypeDAO trainingTypeDAO;
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerService.class);
-    private final TrainerWorkloadClient client;
+    private final TrainerWorkloadJmsConsumer consumer;
 
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
     private static final String TRAINING_TYPE_NOT_FOUND_WITH_ID = "Training type with id %s not found";
 
-    public Optional<TrainerResponseDTO> findByUsername(String username) {
-        return dao.findByUsername(username)
-                .map(mapper::toResponseDTO);
-    }
+    public TrainerResponseDTO findByUsername(String username) {
+        Optional<Trainer> existingTrainer = dao.findByUsername(username);
 
+        if (existingTrainer.isEmpty()) {
+            throw new ResourceNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username));
+        }
+
+        return mapper.toResponseDTO(existingTrainer.get());
+    }
 
     @Transactional
     public void setStatus(String username, Boolean status) {
@@ -75,7 +80,8 @@ public class TrainerService extends
         UUID specialization = requestDTO.getSpecialization();
 
         TrainingType trainingType = trainingTypeDAO.findById(specialization)
-                .orElseThrow(() -> new ResourceNotFoundException(TRAINING_TYPE_NOT_FOUND_WITH_ID.formatted(specialization)));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(TRAINING_TYPE_NOT_FOUND_WITH_ID.formatted(specialization)));
 
         Trainer trainer = new Trainer();
         trainer.setSpecialization(trainingType);

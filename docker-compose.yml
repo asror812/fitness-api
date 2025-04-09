@@ -9,11 +9,11 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5555:5432" # Expose container PostgreSQL on port 5555
+      - "5555:5432"
     networks:
       - microservices-net
     restart: unless-stopped
-
+    
   pgadmin:
     container_name: ms_pgadmin
     image: dpage/pgadmin4
@@ -28,6 +28,36 @@ services:
     networks:
       - microservices-net
     restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:v2.26.1
+    ports:
+      - 9090:9090
+    volumes:
+      - ./services/fitness-service/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - microservices-net
+
+
+  grafana:
+    image: grafana/grafana:7.5.6
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - microservices-net 
+  activemq:
+    image: webcenter/activemq:latest
+    ports:
+      - 8161:8161
+      - 61616:61616
+    environment:
+      - ACTIVEMQ_NAME=activemq
+      - ACTIVEMQ_USERNAME=admin
+      - ACTIVEMQ_PASSWORD=password    
+
 
 networks:
   microservices-net:
@@ -37,3 +67,5 @@ volumes:
   postgres:
   pgadmin:
   mongo:
+  prometheus-data:
+  grafana-data:

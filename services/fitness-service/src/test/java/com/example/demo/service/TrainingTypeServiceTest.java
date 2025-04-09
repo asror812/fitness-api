@@ -23,7 +23,6 @@ import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.exception.AlreadyExistException;
 import com.example.demo.mapper.TrainingTypeMapper;
 import com.example.demo.model.TrainingType;
-
 import io.jsonwebtoken.lang.Collections;
 
 @ExtendWith(MockitoExtension.class)

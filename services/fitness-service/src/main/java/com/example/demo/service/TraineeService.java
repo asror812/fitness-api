@@ -1,20 +1,18 @@
 package com.example.demo.service;
 
-import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.UserDAO;
-import com.example.demo.dto.request.ActionType;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
-import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO.TrainerDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TraineeUpdateResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
@@ -52,7 +50,7 @@ public class TraineeService
     private final TrainerMapper trainerMapper;
     private final Class<Trainee> entityClass = Trainee.class;
     private static final Logger LOGGER = LoggerFactory.getLogger(TraineeService.class);
-    private final TrainerWorkloadClient client;
+    private final TrainerWorkloadJmsConsumer consumer;
 
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
@@ -89,9 +87,13 @@ public class TraineeService
         return mapper.toUpdateResponseDTO(trainee);
     }
 
-    public Optional<TraineeResponseDTO> findByUsername(String username) {
-        return dao.findByUsername(username)
-                .map(mapper::toResponseDTO);
+    public TraineeResponseDTO findByUsername(String username) {
+        Optional<Trainee> existingTrainee = dao.findByUsername(username);
+
+        if(existingTrainee.isEmpty()){
+            throw new ResourceNotFoundException(TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username));
+        }
+        return  mapper.toResponseDTO(existingTrainee.get());
     }
 
     @Transactional
@@ -103,16 +105,13 @@ public class TraineeService
         List<Training> trainings = trainee.getTrainings();
 
         for (Training training : trainings) {
-            TrainerWorkloadRequestDTO requestDTO = TrainerWorkloadRequestDTO.builder()
-                    .trainerUsername(training.getTrainer().getUser().getUsername())
-                    .trainerFirstName(training.getTrainer().getUser().getFirstName())
-                    .trainerLastName(training.getTrainer().getUser().getLastName())
-                    .duration(training.getDuration())
-                    .trainingDate(LocalDate.parse(dateFormat.format(training.getTrainingDate())))
-                    .actionType(ActionType.DELETE)
-                    .build();
+            LocalDate trainingDate = training.getTrainingDate().toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
 
-            client.updateTrainingSession(requestDTO);
+            if (trainingDate.isAfter(LocalDate.now())) {
+                consumer.notifyTrainerDeletion(training);
+            }
         }
     }
 
@@ -168,7 +167,6 @@ public class TraineeService
         return trainers.stream()
                 .map(trainerMapper::toResponseDTO)
                 .toList();
-
     }
 
 }

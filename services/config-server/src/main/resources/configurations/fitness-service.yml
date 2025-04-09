@@ -1,11 +1,16 @@
+spring:
+  jpa:
+    open-in-view: false
 management:
   endpoint:
     health:
       show-details: always
   endpoints:
     web:
+      base-path: /management
       exposure:
-        include: health, info , prometheus
+         include: "prometheus,health,info"
+
 resilience4j:
   circuitbreaker:
     instances:
@@ -19,6 +24,7 @@ resilience4j:
         minimumNumberOfCalls: 5
         waitDurationInOpenState: 10s
         automaticTransitionFromOpenToHalfOpenEnabled: true
+
 service:
   trainer-workload:
-    url: http://localhost:8080/workload     
+    url: http://localhost:8080/workload

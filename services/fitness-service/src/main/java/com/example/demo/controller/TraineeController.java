@@ -28,7 +28,7 @@ public class TraineeController {
 
     @GetMapping("/profiles/{username}")
     public ResponseEntity<TraineeResponseDTO> getProfile(@PathVariable String username) {
-        return ResponseEntity.ok(traineeService.findByUsername(username).orElse(null));
+        return ResponseEntity.ok(traineeService.findByUsername(username));
     }
     
     @PutMapping

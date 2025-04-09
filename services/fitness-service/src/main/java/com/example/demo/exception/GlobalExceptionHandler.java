@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TooManyRequestsException.class)
     public ResponseEntity<ErrorResponseDTO> handleTooManyRequestsException(TooManyRequestsException ex) {
-        LOGGER.warn("Rate limit exceeded: {}", ex.getMessage());
+        LOGGER.warn("REquest rate limit exceeded: {}", ex.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .status(HttpStatus.TOO_MANY_REQUESTS.value())

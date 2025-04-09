@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.example.demo.dao.UserDAO;
@@ -82,7 +81,7 @@ class TraineeControllerTest {
         TraineeResponseDTO traineeResponseDTO = new TraineeResponseDTO(
                 new UserResponseDTO("q", "q", true), new Date(), "T", Collections.emptyList());
 
-        when(traineeService.findByUsername("q.q")).thenReturn(Optional.of(traineeResponseDTO));
+        when(traineeService.findByUsername("q.q")).thenReturn(traineeResponseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get(endpoint + "/profiles/{username}", "q.q"))

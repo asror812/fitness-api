@@ -4,9 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.security.JwtService;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,23 +24,9 @@ class TrainerWorkloadClientTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private TrainerWorkloadClient trainerWorkloadClient;
+    private TrainerWorkloadJmsConsumer consumer;
 
     private final String trainerWorkloadUrl = "http://localhost:8080/workload";
-
-    @BeforeEach
-    void setUp() {
-        // Inject trainerWorkloadUrl manually because it's set via @Value in the real
-        trainerWorkloadClient = new TrainerWorkloadClient(restTemplate, jwtService);
-        // Use reflection to set trainerWorkloadUrl manually
-        try {
-            var field = TrainerWorkloadClient.class.getDeclaredField("trainerWorkloadUrl");
-            field.setAccessible(true);
-            field.set(trainerWorkloadClient, trainerWorkloadUrl);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to inject trainerWorkloadUrl", e);
-        }
-    }
 
     @Test
     void testUpdateTrainingSession() {
@@ -56,7 +41,7 @@ class TrainerWorkloadClientTest {
                 eq(Void.class)))
                         .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        trainerWorkloadClient.updateTrainingSession(requestDTO);
+        consumer.updateTrainingSession(requestDTO);
 
         verify(jwtService).generateTokenForMicroservice();
         verify(restTemplate).exchange(

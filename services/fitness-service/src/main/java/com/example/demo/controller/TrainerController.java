@@ -24,7 +24,7 @@ public class TrainerController {
 
     @GetMapping("/profiles/{username}")
     public ResponseEntity<TrainerResponseDTO> getProfile(@PathVariable String username) {
-        return ResponseEntity.ok(trainerService.findByUsername(username).orElse(null));
+        return ResponseEntity.ok(trainerService.findByUsername(username));
     }
 
     @PutMapping

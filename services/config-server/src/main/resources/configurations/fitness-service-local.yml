@@ -8,7 +8,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-        ddl-auto: update
+      ddl-auto: update
     database-platform: org.hibernate.dialect.H2Dialect 
   h2:
     console:
@@ -17,5 +17,5 @@ spring:
 
 security:
   jwt:
-     duration: 86400
-     signing-key: fitness-rest-application-local-secret-key
+    duration: 86400
+    signing-key: fitness-rest-application-local-secret-key

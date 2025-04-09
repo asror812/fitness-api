@@ -5,3 +5,14 @@ spring:
   cloud:
     config:
       override-system-properties: false
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+
+jms:
+  listener:
+    acknowledge-mode: session    
+  pub-sub-domain: false 
+  workload_queue:
+    update: main-a-queue

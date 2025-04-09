@@ -10,3 +10,6 @@ public class DataAccessException extends RuntimeException {
         super(message, cause);
     }
 }
+
+//Find By Username instead of ok emptry response i throw exception and handle it
+//

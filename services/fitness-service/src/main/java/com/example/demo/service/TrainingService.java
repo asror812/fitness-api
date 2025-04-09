@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.client.TrainerWorkloadClient;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
@@ -11,6 +10,7 @@ import com.example.demo.dto.request.TrainingUpdateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
 import com.example.demo.dto.response.TrainingUpdateResponseDTO;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.jms.TrainerWorkloadJmsConsumer;
 import com.example.demo.mapper.TrainingMapper;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
@@ -41,7 +41,7 @@ public class TrainingService extends
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final TrainerWorkloadClient workloadClient;
+    private final TrainerWorkloadJmsConsumer consumer;
 
     @Transactional
     public void create(TrainingCreateRequestDTO createDTO) {
@@ -79,7 +79,7 @@ public class TrainingService extends
                 .actionType(ActionType.ADD)
                 .build();
 
-        workloadClient.updateTrainingSession(trainerWorkloadRequestDTO);
+        consumer.updateTrainingSession(trainerWorkloadRequestDTO);
     }
 
     public List<TrainingResponseDTO> getTraineeTrainings(String username, Date from, Date to, String trainerName,

@@ -16,5 +16,12 @@ public final class ErrorMessages {
 
     public static final String TOO_MANY_REQUESTS = "Too many requests, please try again later";
 
-    private ErrorMessages() {}
+    private ErrorMessages() {
+    }
+    
+
+    //TODO: Improve log messages
+    //TODO: Enhance test coverage
+    //TOD): Check all exception responses 
+    
 }

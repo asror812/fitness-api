@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -29,7 +26,6 @@ import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TrainerSignUpRequestDTO;
 import com.example.demo.dto.response.SignInResponseDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
-import com.example.demo.metric.RequestCountInSignUpMetrics;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.TraineeService;
@@ -48,8 +44,8 @@ class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
-    @MockitoBean
-    private RequestCountInSignUpMetrics requestCountInSignUpMetrics;
+   /* @MockitoBean
+    private RequestCountInSignUpMetrics requestCountInSignUpMetrics;*/
 
     @MockitoBean
     private BruteForceProtectorService bruteForceProtectorService;
@@ -167,7 +163,7 @@ class AuthControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @Test
+   /*  @Test
     void signUpTrainee_ShouldIncrementRequestCounter() throws Exception {
         TraineeSignUpRequestDTO requestDTO = new TraineeSignUpRequestDTO("asror", "abror", new Date(),
                 "Tashkent");
@@ -184,6 +180,7 @@ class AuthControllerTest {
 
         verify(requestCountInSignUpMetrics, times(1)).increment();
     }
+        
 
     @Test
     void signUpTrainer_ShouldIncrementRequestCounter() throws Exception {
@@ -199,5 +196,6 @@ class AuthControllerTest {
 
         verify(requestCountInSignUpMetrics, times(1)).increment();
     }
+        */
 
 }

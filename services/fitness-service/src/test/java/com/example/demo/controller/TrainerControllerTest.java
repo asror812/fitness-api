@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import static org.mockito.Mockito.when;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.example.demo.utils.BruteForceProtectorService;
@@ -57,7 +56,7 @@ class TrainerControllerTest {
                 new UserResponseDTO("asror", "r", true),
                 new TrainingTypeResponseDTO(UUID.randomUUID(), "Swimming"));
 
-        when(trainerService.findByUsername("asror.r")).thenReturn(Optional.of(responseDTO));
+        when(trainerService.findByUsername("asror.r")).thenReturn(responseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get(endpoint + "/profiles/{username}", "asror.r")
