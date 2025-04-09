@@ -16,10 +16,11 @@ import com.example.demo.model.Training;
 
 @Component
 public class TrainerWorkloadJmsConsumer {
-     @Value("{jms.workload_queue_name.update}")
+
+    @Value("{jms.workload_queue_name.update}")
     private String updateTrainerWorkloadQueue;
 
-       @Autowired
+    @Autowired
     private JmsTemplate jmsTemplate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadJmsConsumer.class);
@@ -31,12 +32,12 @@ public class TrainerWorkloadJmsConsumer {
 
         LOGGER.info("Queue name : {} Request Entity: {}", updateTrainerWorkloadQueue, requestDTO);
 
-        jmsTemplate.convertAndSend("main-a-queue", requestDTO, message -> {
+        jmsTemplate.convertAndSend(updateTrainerWorkloadQueue, requestDTO, message -> {
             message.setStringProperty("transactionId", transactionId);
             return message;
         });
     }
-    
+
     public void notifyTrainerDeletion(Training training) {
         TrainerWorkloadRequestDTO requestDTO = TrainerWorkloadRequestDTO.builder()
                 .trainerUsername(training.getTrainer().getUser().getUsername())

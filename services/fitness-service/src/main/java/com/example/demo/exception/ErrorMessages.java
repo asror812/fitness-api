@@ -2,7 +2,7 @@ package com.example.demo.exception;
 
 public final class ErrorMessages {
 
-    public static final String RESOURCE_NOT_FOUND_ERROR = "Requested resource not found";
+    public static final String RESOURCE_NOT_FOUND_ERROR = "The requested resource not found";
     public static final String ALREADY_EXISTS_ERROR = "The requested resource already exists";
 
     public static final String DATA_ACCESS_ERROR = "An error occurred while accessing data";
@@ -16,12 +16,11 @@ public final class ErrorMessages {
 
     public static final String TOO_MANY_REQUESTS = "Too many requests, please try again later";
 
-    private ErrorMessages() {
-    }
+    private ErrorMessages() {}
     
 
     //TODO: Improve log messages
     //TODO: Enhance test coverage
-    //TOD): Check all exception responses 
+    //TODO: Imporve exception responses 
     
 }

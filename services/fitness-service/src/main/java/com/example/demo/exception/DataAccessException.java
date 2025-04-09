@@ -11,5 +11,3 @@ public class DataAccessException extends RuntimeException {
     }
 }
 
-//Find By Username instead of ok emptry response i throw exception and handle it
-//
