@@ -31,7 +31,7 @@ public class ActiveMQConfig {
     private ObjectMapper mapper;
 
     @Bean
-    public ConnectionFactory connectionFactory() {
+    private ConnectionFactory connectionFactory() {
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(username, password, brokerUrl);
 
         // Retry config
@@ -48,7 +48,7 @@ public class ActiveMQConfig {
     }
 
     @Bean
-    public MessageConverter jacksonJmsConverter() {
+    private MessageConverter jacksonJmsConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");

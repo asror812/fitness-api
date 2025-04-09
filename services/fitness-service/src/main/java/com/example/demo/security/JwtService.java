@@ -18,7 +18,7 @@ public class JwtService {
     private Long microserviceDuration;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         Dotenv envFile = Dotenv.load();
         this.duration = Long.parseLong(envFile.get("JWT_DURATION"));
         this.secretKey = Keys.hmacShaKeyFor(envFile.get("JWT_SECRET_KEY").getBytes());

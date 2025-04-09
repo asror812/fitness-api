@@ -22,5 +22,6 @@ public final class ErrorMessages {
     //TODO: Improve log messages
     //TODO: Enhance test coverage
     //TODO: Imporve all exception responses 
-    
+    //TODO: Custom metric for training creation pere day 
+    //TODO: Custom metric for new trainee sign up per day
 }
