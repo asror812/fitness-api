@@ -1,7 +1,8 @@
-package com.example.service;
+package com.example.demo.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import com.example.demo.dto.ActionType;
@@ -10,7 +11,6 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.TrainerWorkload;
 import com.example.demo.model.WorkingMonth;
 import com.example.demo.model.WorkingYear;
-import com.example.demo.service.TrainerWorkloadServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -147,7 +147,7 @@ class TrainerWorkloadServiceImplTest {
         List<WorkingYear> years = response.getYears();
         WorkingYear workingYear = years.stream().filter(t -> t.getYear().equals(2025)).findAny().get();
 
-        WorkingMonth month = workingYear.getMonthlyWorkload().stream().filter(t -> t.getMonth().equals(3)).findAny()
+        WorkingMonth month = workingYear.getMonthlyWorkload().stream().filter(t -> t.getMonth().equals(Month.MARCH)).findAny()
                 .get();
 
         assertEquals(4.0, month.getTotalHours());

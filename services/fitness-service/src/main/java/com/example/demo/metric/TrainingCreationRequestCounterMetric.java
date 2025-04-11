@@ -10,12 +10,11 @@ public class TrainingCreationRequestCounterMetric {
 
     public TrainingCreationRequestCounterMetric(MeterRegistry registry) {
         this.trainingCreationRequestCounter = Counter.builder("training-create.request.count")
-                .description("Number of training sesions created per day")
+                .description("Number of training sessions created per day")
                 .register(registry);
     }
 
     public void incrementTrainingCreationRequestCounter() {
         trainingCreationRequestCounter.increment();
     }
-
 }

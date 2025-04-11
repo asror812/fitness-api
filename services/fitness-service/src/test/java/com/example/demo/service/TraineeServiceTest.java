@@ -39,6 +39,7 @@ import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
+import com.example.demo.metric.TraineeSignUpRequestCountMetrics;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
@@ -72,6 +73,9 @@ class TraineeServiceTest {
 
     @InjectMocks
     private TraineeService traineeService;
+
+    @Mock
+    private TraineeSignUpRequestCountMetrics signUpRequestCountMetrics;
 
     private Trainee trainee;
 

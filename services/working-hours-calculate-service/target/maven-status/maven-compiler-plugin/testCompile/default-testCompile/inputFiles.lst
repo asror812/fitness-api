@@ -1,3 +1,5 @@
-/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/controller/TrainerWorkloadControllerTest.java
-/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/security/JwtAuthenticationFilterTest.java
-/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/service/TrainerWorkloadServiceTest.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/demo/controller/TrainerWorkloadControllerTest.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/demo/jms/ActiveMQConfigTest.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/demo/jms/TrainerWorkloadJmsListenerTest.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/demo/service/TrainerWorkloadServiceTest.java
+/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/test/java/com/example/demo/utils/JacksonConfigTest.java

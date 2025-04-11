@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,11 +71,11 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
             workload.getYears().add(year);
         }
 
-        WorkingMonth month = year.getMonthlyWorkload().stream().filter(m -> m.getMonth() == monthValue).findFirst()
+        WorkingMonth month = year.getMonthlyWorkload().stream().filter(m -> m.getMonth().getValue() == monthValue).findFirst()
                 .orElse(null);
 
         if (month == null) {
-            month = new WorkingMonth(monthValue, 0.0);
+            month = new WorkingMonth(Month.of(monthValue), 0.0);
             year.getMonthlyWorkload().add(month);
         }
 
@@ -107,7 +108,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
         }
 
         WorkingMonth month = year.getMonthlyWorkload().stream()
-                .filter(m -> m.getMonth().equals(trainingDate.getMonthValue())).findFirst().orElse(null);
+                .filter(m -> m.getMonth().equals(trainingDate.getMonth())).findFirst().orElse(null);
 
         if (month == null || month.getTotalHours() < duration) {
             LOGGER.warn(NOT_ENOUGH_HOURS, requestDTO.getTrainerUsername(), duration, yearValue, monthValue);
@@ -144,7 +145,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     public TrainerWorkload getTrainerWorkload(String username) {
         TrainerWorkload trainerWorkload = trainersWorkload.get(username);
 
-        LOGGER.warn("{}", trainerWorkload);
+        LOGGER.info("{}", trainerWorkload);
 
         if (trainerWorkload == null) {
             LOGGER.warn(NO_WORKLOAD, username);

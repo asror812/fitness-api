@@ -12,6 +12,7 @@ import com.example.demo.dto.response.TrainingUpdateResponseDTO;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainingMapper;
+import com.example.demo.metric.TrainingCreationRequestCounterMetric;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
@@ -42,6 +43,7 @@ public class TrainingService extends
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private final TrainerWorkloadJmsProducer consumer;
+    private final TrainingCreationRequestCounterMetric trainingCreationRequestCounterMetric;
 
     @Transactional
     public void create(TrainingCreateRequestDTO createDTO) {
@@ -80,6 +82,8 @@ public class TrainingService extends
                 .build();
 
         consumer.updateTrainingSession(trainerWorkloadRequestDTO);
+
+        trainingCreationRequestCounterMetric.incrementTrainingCreationRequestCounter();
     }
 
     public List<TrainingResponseDTO> getTraineeTrainings(String username, Date from, Date to, String trainerName,

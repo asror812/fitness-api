@@ -4,76 +4,115 @@ import com.example.demo.dao.UserDAO;
 import com.example.demo.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JwtAuthenticationFilterTest {
 
-    @Mock
     private JwtService jwtService;
-
-    @Mock
     private UserDAO userDAO;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
-
-    @Mock
-    private FilterChain filterChain;
-
-    @Mock
     private ObjectMapper objectMapper;
+    private JwtAuthenticationFilter filter;
 
-    @InjectMocks
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+    private FilterChain filterChain;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        jwtService = mock(JwtService.class);
+        userDAO = mock(UserDAO.class);
+        objectMapper = new ObjectMapper();
+
+        filter = new JwtAuthenticationFilter(jwtService, userDAO, objectMapper);
+
+        request = mock(HttpServletRequest.class);
+        response = mock(HttpServletResponse.class);
+        filterChain = mock(FilterChain.class);
     }
-/* 
-    @Test
-    void testDoFilterInternal_ExcludedUrl() throws Exception {
-        when(request.getRequestURI()).thenReturn("/auth/sign-in");
-
-        when(response.getWriter()).thenReturn(pr)
-
-        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-        verify(filterChain, times(1)).doFilter(request, response);
-        verifyNoInteractions(jwtService, userDAO);
-    }
-    */
 
     @Test
-    void testDoFilterInternal_ValidToken_Success() throws Exception {
-        when(request.getRequestURI()).thenReturn("/some/other/url");
-        when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
+    void shouldReturnUnauthorized_WhenNoAuthorizationHeader() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn(null);
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
 
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(sw.toString().contains("Missing or invalid Authorization header"));
+    }
+
+    @Test
+    void shouldReturnUnauthorized_WhenJwtInvalid() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn("Bearer bad-token");
+        when(jwtService.claims("bad-token")).thenThrow(new JwtException("Invalid"));
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(sw.toString().contains("Invalid or expired token"));
+    }
+
+    @Test
+    void shouldReturnUnauthorized_WhenUsernameMissing() throws Exception {
         Claims claims = mock(Claims.class);
-        when(jwtService.claims("validToken")).thenReturn(claims);
-        when(claims.getSubject()).thenReturn("username");
+        when(claims.getSubject()).thenReturn(null);
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtService.claims("token")).thenReturn(claims);
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(sw.toString().contains("Invalid username"));
+    }
+
+    @Test
+    void shouldAuthenticateAndContinueFilterChain_WhenValidToken() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn("validUser");
 
         User user = mock(User.class);
-        when(user.getAuthorities()).thenReturn(null);
-        when(userDAO.findByUsername("username")).thenReturn(Optional.of(user));
+        when(user.getAuthorities()).thenReturn(null); 
 
-        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtService.claims("token")).thenReturn(claims);
+        when(userDAO.findByUsername("validUser")).thenReturn(Optional.of(user));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(filterChain).doFilter(request, response);
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        verify(filterChain, times(1)).doFilter(request, response);
+    }
+
+    @Test
+    void shouldNotFilter_forExcludedPaths() throws Exception {
+        when(request.getServletPath()).thenReturn("/auth/login");
+        assertTrue(filter.shouldNotFilter(request));
+
+        when(request.getServletPath()).thenReturn("/management/info");
+        assertTrue(filter.shouldNotFilter(request));
+
+        when(request.getServletPath()).thenReturn("/api/data");
+        assertFalse(filter.shouldNotFilter(request));
     }
 }

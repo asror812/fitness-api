@@ -26,6 +26,7 @@ public class TrainerWorkloadJmsListener {
     private String brokerUrl;
 
     @Value("${spring.activemq.user}")
+
     private String brokerUser;
 
     @Value("${spring.activemq.password}")
@@ -34,6 +35,7 @@ public class TrainerWorkloadJmsListener {
     @JmsListener(destination = "${jms.workload_queue.update}", containerFactory = "jmsListenerContainerFactory")
     public void consume(TrainerWorkloadRequestDTO dto, @Headers Map<String, Object> headers) {
         String transactionId = (String) headers.get("transactionId");
+
         try {
             LOGGER.info("Processing message with Transaction ID: {}", transactionId);
             workloadService.processWorkload(dto);
@@ -44,9 +46,10 @@ public class TrainerWorkloadJmsListener {
         }
     }
 
+    
     @JmsListener(destination = "ActiveMQ.DLQ")
     public void handleDLQ(Message failedMessage) {
         LOGGER.error("Message sent to DLQ: {}", failedMessage);
     }
-
+    
 }

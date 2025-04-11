@@ -17,6 +17,7 @@ import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
+import com.example.demo.metric.TraineeSignUpRequestCountMetrics;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +60,8 @@ public class TraineeService
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    private final TraineeSignUpRequestCountMetrics signUpRequestCountMetrics;
+
     @Transactional
     public SignUpResponseDTO register(TraineeSignUpRequestDTO requestDTO) {
         SignUpResponseDTO register = authService.register(requestDTO);
@@ -72,6 +76,9 @@ public class TraineeService
 
         dao.create(trainee);
 
+        
+
+        signUpRequestCountMetrics.increment();
         return register;
     }
 
@@ -107,11 +114,9 @@ public class TraineeService
         List<Training> trainings = trainee.getTrainings();
 
         for (Training training : trainings) {
-            LocalDate trainingDate = training.getTrainingDate().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault())
-                    .toLocalDate();
+            Date trainingDate = training.getTrainingDate();
 
-            if (trainingDate.isAfter(LocalDate.now())) {
+            if (trainingDate.compareTo(new Date()) > 0) {
                 notifyTrainerDeletion(training);
             }
         }

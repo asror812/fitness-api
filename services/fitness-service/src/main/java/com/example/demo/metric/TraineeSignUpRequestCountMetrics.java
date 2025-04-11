@@ -6,12 +6,12 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Component
-public class RequestCountInSignUpMetrics {
+public class TraineeSignUpRequestCountMetrics {
     private final Counter requestCounter;
 
-    public RequestCountInSignUpMetrics(MeterRegistry registry) {
+    public TraineeSignUpRequestCountMetrics(MeterRegistry registry) {
         this.requestCounter = Counter.builder("http_sign_up_requests_total")
-                .description("Total HTTP sign up requests received")
+                .description("Total HTTP trainee sign up requests received")
                 .register(registry);
     }
 

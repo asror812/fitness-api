@@ -1,4 +1,4 @@
-package com.example.demo.utils;
+package com.example.demo.jms;
 
 import java.util.Arrays;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -18,17 +18,13 @@ import jakarta.jms.ConnectionFactory;
 @Configuration
 public class ActiveMQConfig {
 
-    @Value("${spring.activemq.broker-url}")
-    private String brokerUrl;
+    @Value("${spring.activemq.broker-url}") String brokerUrl;
 
-    @Value("${spring.activemq.user}")
-    private String username;
+    @Value("${spring.activemq.user}") String username;
 
-    @Value("${spring.activemq.user}")
-    private String password;
+    @Value("${spring.activemq.user}") String password;
 
-    @Autowired
-    private ObjectMapper mapper;
+    @Autowired ObjectMapper mapper;
 
     @Bean
     ConnectionFactory connectionFactory() {

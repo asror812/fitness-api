@@ -12,8 +12,6 @@
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/model/TrainerWorkload.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/model/WorkingMonth.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/model/WorkingYear.java
-/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/security/JwtAuthenticationFilter.java
-/home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/security/JwtService.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/service/TrainerWorkloadService.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/service/TrainerWorkloadServiceImpl.java
 /home/ruby/Documents/Projects/microservice/services/working-hours-calculate-service/src/main/java/com/example/demo/utils/JacksonConfig.java

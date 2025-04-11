@@ -12,11 +12,10 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class JwtService {
 
-    private Long duration;
-    private SecretKey secretKey;
+    protected Long duration;
+    protected SecretKey secretKey;
 
-    @PostConstruct
-    private void init() {
+    @PostConstruct void init() {
         Dotenv envFile = Dotenv.load();
         this.duration = Long.parseLong(envFile.get("JWT_DURATION"));
         this.secretKey = Keys.hmacShaKeyFor(envFile.get("JWT_SECRET_KEY").getBytes());

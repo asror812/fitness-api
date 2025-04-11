@@ -28,6 +28,7 @@ import com.example.demo.dto.response.TrainingResponseDTO;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainingMapper;
+import com.example.demo.metric.TrainingCreationRequestCounterMetric;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
@@ -56,6 +57,9 @@ class TrainingServiceTest {
 
     @Mock
     private TrainerWorkloadJmsProducer workloadClient;
+
+    @Mock
+    private TrainingCreationRequestCounterMetric trainingCreationRequestCounterMetric;
 
     private Trainer trainer;
     private Trainee trainee;
