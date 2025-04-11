@@ -8,7 +8,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
+import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TraineeUpdateResponseDTO;
@@ -41,6 +41,7 @@ import com.example.demo.mapper.TraineeMapper;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
+import com.example.demo.model.Training;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
 import io.jsonwebtoken.lang.Collections;
@@ -105,6 +106,16 @@ class TraineeServiceTest {
     }
 
     @Test
+    void notifyTrainee() {
+        traineeService.notifyTrainerDeletion(
+                new Training(trainee,
+                        new Trainer(user, new TrainingType(), Collections.emptyList(), Collections.emptySet()),
+                        "swimming", new TrainingType(), new Date(), 1.5));
+
+        verify(consumer, times(1)).updateTrainingSession(any(TrainerWorkloadRequestDTO.class));
+    }
+
+    @Test
     void findByUsername_ShouldReturnTrainee() {
         when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
         when(traineeMapper.toResponseDTO(trainee))
@@ -118,10 +129,38 @@ class TraineeServiceTest {
     }
 
     @Test
+    void findByUsername_EntityNotFoundException() {
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> traineeService.findByUsername("asror.r"));
+
+        assertEquals("Trainee with username asror.r not found", ex.getMessage());
+    }
+
+    @Test
+    void delete_EntityNotFoundException() {
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> traineeService.delete("asror.r"));
+
+        assertEquals("Trainee with username asror.r not found", ex.getMessage());
+    }
+
+    @Test
     void setStatus_ShouldBe_Ok() {
         when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
         traineeService.setStatus("asror.r", false);
         verify(userDAO, times(1)).update(user);
+    }
+
+    @Test
+    void setStatus_EntityNotFoundException() {
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> traineeService.setStatus("asror.r", false));
+        assertEquals("Trainee with username asror.r not found", ex.getMessage());
     }
 
     @Test
@@ -153,6 +192,17 @@ class TraineeServiceTest {
 
         assertEquals(1, result.size());
         verify(trainerDAO, times(1)).getAll();
+    }
+
+    @Test
+    void getNotAssignedTrainers_EntityNotFoundException() {
+
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> traineeService.getNotAssignedTrainers("asror.r"));
+
+        assertEquals("Trainee with username asror.r not found", ex.getMessage());
     }
 
     @Test

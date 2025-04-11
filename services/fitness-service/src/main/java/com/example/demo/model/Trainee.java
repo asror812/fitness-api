@@ -45,10 +45,8 @@ public class Trainee extends BaseEntity {
     private List<Training> trainings = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "trainee_trainers",
-                joinColumns = @JoinColumn(name = "trainee_id"),
-            inverseJoinColumns = @JoinColumn(name = "trainer_id"))
-    private Set<Trainer> trainers = new HashSet<>();            
+    @JoinTable(name = "trainee_trainers", joinColumns = @JoinColumn(name = "trainee_id"), inverseJoinColumns = @JoinColumn(name = "trainer_id"))
+    private Set<Trainer> trainers = new HashSet<>();
 
     @Override
     public String toString() {

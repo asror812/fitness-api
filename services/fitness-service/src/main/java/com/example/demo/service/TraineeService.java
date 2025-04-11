@@ -3,9 +3,11 @@ package com.example.demo.service;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.UserDAO;
+import com.example.demo.dto.request.ActionType;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
+import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO.TrainerDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
@@ -50,7 +52,7 @@ public class TraineeService
     private final TrainerMapper trainerMapper;
     private final Class<Trainee> entityClass = Trainee.class;
     private static final Logger LOGGER = LoggerFactory.getLogger(TraineeService.class);
-    private final TrainerWorkloadJmsProducer consumer;
+    private final TrainerWorkloadJmsProducer producer;
 
     private static final String TRAINEE_NOT_FOUND_WITH_USERNAME = "Trainee with username %s not found";
     private static final String TRAINER_NOT_FOUND_WITH_USERNAME = "Trainer with username %s not found";
@@ -110,9 +112,23 @@ public class TraineeService
                     .toLocalDate();
 
             if (trainingDate.isAfter(LocalDate.now())) {
-                consumer.notifyTrainerDeletion(training);
+                notifyTrainerDeletion(training);
             }
         }
+    }
+
+
+     public void notifyTrainerDeletion(Training training) {
+        TrainerWorkloadRequestDTO requestDTO = TrainerWorkloadRequestDTO.builder()
+                .trainerUsername(training.getTrainer().getUser().getUsername())
+                .trainerFirstName(training.getTrainer().getUser().getFirstName())
+                .trainerLastName(training.getTrainer().getUser().getLastName())
+                .duration(training.getDuration())
+                .trainingDate(LocalDate.parse(dateFormat.format(training.getTrainingDate())))
+                .actionType(ActionType.DELETE)
+                .build();
+
+        producer.updateTrainingSession(requestDTO);
     }
 
     @Transactional

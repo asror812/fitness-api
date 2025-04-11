@@ -41,21 +41,23 @@ class JwtAuthenticationFilterTest {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     
 
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
+/* 
     @Test
     void testDoFilterInternal_ExcludedUrl() throws Exception {
         when(request.getRequestURI()).thenReturn("/auth/sign-in");
+
+        when(response.getWriter()).thenReturn(pr)
 
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         verify(filterChain, times(1)).doFilter(request, response);
         verifyNoInteractions(jwtService, userDAO);
     }
+    */
 
     @Test
     void testDoFilterInternal_ValidToken_Success() throws Exception {

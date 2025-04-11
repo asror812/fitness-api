@@ -14,19 +14,12 @@ public class JwtService {
 
     private Long duration;
     private SecretKey secretKey;
-    private SecretKey microserviceSecretKey;
-    private Long microserviceDuration;
 
     @PostConstruct
     private void init() {
         Dotenv envFile = Dotenv.load();
         this.duration = Long.parseLong(envFile.get("JWT_DURATION"));
         this.secretKey = Keys.hmacShaKeyFor(envFile.get("JWT_SECRET_KEY").getBytes());
-
-        this.microserviceSecretKey = Keys.hmacShaKeyFor(
-                envFile.get("MICROSERVICE_JWT_SIGNING_KEY").getBytes());
-        this.microserviceDuration = Long
-                .parseLong(envFile.get("MICROSERVICE_JWT_DURATION"));
     }
 
     public String generateToken(String username) {
@@ -38,18 +31,6 @@ public class JwtService {
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(secretKey)
-                .compact();
-    }
-
-    public String generateTokenForMicroservice() {
-        Date now = new Date();
-        Date expiration = Date.from(now.toInstant().plusSeconds(this.microserviceDuration));
-
-        return Jwts.builder()
-                .subject("fitness-microservice")
-                .issuedAt(now)
-                .expiration(expiration)
-                .signWith(microserviceSecretKey)
                 .compact();
     }
 

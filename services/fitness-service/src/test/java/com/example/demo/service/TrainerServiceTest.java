@@ -9,12 +9,14 @@ import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
 import io.jsonwebtoken.lang.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +69,7 @@ class TrainerServiceTest {
     }
 
     @Test
-    void findByUsername_ShouldBe_Ok() {
+    void findByUsername_Success() {
         when(trainerDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainer));
         when(trainerMapper.toResponseDTO(trainer)).thenReturn(
                 new TrainerResponseDTO(new UserResponseDTO("asror", "r", true),
@@ -77,6 +79,15 @@ class TrainerServiceTest {
 
         assertNotNull(response);
         verify(trainerDAO).findByUsername("asror.r");
+    }
+
+    @Test
+    void findByUsername_EntityNotFoundException() {
+        when(trainerDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainerService.findByUsername("asror.r"));
+        assertEquals("Trainer with username asror.r not found", ex.getMessage());
     }
 
     @Test
@@ -102,7 +113,17 @@ class TrainerServiceTest {
     }
 
     @Test
-    void register_200() {
+    void setStatus_ShouldReturn_EntityNotException() {
+
+        when(trainerDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> trainerService.setStatus("asror.r", true));
+        assertEquals("Trainer with username asror.r not found", exception.getMessage());
+    }
+
+    @Test
+    void register_Success() {
         UUID id = UUID.randomUUID();
         TrainerSignUpRequestDTO requestDTO = new TrainerSignUpRequestDTO("asror", "r", id);
         SignUpResponseDTO signUpResponse = new SignUpResponseDTO("asror.r", "password", "qwerty123456");
@@ -117,6 +138,22 @@ class TrainerServiceTest {
     }
 
     @Test
+    void register_EntityNotFoundException() {
+        UUID id = UUID.randomUUID();
+        TrainerSignUpRequestDTO requestDTO = new TrainerSignUpRequestDTO("asror", "r", id);
+        SignUpResponseDTO signUpResponse = new SignUpResponseDTO("asror.r", "password", "qwerty123456");
+
+        when(authService.register(Mockito.any(TrainerSignUpRequestDTO.class))).thenReturn(signUpResponse);
+        when(trainingTypeDAO.findById(id)).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainerService.register(requestDTO));
+
+        assertEquals("Training type with id %s not found".formatted(id), ex.getMessage());
+
+    }
+
+    @Test
     void internalUpdate_ShouldBe_Ok() {
         TrainerUpdateRequestDTO requestDTO = new TrainerUpdateRequestDTO("asror.r", "asror", "r", true,
                 UUID.randomUUID());
@@ -125,5 +162,19 @@ class TrainerServiceTest {
 
         trainerService.update(requestDTO);
         verify(trainerDAO, times(1)).update(trainer);
+    }
+
+    @Test
+    void internalUpdate_EntityNotFoundException() {
+        TrainerUpdateRequestDTO requestDTO = new TrainerUpdateRequestDTO("asror.r", "asror", "r", true,
+                UUID.randomUUID());
+
+        when(trainerDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> trainerService.update(requestDTO));
+
+        assertEquals("Trainer with username asror.r not found", exception.getMessage());
+
     }
 }

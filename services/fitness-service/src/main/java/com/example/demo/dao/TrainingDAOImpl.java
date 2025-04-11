@@ -17,7 +17,6 @@ import java.util.*;
 @Repository
 public class TrainingDAOImpl extends AbstractHibernateDAO<Training> implements TrainingDAO {
     private static final String FIND_TRAINING_BY_TRAINEE_ID = "FROM Training WHERE trainee.id = :id";
-    private static final String DELETE_TRAINING_BY_ID = "DELETE FROM Training t WHERE t.id = :id";
 
     public TrainingDAOImpl() {
         super(Training.class);
@@ -100,8 +99,7 @@ public class TrainingDAOImpl extends AbstractHibernateDAO<Training> implements T
 
     @Override
     public void delete(UUID id) {
-        jakarta.persistence.Query query = entityManager.createQuery(DELETE_TRAINING_BY_ID);;
-        query.setParameter("id", id);
-        query.executeUpdate();
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
+
 }

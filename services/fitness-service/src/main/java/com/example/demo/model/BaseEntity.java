@@ -10,7 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
-@Getter@Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @MappedSuperclass
 public class BaseEntity implements Serializable {

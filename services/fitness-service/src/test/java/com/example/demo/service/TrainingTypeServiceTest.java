@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,7 @@ import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dto.request.TrainingTypeCreateDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.exception.AlreadyExistException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.mapper.TrainingTypeMapper;
 import com.example.demo.model.TrainingType;
 import io.jsonwebtoken.lang.Collections;
@@ -44,6 +46,16 @@ class TrainingTypeServiceTest {
         TrainingType byName = trainingTypeService.findByName("swimming");
 
         assertNotNull(byName);
+    }
+
+    @Test
+    void findByName_NoResult() {
+        when(trainingTypeDAO.findByName("swimming")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainingTypeService.findByName("swimming"));
+
+        assertEquals("Training type with name swimming not found", ex.getMessage());
     }
 
     @Test

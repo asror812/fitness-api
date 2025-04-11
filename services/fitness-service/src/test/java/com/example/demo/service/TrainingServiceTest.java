@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,11 +18,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
 import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainingMapper;
 import com.example.demo.model.Trainee;
@@ -32,6 +36,7 @@ import com.example.demo.model.User;
 import io.jsonwebtoken.lang.Collections;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings()
 class TrainingServiceTest {
 
     @Mock
@@ -71,7 +76,7 @@ class TrainingServiceTest {
     }
 
     @Test
-    void create() {
+    void create_Success() {
         TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
                 "asror.r", "abror.r", "Swimming", new Date(),
                 1.5);
@@ -82,6 +87,36 @@ class TrainingServiceTest {
         trainingService.create(createDTO);
 
         verify(trainingDAO, times(1)).create(any(Training.class));
+    }
+
+    @Test
+    void create_Trainee_EntityNotFoundException() {
+        TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
+                "asror.r", "abror.r", "Swimming", new Date(),
+                1.5);
+
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+        
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainingService.create(createDTO));
+
+        assertEquals("Trainee with username asror.r not found", ex.getMessage());
+    }
+    
+    @Test
+    void create_Trainer_EntityNotFoundException() {
+        TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
+                "asror.r", "abror.r", "Swimming", new Date(),
+                1.5);
+
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
+        when(trainerDAO.findByUsername("abror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainingService.create(createDTO));
+
+        assertEquals("Trainer with username abror.r not found", ex.getMessage());
     }
 
     @Test

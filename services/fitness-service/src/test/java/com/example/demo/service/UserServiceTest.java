@@ -3,15 +3,14 @@ package com.example.demo.service;
 import com.example.demo.dao.UserDAO;
 import com.example.demo.exception.EntityNotFoundException;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,13 +26,8 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void loadUserByUsername_ShouldThrowEntityNotFoundException() {
+    void loadUserByUsername_EntityNotFoundException() {
         String username = "asror.r";
 
         when(userDAO.findByUsername(username)).thenReturn(Optional.empty());
@@ -43,5 +37,18 @@ class UserServiceTest {
         });
 
         assertEquals("User not found with username asror.r", exception.getMessage());
+    }
+
+    @Test
+    void loadUserByUsername_Success() {
+        String username = "asror.r";
+
+        when(userDAO.findByUsername(username)).thenReturn(Optional.of(new com.example.demo.model.User()));
+
+
+          UserDetails userByUsername = userService.loadUserByUsername(username);
+
+          assertNotNull(userByUsername);
+         
     }
 }
