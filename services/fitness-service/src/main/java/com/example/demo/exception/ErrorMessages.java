@@ -16,8 +16,8 @@ public final class ErrorMessages {
 
     protected static final String TOO_MANY_REQUESTS = "Too many requests, please try again later";
 
+    protected static final String INTERNAL_SERVER_ERROR = "Unexpected error occurred while processing your request.";
+
     private ErrorMessages() {}
    
 }
-// TODO: Custom metric for training creation pere day
-// TODO: Custom metric for new trainee sign up per day

@@ -81,11 +81,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (JwtException e) {
-            LOGGER.warn("Invalid or expired token: {} - {}", token, e.getMessage());
+            LOGGER.error("Invalid or expired token: {} - {}", token, e.getMessage());
             sendErrorResponse(response, HttpStatus.UNAUTHORIZED, INVALID_TOKEN);
         } catch (Exception e) {
             LOGGER.error("Unexpected authentication error: {}", e.getMessage(), e);
-            sendErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, AUTHENTICATION_FAILED);
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, AUTHENTICATION_FAILED);
         }
     }
 
