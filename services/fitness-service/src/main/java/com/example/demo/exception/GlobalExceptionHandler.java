@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.demo.dto.response.ErrorResponseDTO;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.InternalServerErrorException;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -111,13 +110,14 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
     }
     
-    @ExceptionHandler(InternalServerErrorException.class)
-    public ResponseEntity<ErrorResponseDTO> handleInternalServerError(InternalServerErrorException ex) {
-        ErrorResponseDTO error = ErrorResponseDTO.builder()
-                        .message(ErrorMessages.INTERNAL_SERVER_ERROR)
-                        .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
-                        .build();
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
+            LOGGER.error("Unexpected error occurred", ex);
+            ErrorResponseDTO error = ErrorResponseDTO.builder()
+                            .message(ErrorMessages.INTERNAL_SERVER_ERROR)
+                            .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+                            .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
 }
