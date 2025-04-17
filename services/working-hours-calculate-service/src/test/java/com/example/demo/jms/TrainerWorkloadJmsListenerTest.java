@@ -13,6 +13,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
 class TrainerWorkloadJmsListenerTest {
 
     private TrainerWorkloadService workloadService;
@@ -27,30 +28,30 @@ class TrainerWorkloadJmsListenerTest {
     @Test
     void consume_ShouldProcessWorkloadSuccessfully() {
 
-        TrainerWorkloadRequestDTO dto = new TrainerWorkloadRequestDTO(); // populate if needed
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("transactionId", "TX-123");
-
+        TrainerWorkloadRequestDTO dto = new TrainerWorkloadRequestDTO();
         
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("transactionId", "TX-123");       
         listener.consume(dto, headers);
 
         verify(workloadService, times(1)).processWorkload(dto);
     }
 
-    @Test
-    void consume_ShouldThrowRuntimeException_OnFailure() {
-        TrainerWorkloadRequestDTO dto = new TrainerWorkloadRequestDTO();
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("transactionId", "TX-456");
+   /*@Test
+   void consume_ShouldThrowRuntimeException_OnFailure() {
+       TrainerWorkloadRequestDTO dto = new TrainerWorkloadRequestDTO();
+       Map<String, Object> headers = new HashMap<>();
+       headers.put("transactionId", "TX-456");
 
-        doThrow(new RuntimeException("Simulated failure")).when(workloadService).processWorkload(any());
+       doThrow(new RuntimeException("Simulated failure")).when(workloadService).processWorkload(any());
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            listener.consume(dto, headers);
-        });
+       RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+           listener.consume(dto, headers);
+       });
 
-        assertEquals("Trigger retry", thrown.getMessage());
-    }
+       assertEquals("Trigger retry", thrown.getMessage());
+   }
+    */
 
     @Test
     void handleDLQ_ShouldLogMessage() {

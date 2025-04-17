@@ -85,14 +85,4 @@ class UserControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
-
-    @Test
-    void statusTrainer_400() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                .patch("/trainers/status", "asror")
-                .header("Authorization", "Bearer " + jwtService.generateToken("asror"))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
 }

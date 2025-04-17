@@ -12,14 +12,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.example.demo.dao.TrainerWorkloadRepository;
 import com.example.demo.model.TrainerWorkload;
 import com.example.demo.service.TrainerWorkloadService;
+
+
 @WebMvcTest(TrainerWorkloadController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class TrainerWorkloadControllerTest {
 
     @MockitoBean
     private TrainerWorkloadService workloadService;
+
+    @MockitoBean
+    private TrainerWorkloadRepository repository;
 
     @Autowired
     private MockMvc mockMvc;

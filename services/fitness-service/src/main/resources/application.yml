@@ -5,4 +5,4 @@ spring:
     name: fitness-service
   profiles:
     active:
-    - dev   
+    - dev

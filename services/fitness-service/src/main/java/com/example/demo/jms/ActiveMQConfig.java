@@ -22,7 +22,7 @@ public class ActiveMQConfig {
 
     @Value("${spring.activemq.user}") String username;
 
-    @Value("${spring.activemq.user}") String password;
+    @Value("${spring.activemq.password}") String password;
 
     @Autowired ObjectMapper mapper;
 

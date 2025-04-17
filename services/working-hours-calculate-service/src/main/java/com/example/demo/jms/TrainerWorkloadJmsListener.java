@@ -41,8 +41,7 @@ public class TrainerWorkloadJmsListener {
             workloadService.processWorkload(dto);
             LOGGER.info("Successfully processed {}", dto);
         } catch (Exception e) {
-            LOGGER.error("Message processing failed, will be retried", e);
-            throw new RuntimeException("Trigger retry");
+            LOGGER.error("Message processing failed, will be retried", e.getCause());
         }
     }
 

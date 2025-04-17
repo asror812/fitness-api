@@ -20,21 +20,21 @@ import lombok.ToString;
 @ToString
 public class TrainerWorkloadRequestDTO {
 
-    @NotNull
+    @NotNull(message = "Trainer username is required")
     private String trainerUsername;
 
-    @NotNull
+    @NotNull(message = "Trainer firstname is required")
     private String trainerFirstName;
 
-    @NotNull
+    @NotNull(message = "Trainer lastname is required")
     private String trainerLastName;
 
-    @NotNull
+    @NotNull(message = "Training date is required")
     private LocalDate trainingDate;
 
-    @NotNull
+    @NotNull(message = "Training duration is required")
     private Double duration;
 
-    @NotNull
+    @NotNull(message = "Invalid action type")
     private ActionType actionType;
 }

@@ -1,27 +1,32 @@
 package com.example.demo.jms;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
 class ActiveMQConfigTest {
 
     private ActiveMQConfig config;
 
     private ObjectMapper mapper;
 
+
     @BeforeEach
     void setUp() {
         config = new ActiveMQConfig();
 
-        // Setting test values directly (since @Value is not injected here)
         config.brokerUrl = "tcp://localhost:61616";
         config.username = "admin";
         config.password = "admin";
