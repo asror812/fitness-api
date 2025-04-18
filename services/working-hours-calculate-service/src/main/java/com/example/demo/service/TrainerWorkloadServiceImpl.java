@@ -100,6 +100,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
         }
 
         month.setTotalHours(currentHours - duration);
+
         repository.save(workload);
 
         LOGGER.info(SUCCESSFULLY_TRAINING_SESSION_REMOVED, duration, username, yearValue, monthValue);

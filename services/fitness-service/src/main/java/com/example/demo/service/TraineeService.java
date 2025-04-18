@@ -111,6 +111,8 @@ public class TraineeService
 
         List<Training> trainings = trainee.getTrainings();
 
+        dao.delete(trainee);
+
         for (Training training : trainings) {
             Date trainingDate = training.getTrainingDate();
 
@@ -118,6 +120,8 @@ public class TraineeService
                 notifyTrainerDeletion(training);
             }
         }
+
+
     }
 
     public void notifyTrainerDeletion(Training training) {
