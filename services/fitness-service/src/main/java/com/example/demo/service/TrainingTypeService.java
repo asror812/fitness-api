@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dto.request.TrainingTypeCreateDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
@@ -37,6 +39,7 @@ public class TrainingTypeService {
                 .toList();
     }
 
+    @Transactional
     public TrainingTypeResponseDTO create(TrainingTypeCreateDTO createDTO) {
         String name = createDTO.getName();
 

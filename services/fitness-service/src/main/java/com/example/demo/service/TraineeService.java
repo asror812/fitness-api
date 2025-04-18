@@ -76,8 +76,6 @@ public class TraineeService
 
         dao.create(trainee);
 
-        
-
         signUpRequestCountMetrics.increment();
         return register;
     }
@@ -99,10 +97,10 @@ public class TraineeService
     public TraineeResponseDTO findByUsername(String username) {
         Optional<Trainee> existingTrainee = dao.findByUsername(username);
 
-        if(existingTrainee.isEmpty()){
+        if (existingTrainee.isEmpty()) {
             throw new EntityNotFoundException(TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username));
         }
-        return  mapper.toResponseDTO(existingTrainee.get());
+        return mapper.toResponseDTO(existingTrainee.get());
     }
 
     @Transactional
@@ -122,8 +120,7 @@ public class TraineeService
         }
     }
 
-
-     public void notifyTrainerDeletion(Training training) {
+    public void notifyTrainerDeletion(Training training) {
         TrainerWorkloadRequestDTO requestDTO = TrainerWorkloadRequestDTO.builder()
                 .trainerUsername(training.getTrainer().getUser().getUsername())
                 .trainerFirstName(training.getTrainer().getUser().getFirstName())

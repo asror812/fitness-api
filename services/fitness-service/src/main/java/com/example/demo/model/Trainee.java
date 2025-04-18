@@ -48,6 +48,9 @@ public class Trainee extends BaseEntity {
     @JoinTable(name = "trainee_trainers", joinColumns = @JoinColumn(name = "trainee_id"), inverseJoinColumns = @JoinColumn(name = "trainer_id"))
     private Set<Trainer> trainers = new HashSet<>();
 
+
+    
+
     @Override
     public String toString() {
         return "Trainee [dateOfBirth=" + dateOfBirth + ", address=" + address + ", user=" + user.getUsername() + "]";
