@@ -47,11 +47,4 @@ public class UserDAOImpl extends AbstractHibernateDAO<User> implements UserDAO {
             return Optional.empty();
         }
     }
-
-
-    @Override
-    public void delete(User user) {
-        entityManager.remove(user);
-    }
-
 }

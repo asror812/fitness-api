@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.dao.UserDAO;
+import com.example.demo.dto.response.ErrorResponseDTO;
 import com.example.demo.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -8,16 +9,18 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class JwtAuthenticationFilterTest {
 
@@ -43,16 +46,26 @@ class JwtAuthenticationFilterTest {
         filterChain = mock(FilterChain.class);
     }
 
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     void shouldReturnUnauthorized_WhenNoAuthorizationHeader() throws Exception {
         when(request.getHeader("Authorization")).thenReturn(null);
+
         StringWriter sw = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(sw));
 
         filter.doFilterInternal(request, response, filterChain);
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertTrue(sw.toString().contains("Missing or invalid Authorization header"));
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Missing or invalid Authorization header", error.getMessage());
+        assertNotNull(error.getTimestamp());
     }
 
     @Test
@@ -66,7 +79,11 @@ class JwtAuthenticationFilterTest {
         filter.doFilterInternal(request, response, filterChain);
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertTrue(sw.toString().contains("Invalid or expired token"));
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Invalid or expired token", error.getMessage());
+        assertNotNull(error.getTimestamp());
     }
 
     @Test
@@ -83,7 +100,11 @@ class JwtAuthenticationFilterTest {
         filter.doFilterInternal(request, response, filterChain);
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertTrue(sw.toString().contains("Invalid username"));
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Invalid username", error.getMessage());
+        assertNotNull(error.getTimestamp());
     }
 
     @Test
@@ -92,7 +113,7 @@ class JwtAuthenticationFilterTest {
         when(claims.getSubject()).thenReturn("validUser");
 
         User user = mock(User.class);
-        when(user.getAuthorities()).thenReturn(null); 
+        when(user.getAuthorities()).thenReturn(null);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer token");
         when(jwtService.claims("token")).thenReturn(claims);
@@ -101,7 +122,30 @@ class JwtAuthenticationFilterTest {
         filter.doFilterInternal(request, response, filterChain);
 
         verify(filterChain).doFilter(request, response);
+
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+        assertEquals(user, SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
+    @Test
+    void shouldReturnUnauthorized_WhenUserNotFound() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn("nonExistentUser");
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtService.claims("token")).thenReturn(claims);
+        when(userDAO.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Authentication failed", error.getMessage());
     }
 
     @Test

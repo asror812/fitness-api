@@ -7,5 +7,6 @@ import java.util.Optional;
 @Repository
 public interface TraineeDAO extends GenericDAO<Trainee> {
     void delete(Trainee trainee);
+
     Optional<Trainee> findByUsername(String username);
 }

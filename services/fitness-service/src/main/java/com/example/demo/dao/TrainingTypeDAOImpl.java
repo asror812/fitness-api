@@ -25,7 +25,8 @@ public class TrainingTypeDAOImpl extends AbstractHibernateDAO<TrainingType> impl
     @Override
     public Optional<TrainingType> findByName(String name) {
         try {
-            TypedQuery<TrainingType> query = entityManager.createQuery(HQL_FIND_TRAINING_TYPE_BY_NAME,TrainingType.class);
+            TypedQuery<TrainingType> query = entityManager.createQuery(HQL_FIND_TRAINING_TYPE_BY_NAME,
+                    TrainingType.class);
             query.setParameter("type", name);
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
@@ -33,7 +34,6 @@ public class TrainingTypeDAOImpl extends AbstractHibernateDAO<TrainingType> impl
             return Optional.empty();
         }
     }
-
 
     @Override
     public List<TrainingType> getAll() {

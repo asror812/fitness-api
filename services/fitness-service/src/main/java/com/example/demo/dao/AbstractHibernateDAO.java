@@ -18,7 +18,6 @@ public abstract class AbstractHibernateDAO<T> {
     protected EntityManager entityManager;
     private final Class<T> clazz;
 
-
     private static final String FAILED_TO_GET_BY_ID = "Failed to get by id:  %s";
     private static final String FAILED_TO_CREATE = "Failed to create %s";
     private static final String FAILED_TO_UPDATE = "Failed to update %s";

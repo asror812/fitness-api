@@ -13,6 +13,4 @@ public interface TrainingDAO extends GenericDAO<Training> {
     List<Training> findTrainerTrainings(String username, Date from, Date to, String traineeName);
 
     List<Training> findTraineeTrainingsById(UUID id);
-
-    void delete(UUID id);
 }

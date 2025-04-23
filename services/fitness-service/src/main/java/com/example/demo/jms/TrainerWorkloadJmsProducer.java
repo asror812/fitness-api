@@ -9,19 +9,17 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 
-
 @Component
 public class TrainerWorkloadJmsProducer {
 
     @Value("${jms.workload_queue.update}")
-    private String updateTrainerWorkloadQueue;
+    String updateTrainerWorkloadQueue;
 
     @Autowired
     private JmsTemplate jmsTemplate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainerWorkloadJmsProducer.class);
     private static final String transactionId = MDC.get("transactionID");
-
 
     public void updateTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
         LOGGER.info("Queue name : {} Request Entity: {}", updateTrainerWorkloadQueue, requestDTO);
@@ -32,5 +30,4 @@ public class TrainerWorkloadJmsProducer {
         });
     }
 
-   
 }

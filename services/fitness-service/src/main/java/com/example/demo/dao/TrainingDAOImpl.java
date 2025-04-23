@@ -96,10 +96,4 @@ public class TrainingDAOImpl extends AbstractHibernateDAO<Training> implements T
         query.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(query).getResultList();
     }
-
-    @Override
-    public void delete(UUID id) {
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
 }

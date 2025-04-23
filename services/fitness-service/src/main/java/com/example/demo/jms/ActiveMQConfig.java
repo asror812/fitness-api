@@ -18,13 +18,17 @@ import jakarta.jms.ConnectionFactory;
 @Configuration
 public class ActiveMQConfig {
 
-    @Value("${spring.activemq.broker-url}") String brokerUrl;
+    @Value("${spring.activemq.broker-url}")
+    String brokerUrl;
 
-    @Value("${spring.activemq.user}") String username;
+    @Value("${spring.activemq.user}")
+    String username;
 
-    @Value("${spring.activemq.password}") String password;
+    @Value("${spring.activemq.password}")
+    String password;
 
-    @Autowired ObjectMapper mapper;
+    @Autowired
+    ObjectMapper mapper;
 
     @Bean
     ConnectionFactory connectionFactory() {

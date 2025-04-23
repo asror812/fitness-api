@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.TrainerWorkload;
+
+import java.util.List;
 import java.util.Optional;
 
 
@@ -14,4 +16,8 @@ public interface TrainerWorkloadRepository extends MongoRepository<TrainerWorklo
 
     @Query("{ '_id': ?0 }")
     Optional<TrainerWorkload> findByUsername(String username);
+
+
+    @Query("{ 'firstName': { $regex: ?0, $options: 'i' }, 'lastName': { $regex: ?1, $options: 'i' } }")
+    List<TrainerWorkload> searchByName(String firstNamePattern, String lastNamePattern);
 }

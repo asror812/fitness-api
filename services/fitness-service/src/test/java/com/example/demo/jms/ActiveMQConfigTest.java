@@ -29,10 +29,8 @@ class ActiveMQConfigTest {
 
     @Test
     void connectionFactory_ShouldCreateActiveMQFactoryWithRetryPolicy() {
-        // Act
         ConnectionFactory connectionFactory = config.connectionFactory();
 
-        // Assert
         assertNotNull(connectionFactory);
         assertTrue(connectionFactory instanceof ActiveMQConnectionFactory);
 
