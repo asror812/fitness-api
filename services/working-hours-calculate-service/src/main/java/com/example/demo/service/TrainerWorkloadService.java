@@ -8,7 +8,7 @@ import com.example.demo.model.TrainerWorkload;
 @Service
 public interface TrainerWorkloadService {
 
-    public void processWorkload(TrainerWorkloadRequestDTO requestDTO);
+    void processWorkload(TrainerWorkloadRequestDTO requestDTO);
 
-    public TrainerWorkload getTrainerWorkload(String username);
+    TrainerWorkload getTrainerWorkload(String username);
 }

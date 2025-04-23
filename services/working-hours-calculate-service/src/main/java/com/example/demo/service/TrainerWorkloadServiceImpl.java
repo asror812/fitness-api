@@ -31,7 +31,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     private static final String NOT_ENOUGH_HOURS = "Trainer: {} does not have enough hours to remove {} hours for year: {} month: {}";
     private static final String NO_WORKLOAD_EXCEPTION_MESSAGE = "No workload found for trainer '%s' year: %s month: %s";
 
-    public void addTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
+    private void addTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
         String username = requestDTO.getTrainerUsername();
         LocalDate trainingDate = requestDTO.getTrainingDate();
         int yearValue = trainingDate.getYear();
@@ -55,19 +55,18 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         WorkingMonth month = year.getMonthlyWorkload().stream().filter(m -> m.getMonth().getValue() == monthValue)
                 .findFirst().orElseGet(() -> {
-                    WorkingMonth newMonth = new WorkingMonth(Month.of(monthValue), 0.0);
+                    WorkingMonth newMonth = WorkingMonth.builder().month(Month.of(monthValue)).build();
                     year.getMonthlyWorkload().add(newMonth);
                     return newMonth;
                 });
 
         month.setTotalHours(month.getTotalHours() + duration);
-
         repository.save(workload);
 
         LOGGER.info(SUCCESSFULLY_TRAINING_SESSION_ADDED, duration, username, yearValue, monthValue);
     }
 
-    public void removeTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
+    private void removeTrainingSession(TrainerWorkloadRequestDTO requestDTO) {
         String username = requestDTO.getTrainerUsername();
         LocalDate trainingDate = requestDTO.getTrainingDate();
         int yearValue = trainingDate.getYear();
@@ -81,7 +80,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         WorkingYear year = workload.getYears().stream().filter(y -> y.getYear() == yearValue).findFirst()
                 .orElseThrow(() -> {
-                    LOGGER.error(NO_WORKLOAD, username, yearValue, monthValue);
+                    LOGGER.warn(NO_WORKLOAD, username, yearValue, monthValue);
                     return new EntityNotFoundException(
                             String.format(NO_WORKLOAD_EXCEPTION_MESSAGE, username, yearValue, monthValue));
                 });
@@ -95,11 +94,19 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
         double currentHours = month.getTotalHours();
         if (currentHours < duration) {
-            LOGGER.error(NOT_ENOUGH_HOURS, username, duration, yearValue, monthValue);
+            LOGGER.warn(NOT_ENOUGH_HOURS, username, duration, yearValue, monthValue);
             throw new IllegalArgumentException("Not enough hours to remove. Trainer has only: " + currentHours);
         }
 
         month.setTotalHours(currentHours - duration);
+
+        if (month.getTotalHours() == 0) {
+            year.getMonthlyWorkload().remove(month);
+        }
+
+        if (year.getMonthlyWorkload().isEmpty()) {
+            workload.getYears().remove(year);
+        }
 
         repository.save(workload);
 
@@ -109,21 +116,18 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     @Override
     public void processWorkload(TrainerWorkloadRequestDTO requestDTO) {
         ActionType action = requestDTO.getActionType();
-        if (action == ActionType.ADD) {
-            addTrainingSession(requestDTO);
-        }
-        else if (action == ActionType.DELETE) {
-            removeTrainingSession(requestDTO);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid action type: " + action);
+
+        switch (action) {
+        case ADD -> addTrainingSession(requestDTO);
+        case DELETE -> removeTrainingSession(requestDTO);
+        default -> throw new IllegalArgumentException("Unsupported action type: " + action);
         }
     }
 
     @Override
     public TrainerWorkload getTrainerWorkload(String username) {
         return repository.findById(username).orElseThrow(() -> {
-            LOGGER.warn("No workload found for trainer '{}'", username);
+            LOGGER.error("No workload found for trainer '{}'", username);
             return new EntityNotFoundException("No workload found for trainer: " + username);
         });
     }

@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(EntityNotFoundException e) {
-        LOGGER.warn("Resource not found: {}", e.getMessage());
+        LOGGER.error("{}", e.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.RESOURCE_NOT_FOUND_ERROR)
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponseDTO> handleDataAccessException(DataAccessException e) {
-        LOGGER.error("Data access error", e);
+        LOGGER.error("{}", e.getMessage());
 
         if (e.getCause() instanceof ConstraintViolationException) {
             ErrorResponseDTO error = ErrorResponseDTO.builder()
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ InvalidCredentialsException.class, AuthenticationFailureException.class })
     public ResponseEntity<ErrorResponseDTO> handleAuthenticationExceptions(RuntimeException ex) {
-        LOGGER.warn("Authentication failed: {}", ex.getMessage());
+        LOGGER.error("{}", ex.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.INVALID_CREDENTIALS)
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .toList();
 
-        LOGGER.warn("Validation errors: {}", errors);
+        LOGGER.warn("{}", errors);
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.VALIDATION_ERROR)
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<ErrorResponseDTO> handleAlreadyExistException(AlreadyExistException ex) {
-        LOGGER.warn("Resource already exists: {}", ex.getMessage());
+        LOGGER.error("{}", ex.getMessage());
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
@@ -100,24 +100,24 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TooManyRequestsException.class)
     public ResponseEntity<ErrorResponseDTO> handleTooManyRequestsException(TooManyRequestsException ex) {
-            LOGGER.warn("REquest rate limit exceeded: {}", ex.getMessage());
+        LOGGER.error("{}", ex.getMessage());
 
-            ErrorResponseDTO error = ErrorResponseDTO.builder()
-                            .message(ErrorMessages.TOO_MANY_REQUESTS)
-                            .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
-                            .build();
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .message(ErrorMessages.TOO_MANY_REQUESTS)
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+                .build();
 
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
-            LOGGER.error("Unexpected error occurred", ex);
-            ErrorResponseDTO error = ErrorResponseDTO.builder()
-                            .message(ErrorMessages.INTERNAL_SERVER_ERROR)
-                            .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
-                            .build();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        LOGGER.error("{}", ex.getMessage());
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .message(ErrorMessages.INTERNAL_SERVER_ERROR)
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
 }

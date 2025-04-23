@@ -114,9 +114,9 @@ public class TraineeService
         for (Training training : trainings) {
             training.setTrainee(null);
         }
-        
+
         dao.delete(trainee);
-        
+
         for (Training training : trainings) {
             Date trainingDate = training.getTrainingDate();
 
@@ -127,7 +127,7 @@ public class TraineeService
 
     }
 
-    public void notifyTrainerDeletion(Training training) {
+    private void notifyTrainerDeletion(Training training) {
         TrainerWorkloadRequestDTO requestDTO = TrainerWorkloadRequestDTO.builder()
                 .trainerUsername(training.getTrainer().getUser().getUsername())
                 .trainerFirstName(training.getTrainer().getUser().getFirstName())

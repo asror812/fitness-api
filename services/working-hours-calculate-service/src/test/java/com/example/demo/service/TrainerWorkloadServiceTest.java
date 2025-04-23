@@ -27,155 +27,127 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TrainerWorkloadServiceImplTest {
 
-        @Mock
-        private TrainerWorkloadRepository repository;
+    @Mock
+    private TrainerWorkloadRepository repository;
 
-        @InjectMocks
-        private TrainerWorkloadServiceImpl service;
+    @InjectMocks
+    private TrainerWorkloadServiceImpl service;
 
-        private final String testUsername = "trainer1";
-        private TrainerWorkload workload;
+    private final String testUsername = "trainer1";
+    private TrainerWorkload workload;
 
-        @BeforeEach
-        void setup() {
-                workload = new TrainerWorkload();
-                workload.setUsername(testUsername);
-                workload.setFirstName("John");
-                workload.setLastName("Doe");
-                workload.setYears(new ArrayList<>());
-        }
+    @BeforeEach
+    void setup() {
+        workload = new TrainerWorkload();
+        workload.setUsername(testUsername);
+        workload.setFirstName("John");
+        workload.setLastName("Doe");
+        workload.setYears(new ArrayList<>());
+    }
 
-        @Test
-        void addTrainingSession() {
-                TrainerWorkloadRequestDTO request = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.ADD);
+    @Test
+    void processWorkload_Add_NewMonthAndYear() {
+        TrainerWorkloadRequestDTO request = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
+                LocalDate.of(2025, 3, 1), 2.0, ActionType.ADD);
 
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
-                when(repository.save(any())).thenReturn(workload);
+        when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
+        when(repository.save(any())).thenReturn(workload);
 
-                service.addTrainingSession(request);
+        service.processWorkload(request);
 
-                assertEquals(1, workload.getYears().size());
-                WorkingYear year = workload.getYears().get(0);
-                assertEquals(2025, year.getYear());
-                assertEquals(1, year.getMonthlyWorkload().size());
-                assertEquals(2.0, year.getMonthlyWorkload().get(0).getTotalHours());
-        }
+        assertEquals(1, workload.getYears().size());
+        WorkingYear year = workload.getYears().get(0);
+        assertEquals(2025, year.getYear());
+        assertEquals(1, year.getMonthlyWorkload().size());
+        assertEquals(2.0, year.getMonthlyWorkload().get(0).getTotalHours());
+    }
 
-        @Test
-        void addTrainingSession_ExistingTrainer() {
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
-                when(repository.save(any())).thenReturn(workload);
+    @Test
+    void processWorkload_Add_ToExistingMonth() {
+        TrainerWorkloadRequestDTO request1 = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
+                LocalDate.of(2025, 3, 1), 2.0, ActionType.ADD);
 
-                TrainerWorkloadRequestDTO request1 = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.ADD);
-                TrainerWorkloadRequestDTO request2 = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 1.5, ActionType.ADD);
+        TrainerWorkloadRequestDTO request2 = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
+                LocalDate.of(2025, 3, 1), 1.5, ActionType.ADD);
 
-                service.addTrainingSession(request1);
-                service.addTrainingSession(request2);
+        when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
+        when(repository.save(any())).thenReturn(workload);
 
-                double totalHours = workload.getYears().get(0).getMonthlyWorkload().get(0).getTotalHours();
-                assertEquals(3.5, totalHours);
-        }
+        service.processWorkload(request1);
+        service.processWorkload(request2);
 
-        @Test
-        void removeTrainingSession() {
-                WorkingMonth march = new WorkingMonth(Month.MARCH, 3.0);
-                WorkingYear year = new WorkingYear(2025, List.of(march));
-                workload.setYears(List.of(year));
+        double totalHours = workload.getYears().get(0).getMonthlyWorkload().get(0).getTotalHours();
+        assertEquals(3.5, totalHours);
+    }
 
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
-                when(repository.save(any())).thenReturn(workload);
+    @Test
+    void processWorkload_Delete_ReducesHours() {
+        WorkingMonth march = new WorkingMonth(Month.MARCH, 3.0);
+        WorkingYear year = new WorkingYear(2025, List.of(march));
+        workload.setYears(List.of(year));
 
-                TrainerWorkloadRequestDTO removeRequest = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
+        TrainerWorkloadRequestDTO deleteRequest = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
+                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
 
-                service.removeTrainingSession(removeRequest);
+        when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
+        when(repository.save(any())).thenReturn(workload);
 
-                assertEquals(1.0, march.getTotalHours());
-        }
+        service.processWorkload(deleteRequest);
 
-        @Test
-        void removeTrainingSession_NotEnoughHours() {
-                WorkingMonth march = new WorkingMonth(Month.MARCH, 1.0);
-                WorkingYear year = new WorkingYear(2025, List.of(march));
-                workload.setYears(List.of(year));
+        assertEquals(1.0, march.getTotalHours());
+    }
 
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
+    @Test
+    void processWorkload_Delete_NotEnoughHours_ThrowsException() {
+        WorkingMonth march = new WorkingMonth(Month.MARCH, 1.0);
+        WorkingYear year = new WorkingYear(2025, List.of(march));
+        workload.setYears(List.of(year));
 
-                TrainerWorkloadRequestDTO removeRequest = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
+        TrainerWorkloadRequestDTO deleteRequest = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
+                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
 
-                Exception ex = assertThrows(IllegalArgumentException.class,
-                                () -> service.removeTrainingSession(removeRequest));
-                assertEquals("Not enough hours to remove. Trainer has only: 1.0", ex.getMessage());
-        }
+        when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
 
-        @Test
-        void removeTrainingSession_TrainerNotFound() {
-                when(repository.findById(testUsername)).thenReturn(Optional.empty());
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> service.processWorkload(deleteRequest));
+        assertEquals("Not enough hours to remove. Trainer has only: 1.0", ex.getMessage());
+    }
 
-                TrainerWorkloadRequestDTO removeRequest = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
+    @Test
+    void processWorkload_TrainerNotFound_ThrowsException() {
+        TrainerWorkloadRequestDTO request = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
+                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
 
-                assertThrows(EntityNotFoundException.class, () -> service.removeTrainingSession(removeRequest));
-        }
+        when(repository.findById(testUsername)).thenReturn(Optional.empty());
 
-        @Test
-        void processWorkload_Add() {
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
-                when(repository.save(any())).thenReturn(workload);
+        assertThrows(EntityNotFoundException.class, () -> service.processWorkload(request));
+    }
 
-                TrainerWorkloadRequestDTO request = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.ADD);
+    @Test
+    void getTrainerWorkload_NoData_ThrowsException() {
+        when(repository.findById(testUsername)).thenReturn(Optional.empty());
 
-                service.processWorkload(request);
-                assertEquals(2.0, workload.getYears().get(0).getMonthlyWorkload().get(0).getTotalHours());
-        }
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> service.getTrainerWorkload(testUsername));
 
-        @Test
-        void processWorkload_Delete() {
-                WorkingMonth march = new WorkingMonth(Month.MARCH, 3.0);
-                WorkingYear year = new WorkingYear(2025, List.of(march));
-                workload.setYears(List.of(year));
+        assertEquals("No workload found for trainer: trainer1", exception.getMessage());
+    }
 
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
-                when(repository.save(any())).thenReturn(workload);
+    @Test
+    void getTrainerWorkload_WithData_ReturnsCorrectly() {
+        WorkingMonth march = new WorkingMonth(Month.MARCH, 4.0);
+        WorkingYear year = new WorkingYear(2025, List.of(march));
+        workload.setYears(List.of(year));
 
-                TrainerWorkloadRequestDTO deleteRequest = new TrainerWorkloadRequestDTO(testUsername, "John", "Doe",
-                                LocalDate.of(2025, 3, 1), 2.0, ActionType.DELETE);
+        when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
 
-                service.processWorkload(deleteRequest);
-                assertEquals(1.0, march.getTotalHours());
-        }
+        TrainerWorkload response = service.getTrainerWorkload(testUsername);
 
-        @Test
-        void getTrainerWorkload_NoData() {
-                when(repository.findById(testUsername)).thenReturn(Optional.empty());
+        WorkingYear workingYear = response.getYears().stream().filter(t -> t.getYear().equals(2025)).findAny()
+                .orElseThrow();
 
-                EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                                () -> service.getTrainerWorkload(testUsername));
+        WorkingMonth month = workingYear.getMonthlyWorkload().stream().filter(t -> t.getMonth().equals(Month.MARCH))
+                .findAny().orElseThrow();
 
-                assertEquals("No workload found for trainer: trainer1", exception.getMessage());
-        }
-
-        @Test
-        void getTrainerWorkload_WithData() {
-                WorkingMonth march = new WorkingMonth(Month.MARCH, 4.0);
-                WorkingYear year = new WorkingYear(2025, List.of(march));
-                workload.setYears(List.of(year));
-
-                when(repository.findById(testUsername)).thenReturn(Optional.of(workload));
-
-                TrainerWorkload response = service.getTrainerWorkload(testUsername);
-
-                WorkingYear workingYear = response.getYears().stream().filter(t -> t.getYear().equals(2025)).findAny()
-                                .get();
-
-                WorkingMonth month = workingYear.getMonthlyWorkload().stream()
-                                .filter(t -> t.getMonth().equals(Month.MARCH)).findAny().get();
-
-                assertEquals(4.0, month.getTotalHours());
-        }
+        assertEquals(4.0, month.getTotalHours());
+    }
 }

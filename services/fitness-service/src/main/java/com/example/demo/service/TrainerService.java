@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dao.UserDAO;

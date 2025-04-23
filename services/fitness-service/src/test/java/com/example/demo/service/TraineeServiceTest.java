@@ -28,7 +28,6 @@ import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
-import com.example.demo.dto.request.TrainerWorkloadRequestDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
 import com.example.demo.dto.response.TraineeResponseDTO;
 import com.example.demo.dto.response.TraineeUpdateResponseDTO;
@@ -42,7 +41,6 @@ import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.metric.TraineeSignUpRequestCountMetrics;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
-import com.example.demo.model.Training;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
 import io.jsonwebtoken.lang.Collections;
@@ -107,16 +105,6 @@ class TraineeServiceTest {
         assertEquals("asror.r", result.getUsername());
         assertNotNull(result);
         verify(traineeDAO, times(1)).create(any(Trainee.class));
-    }
-
-    @Test
-    void notifyTrainee() {
-        traineeService.notifyTrainerDeletion(
-                new Training(trainee,
-                        new Trainer(user, new TrainingType(), Collections.emptyList(), Collections.emptySet()),
-                        "swimming", new TrainingType(), new Date(), 1.5));
-
-        verify(consumer, times(1)).updateTrainingSession(any(TrainerWorkloadRequestDTO.class));
     }
 
     @Test
