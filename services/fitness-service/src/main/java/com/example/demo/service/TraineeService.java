@@ -35,7 +35,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -148,9 +147,9 @@ public class TraineeService
 
         User user = trainee.getUser();
 
-        if (Objects.equals(user.getActive(), status)) {
-            LOGGER.warn("'{}' already {}", trainee, status);
-            throw new IllegalStateException(String.format("'%s' is already %s", username, status));
+        if (user.isActive() == status) {
+            LOGGER.warn("'{}'s status already set {}", trainee, status);
+            throw new IllegalStateException(String.format("'%s's status already set %s", username, status));
         }
 
         user.setActive(status);

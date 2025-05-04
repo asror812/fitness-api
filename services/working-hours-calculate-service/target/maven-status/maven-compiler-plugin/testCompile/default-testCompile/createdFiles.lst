@@ -1,5 +1,0 @@
-com/example/demo/utils/JacksonConfigTest.class
-com/example/demo/jms/ActiveMQConfigTest.class
-com/example/demo/service/TrainerWorkloadServiceImplTest.class
-com/example/demo/controller/TrainerWorkloadControllerTest.class
-com/example/demo/jms/TrainerWorkloadJmsListenerTest.class

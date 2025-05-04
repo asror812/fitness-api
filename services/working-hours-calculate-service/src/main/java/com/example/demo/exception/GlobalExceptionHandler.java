@@ -17,19 +17,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(Exception e) {
-        LOGGER.error("{}", e.getMessage());
         ErrorResponse error = ErrorResponse.builder().message(ErrorMessages.RESOURCE_NOT_FOUND_ERROR)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now())).build();
 
+        LOGGER.error("{}", error);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        LOGGER.error("{}", e.getMessage());
         ErrorResponse error = ErrorResponse.builder().message(ErrorMessages.INVALID_ACTION_TYPE_ERROR)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now())).build();
 
+        LOGGER.error("{}", error);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 

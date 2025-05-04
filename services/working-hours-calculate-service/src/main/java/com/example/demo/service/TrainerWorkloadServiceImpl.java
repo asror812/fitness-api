@@ -118,9 +118,9 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
         ActionType action = requestDTO.getActionType();
 
         switch (action) {
-        case ADD -> addTrainingSession(requestDTO);
-        case DELETE -> removeTrainingSession(requestDTO);
-        default -> throw new IllegalArgumentException("Unsupported action type: " + action);
+            case ADD -> addTrainingSession(requestDTO);
+            case DELETE -> removeTrainingSession(requestDTO);
+            default -> throw new IllegalArgumentException("Unsupported action type: " + action);
         }
     }
 

@@ -18,6 +18,8 @@ public final class ErrorMessages {
 
     protected static final String INTERNAL_SERVER_ERROR = "Unexpected error occurred while processing your request.";
 
+    protected static final String STATUS_ALREADY_SET = "The user's status is already set to the requested value.";
+    
     private ErrorMessages() {}
    
 }

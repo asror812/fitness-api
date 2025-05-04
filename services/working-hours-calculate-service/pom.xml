@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.4.5</version>
         <relativePath />
     </parent>
 
@@ -16,11 +16,11 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>21</java.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
 
+    <!-- Spring Boot Active MQ  -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -33,6 +33,7 @@
             </exclusions>
         </dependency>
 
+        <!-- Active MQ Broker -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
@@ -40,13 +41,14 @@
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+        <!-- Model Mapper -->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.2.2</version>
         </dependency>
 
+        <!-- Spring Cloud -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
@@ -58,6 +60,7 @@
             <version>2.3.2</version>
         </dependency>
 
+        <!-- Eureka Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
@@ -95,11 +98,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Prometheus -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
@@ -141,7 +146,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

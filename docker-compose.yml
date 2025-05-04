@@ -1,4 +1,5 @@
 services:
+
   postgresql:
     container_name: ms_postgres_db
     image: postgres
@@ -50,6 +51,7 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=asror
       - ME_CONFIG_MONGODB_ADMINPASSWORD=asror
       - ME_CONFIG_MONGODB_SERVER=mongodb
+
   activemq:
     image: islandora/activemq:4
     container_name: activemq
@@ -63,7 +65,7 @@ services:
       ACTIVEMQ_WEB_ADMIN_PASSWORD: password
       ACTIVEMQ_WEB_ADMIN_ROLES: admin
     volumes:
-      - activemq_data:/opt/activemq/data
+      - activemq:/opt/activemq/data
       
 
 networks:
@@ -74,4 +76,4 @@ volumes:
   postgres:
   pgadmin:
   mongo:
-  activemq_data:
+  activemq:

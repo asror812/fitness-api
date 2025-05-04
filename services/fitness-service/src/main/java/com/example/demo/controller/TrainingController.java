@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/trainings")
+@RequestMapping("/api/v1/fitness/trainings")
 public class TrainingController {
     private final TrainingService trainingService;
 
@@ -30,10 +32,10 @@ public class TrainingController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/trainer/{username}")  
+    @GetMapping("/trainer/{username}")
     public ResponseEntity<List<TrainingResponseDTO>> getTrainerTrainers(@PathVariable String username,
-            @RequestParam(required = false) Date from,
-            @RequestParam(required = false) Date to,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @RequestParam(required = false) String traineeName) {
 
         List<TrainingResponseDTO> trainerTrainings = trainingService.getTrainerTrainings(username, from, to,
@@ -43,8 +45,8 @@ public class TrainingController {
 
     @GetMapping("/trainee/{username}")
     public ResponseEntity<List<TrainingResponseDTO>> getTraineeTrainings(@PathVariable String username,
-            @RequestParam(required = false) Date from,
-            @RequestParam(required = false) Date to,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @RequestParam(required = false) String trainerName,
             @RequestParam(required = false) String trainingTypeName) {
 

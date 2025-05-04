@@ -11,8 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface TrainerWorkloadRepository extends MongoRepository<TrainerWorkload, String> {
-
-    @Query("{ '_id': ?0 }")
     Optional<TrainerWorkload> findByUsername(String username);
 
     @Query("{ 'firstName': { $regex: ?0, $options: 'i' }, 'lastName': { $regex: ?1, $options: 'i' } }")

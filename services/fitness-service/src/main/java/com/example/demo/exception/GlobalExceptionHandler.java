@@ -21,28 +21,24 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(EntityNotFoundException e) {
-        LOGGER.error("{}", e.getMessage());
-
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.RESOURCE_NOT_FOUND_ERROR)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(error);
+        LOGGER.error("{}", error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponseDTO> handleDataAccessException(DataAccessException e) {
-        LOGGER.error("{}", e.getMessage());
-
         if (e.getCause() instanceof ConstraintViolationException) {
             ErrorResponseDTO error = ErrorResponseDTO.builder()
                     .message(ErrorMessages.DUPLICATE_ENTRY_ERROR)
                     .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                     .build();
 
+            LOGGER.error("{}", error);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
 
@@ -51,22 +47,23 @@ public class GlobalExceptionHandler {
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
+        LOGGER.error("{}", error);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler({ InvalidCredentialsException.class, AuthenticationFailureException.class })
     public ResponseEntity<ErrorResponseDTO> handleAuthenticationExceptions(RuntimeException ex) {
-        LOGGER.error("{}", ex.getMessage());
-
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.INVALID_CREDENTIALS)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
+
+        LOGGER.error("{}", error);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponseDTO> handleValidationException(MethodArgumentNotValidException ex) {
 
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
@@ -74,50 +71,59 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .toList();
 
-        LOGGER.warn("{}", errors);
-
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.VALIDATION_ERROR)
                 .details(errors)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
+        LOGGER.error("{}", error);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<ErrorResponseDTO> handleAlreadyExistException(AlreadyExistException ex) {
-        LOGGER.error("{}", ex.getMessage());
-
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .message(ErrorMessages.ALREADY_EXISTS_ERROR)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CONFLICT.value())
-                .body(error);
+        LOGGER.error("{}", error);
+        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(error);
     }
 
     @ExceptionHandler(TooManyRequestsException.class)
     public ResponseEntity<ErrorResponseDTO> handleTooManyRequestsException(TooManyRequestsException ex) {
-        LOGGER.error("{}", ex.getMessage());
-
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.TOO_MANY_REQUESTS)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
 
+        LOGGER.error("{}", error);
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
-        LOGGER.error("{}", ex.getMessage());
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .message(ErrorMessages.INTERNAL_SERVER_ERROR)
                 .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
                 .build();
+
+        LOGGER.error("{}", error);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex) {
+
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .message(ErrorMessages.STATUS_ALREADY_SET)
+                .timestamp(DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+                .build();
+
+        LOGGER.error("{}", error);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
 }

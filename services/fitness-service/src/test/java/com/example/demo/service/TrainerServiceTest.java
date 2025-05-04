@@ -96,7 +96,7 @@ class TrainerServiceTest {
 
         trainerService.setStatus("asror.r", false);
 
-        assertFalse(trainer.getUser().getActive());
+        assertFalse(trainer.getUser().isActive());
         verify(userDAO).update(user);
     }
 

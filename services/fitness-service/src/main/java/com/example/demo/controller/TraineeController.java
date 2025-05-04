@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/trainees")
+@RequestMapping("/api/v1/fitness/trainees")
 public class TraineeController {
     private final TraineeService traineeService;
 
@@ -30,7 +30,7 @@ public class TraineeController {
     public ResponseEntity<TraineeResponseDTO> getProfile(@PathVariable String username) {
         return ResponseEntity.ok(traineeService.findByUsername(username));
     }
-    
+
     @PutMapping
     public ResponseEntity<TraineeUpdateResponseDTO> update(@Valid @RequestBody TraineeUpdateRequestDTO requestDTO) {
         TraineeUpdateResponseDTO update = traineeService.update(requestDTO);
@@ -48,6 +48,7 @@ public class TraineeController {
         return new ResponseEntity<>(traineeService.getNotAssignedTrainers(username), HttpStatus.OK);
     }
 
+    // TODO: CHECK
     @PutMapping("/{username}/trainers")
     public ResponseEntity<List<TrainerResponseDTO>> updateTraineeAssignedTrainers(@PathVariable String username,
             @RequestBody TraineeTrainersUpdateRequestDTO requestDTO) {

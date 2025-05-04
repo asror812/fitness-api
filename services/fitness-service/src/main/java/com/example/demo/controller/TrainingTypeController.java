@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/training-types")
+@RequestMapping("/api/v1/fitness/training-types")
 public class TrainingTypeController {
     private final TrainingTypeService trainingTypeService;
 
@@ -30,9 +29,9 @@ public class TrainingTypeController {
     }
 
     @PostMapping
-    public ResponseEntity<TrainingTypeResponseDTO> createTrainingType(@Valid @RequestBody TrainingTypeCreateDTO createDTO) {
+    public ResponseEntity<TrainingTypeResponseDTO> create(
+            @Valid @RequestBody TrainingTypeCreateDTO createDTO) {
         return new ResponseEntity<>(trainingTypeService.create(createDTO), HttpStatus.CREATED);
     }
-    
 
 }

@@ -36,7 +36,7 @@ public class User extends BaseEntity implements UserDetails {
     private String password;
 
     @Column(name = "is_active")
-    private Boolean active;
+    private boolean active;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

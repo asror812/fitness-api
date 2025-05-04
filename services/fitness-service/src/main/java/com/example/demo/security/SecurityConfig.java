@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
-                                .requestMatchers("/auth/**", 
-                                        "/management/**").permitAll()
+                                .requestMatchers("/api/v1/fitness/auth/**", 
+                                        "/api/v1/fitness/management/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(transactionLoggerFilter, JwtAuthenticationFilter.class)

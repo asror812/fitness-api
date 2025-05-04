@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/workload")
+@RequestMapping("/api/v1/workloads/")
 public class TrainerWorkloadController {
 
     private final TrainerWorkloadService workloadService;

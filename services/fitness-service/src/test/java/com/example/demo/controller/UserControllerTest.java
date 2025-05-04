@@ -19,7 +19,7 @@ import com.example.demo.service.TraineeService;
 import com.example.demo.service.TrainerService;
 import com.google.gson.Gson;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest(UserStatusController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest {
     @MockitoBean

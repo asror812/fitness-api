@@ -55,14 +55,14 @@ public class TrainerService extends
     }
 
     @Transactional
-    public void setStatus(String username, Boolean status) {
+    public void setStatus(String username, boolean status) {
         Trainer trainer = dao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(TRAINER_NOT_FOUND_WITH_USERNAME.formatted(username)));
         User user = trainer.getUser();
 
-        if (user.getActive().equals(status)) {
-            LOGGER.warn("'{}' already {}", trainer, status);
-            throw new IllegalStateException(String.format("'%s' is already %s", username, status));
+        if (user.isActive() == status) {
+            LOGGER.warn("'{}'s status already set {}", trainer, status);
+            throw new IllegalStateException(String.format("'%s's status already set %s", username, status));
         }
 
         user.setActive(status);

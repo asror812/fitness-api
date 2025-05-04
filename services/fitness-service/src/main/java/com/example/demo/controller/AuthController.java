@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/fitness/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/trainers")
+@RequestMapping("/api/v1/fitness/trainers")
 @RequiredArgsConstructor
 public class TrainerController {
 

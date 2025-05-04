@@ -92,7 +92,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.startsWith("/auth/") || path.startsWith("/management/");
+        return path.startsWith("/api/v1/fitness/auth/") || path.startsWith("/api/v1/fitness/management/");
     }
 
     private void sendErrorResponse(HttpServletResponse response, HttpStatus httpStatus, String message)
