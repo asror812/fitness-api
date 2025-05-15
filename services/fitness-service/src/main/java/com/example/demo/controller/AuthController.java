@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.dto.request.ChangePasswordRequestDTO;
 import com.example.demo.dto.request.SignInRequestDTO;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;

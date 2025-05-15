@@ -28,7 +28,7 @@ public class TraineeMapper
         trainee.setDateOfBirth(updateDto.getDateOfBirth());
         trainee.getUser().setFirstName(updateDto.getFirstName());
         trainee.getUser().setLastName(updateDto.getLastName());
-        trainee.getUser().setActive(updateDto.getActive());
+        trainee.getUser().setActive(updateDto.isActive());
     }
 
     @Override

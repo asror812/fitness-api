@@ -40,7 +40,7 @@ class TraineeControllerTest {
     @MockitoBean
     private TraineeService traineeService;
 
-    private final String endpoint = "/trainees";
+    private final String endpoint = "/api/v1/fitness/trainees";
 
     @Autowired
     private MockMvc mockMvc;

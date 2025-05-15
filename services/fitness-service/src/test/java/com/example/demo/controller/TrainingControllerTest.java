@@ -44,12 +44,15 @@ class TrainingControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+
+    private final String endpoint = "/api/v1/fitness/trainings";
+
     @Test
     void addTraining_ShouldReturn_200() throws Exception {
         TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO("a", "a", "Swimming-1", new Date(),
                 1.5);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/trainings")
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
@@ -63,7 +66,7 @@ class TrainingControllerTest {
                 .thenReturn(getAllTraineeTrainings());
 
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/trainings/trainee/{username}", "asror.r")
+                .get(endpoint + "/trainee/{username}", "asror.r")
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -84,7 +87,7 @@ class TrainingControllerTest {
                 .thenReturn(getAllTrainerTrainings());
 
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/trainings/trainer/{username}", "asror.r")
+                .get(endpoint + "/trainer/{username}", "asror.r")
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())

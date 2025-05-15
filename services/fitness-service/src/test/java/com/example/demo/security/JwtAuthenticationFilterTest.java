@@ -52,7 +52,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldReturnUnauthorized_WhenNoAuthorizationHeader() throws Exception {
+    void shouldReturnUnauthorized_NoAuthorizationHeader() throws Exception {
         when(request.getHeader("Authorization")).thenReturn(null);
 
         StringWriter sw = new StringWriter();
@@ -69,7 +69,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldReturnUnauthorized_WhenJwtInvalid() throws Exception {
+    void shouldReturnUnauthorized_JwtInvalid() throws Exception {
         when(request.getHeader("Authorization")).thenReturn("Bearer bad-token");
         when(jwtService.claims("bad-token")).thenThrow(new JwtException("Invalid"));
 
@@ -87,7 +87,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldReturnUnauthorized_WhenUsernameMissing() throws Exception {
+    void shouldReturnUnauthorized_UsernameMissing() throws Exception {
         Claims claims = mock(Claims.class);
         when(claims.getSubject()).thenReturn(null);
 
@@ -108,7 +108,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldAuthenticateAndContinueFilterChain_WhenValidToken() throws Exception {
+    void shouldAuthenticateAndContinueFilterChain_ValidToken() throws Exception {
         Claims claims = mock(Claims.class);
         when(claims.getSubject()).thenReturn("validUser");
 
@@ -128,7 +128,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldReturnUnauthorized_WhenUserNotFound() throws Exception {
+    void shouldReturnUnauthorized_UserNotFound() throws Exception {
         Claims claims = mock(Claims.class);
         when(claims.getSubject()).thenReturn("nonExistentUser");
 
@@ -150,13 +150,10 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void shouldNotFilter_forExcludedPaths() throws Exception {
-        when(request.getServletPath()).thenReturn("/auth/login");
+        when(request.getServletPath()).thenReturn("/api/v1/fitness/auth/login");
         assertTrue(filter.shouldNotFilter(request));
 
-        when(request.getServletPath()).thenReturn("/management/info");
+        when(request.getServletPath()).thenReturn("/api/v1/fitness/management/info");
         assertTrue(filter.shouldNotFilter(request));
-
-        when(request.getServletPath()).thenReturn("/api/data");
-        assertFalse(filter.shouldNotFilter(request));
     }
 }

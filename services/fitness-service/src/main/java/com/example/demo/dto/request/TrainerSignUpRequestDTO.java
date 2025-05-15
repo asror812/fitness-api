@@ -17,5 +17,5 @@ public class TrainerSignUpRequestDTO extends SignUpRequestDTO {
     public TrainerSignUpRequestDTO(String firstName, String lastName, UUID specialization) {
         super(firstName, lastName);
         this.specialization = specialization;
-    } 
+    }
 }

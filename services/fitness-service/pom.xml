@@ -25,20 +25,11 @@
 
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-
-
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
             <version>2.3.2</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,10 +42,10 @@
             </exclusions>
         </dependency>
 
+
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
-            <version>5.17.0</version>
         </dependency>
 
         <dependency>
@@ -108,7 +99,21 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>test</scope>
+        </dependency>
+
+
+        <!-- Modelmapper -->
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.2.2</version>
         </dependency>
 
 
@@ -126,6 +131,37 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Spring Hibernate -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-hibernate</artifactId>
+            <version>1.2.9</version>
+        </dependency>
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <!-- PostgresQL-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.3.1</version>
         </dependency>
 
         <!-- JJWT API -->
@@ -152,20 +188,6 @@
             <scope>runtime</scope>
         </dependency>
 
-
-        <!-- Spring Hibernate -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-hibernate</artifactId>
-            <version>1.2.9</version>
-        </dependency>
-
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
         <!-- Mockito Core -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -173,25 +195,47 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- mockito-inline -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>5.2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Cucumber core -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.3.4</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>7.3.4</version>
         </dependency>
 
 
-        <!-- PostgresQL-->
+        <!-- Spring Boot Cucumber integration -->
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.3.1</version>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>7.3.4</version>
+            <scope>test</scope>
         </dependency>
+
+        <!-- JUnit 5 (Platform Engine) integration -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.3.4</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
+
 
     <dependencyManagement>
         <dependencies>
@@ -211,7 +255,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.8</version>
+                    <version>0.8.12</version>
                 </plugin>
 
                 <plugin>
@@ -250,4 +294,48 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <profiles>
+        <!-- Unit tests only -->
+        <profile>
+            <id>unit-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*Test.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/Cucumber*.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Cucumber tests only -->
+        <profile>
+            <id>cucumber-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <includes>
+                                <include>**/Cucumber*.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
 </project>

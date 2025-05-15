@@ -42,6 +42,8 @@ class UserControllerTest {
 
     private StatusRequestDTO requestDTO;
 
+    private final String endpoint = "/api/v1/fitness/status";
+
     @Autowired
     private Gson gson;
 
@@ -56,7 +58,7 @@ class UserControllerTest {
     void statusTrainee_400() throws Exception {
         requestDTO = new StatusRequestDTO();
         mockMvc.perform(MockMvcRequestBuilders
-                .patch("/trainees/status", "asror")
+                .patch(endpoint + "/trainees", "asror")
                 .header("Authorization", "Bearer " + jwtService.generateToken("asror"))
                 .content(gson.toJson(requestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -66,7 +68,7 @@ class UserControllerTest {
     @Test
     void statusTrainee_200() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .patch("/trainees/status", "asror")
+                .patch(endpoint + "/trainees", "asror")
                 .header("Authorization", "Bearer " + jwtService.generateToken("asror"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(requestDTO)))
@@ -77,7 +79,7 @@ class UserControllerTest {
     @Test
     void statusTrainer_200() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .patch("/trainers/status", "asror")
+                .patch(endpoint + "/trainers", "asror")
                 .header("Authorization", "Bearer " + jwtService.generateToken("asror"))
                 .accept(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(requestDTO))

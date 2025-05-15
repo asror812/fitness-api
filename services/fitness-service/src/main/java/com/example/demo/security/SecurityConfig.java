@@ -3,6 +3,7 @@ package com.example.demo.security;
 import com.example.demo.utils.BruteForceProtectorService;
 import com.example.demo.utils.TransactionLoggerFilter;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -23,6 +24,9 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CorsProperties corsProperties;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
             JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -33,8 +37,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
-                                .requestMatchers("/api/v1/fitness/auth/**", 
-                                        "/api/v1/fitness/management/**").permitAll()
+                                .requestMatchers("/api/v1/fitness/auth/**",
+                                        "/api/v1/fitness/management/**")
+                                .permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(transactionLoggerFilter, JwtAuthenticationFilter.class)
@@ -47,8 +52,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+        configuration.setAllowedMethods(corsProperties.getAllowedMethods());
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

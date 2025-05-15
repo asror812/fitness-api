@@ -8,6 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.UserDAO;
+import com.example.demo.dto.request.ActionType;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeTrainersUpdateRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
@@ -41,6 +44,7 @@ import com.example.demo.mapper.TrainerMapper;
 import com.example.demo.metric.TraineeSignUpRequestCountMetrics;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
+import com.example.demo.model.Training;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
 import io.jsonwebtoken.lang.Collections;
@@ -67,7 +71,7 @@ class TraineeServiceTest {
     private TrainerMapper trainerMapper;
 
     @Mock
-    private TrainerWorkloadJmsProducer consumer;
+    private TrainerWorkloadJmsProducer producer;
 
     @InjectMocks
     private TraineeService traineeService;
@@ -81,6 +85,8 @@ class TraineeServiceTest {
 
     private User user;
 
+    private Trainer trainer;
+
     @BeforeEach
     void initialize() {
         user = new User("asror", "r", "asror.r", "password1234", true);
@@ -90,10 +96,14 @@ class TraineeServiceTest {
         trainee.setUser(user);
 
         trainingType = new TrainingType("swimming", new ArrayList<>(), new ArrayList<>());
+
+        trainer = new Trainer();
+        trainer.setSpecialization(trainingType);
+        trainer.setUser(user);
     }
 
     @Test
-    void register_ShouldSetStatus_ShouldBeSuccessfulReturnSignUpResponseDTO() {
+    void register_ShouldSetStatus_ShouldBeSuccessful() {
         TraineeSignUpRequestDTO requestDTO = new TraineeSignUpRequestDTO("asror", "r", new Date(), "T");
 
         SignUpResponseDTO responseDTO = new SignUpResponseDTO("asror.r", "password", "qwerty");
@@ -162,7 +172,7 @@ class TraineeServiceTest {
         IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> traineeService.setStatus("asror.r", true));
 
-        assertEquals("'asror.r' is already true", exception.getMessage());
+        assertEquals("'asror.r's status already set true", exception.getMessage());
 
         verify(userDAO, never()).update(any(User.class));
     }
@@ -252,7 +262,7 @@ class TraineeServiceTest {
     }
 
     @Test
-    void updateTraineeTrainers_ShouldThrowEntityNotFoundException_WhenTrainerNotFound() {
+    void updateTraineeTrainers_ShouldThrowEntityNotFoundException() {
         String username = "asror.r";
         TraineeTrainersUpdateRequestDTO requestDTO = new TraineeTrainersUpdateRequestDTO(
                 List.of(new TraineeTrainersUpdateRequestDTO.TrainerDTO("nonexistentTrainer")));
@@ -294,7 +304,7 @@ class TraineeServiceTest {
     }
 
     @Test
-    void internalUpdate_ShouldThrowEntityNotFoundException_WhenTraineeNotFound() {
+    void internalUpdate_ShouldThrowEntityNotFoundException() {
         TraineeUpdateRequestDTO updateDTO = new TraineeUpdateRequestDTO("nonexistent", "asror", "r", true, new Date(),
                 "T");
 
@@ -309,4 +319,45 @@ class TraineeServiceTest {
         verify(traineeDAO, never()).update(any());
         verify(traineeMapper, never()).toUpdateResponseDTO(any());
     }
+
+    @Test
+    void delete_ShouldRemoveTraineeAndNotifyTrainersForFutureTrainings() {
+        String username = "asror.r";
+
+        Date now = new Date();
+        Date futureDate = new Date(now.getTime() + 86400000); // +1 day
+        Date pastDate = new Date(now.getTime() - 86400000); // -1 day
+
+        Training futureTraining = new Training();
+        futureTraining.setTrainingDate(futureDate);
+        futureTraining.setDuration(1.5);
+        futureTraining.setTrainee(trainee);
+        futureTraining.setTrainer(trainer);
+
+        Training pastTraining = new Training();
+        pastTraining.setTrainingDate(pastDate);
+        pastTraining.setDuration(2.0);
+        pastTraining.setTrainee(trainee);
+        pastTraining.setTrainer(trainer);
+
+        List<Training> trainings = new ArrayList<>();
+        trainings.add(futureTraining);
+        trainings.add(pastTraining);
+
+        trainee.setTrainings(trainings);
+
+        when(traineeDAO.findByUsername(username)).thenReturn(Optional.of(trainee));
+
+        traineeService.delete(username);
+
+        verify(traineeDAO, times(1)).delete(trainee);
+        verify(producer, times(1))
+                .updateTrainingSession(Mockito.argThat(req -> req.getTrainerUsername().equals(user.getUsername()) &&
+                        req.getActionType() == ActionType.DELETE &&
+                        req.getTrainingDate().equals(
+                                LocalDate.parse(new java.text.SimpleDateFormat("yyyy-MM-dd").format(futureDate)))));
+
+        verify(producer, times(1)).updateTrainingSession(any());
+    }
+
 }

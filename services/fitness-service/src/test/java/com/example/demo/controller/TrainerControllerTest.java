@@ -48,7 +48,7 @@ class TrainerControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final String endpoint = "/trainers";
+    private final String endpoint = "/api/v1/fitness/trainers";
 
     @Test
     void getProfile_ShouldReturn_200() throws Exception {

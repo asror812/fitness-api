@@ -16,7 +16,7 @@ public class TrainerUpdateRequestDTO extends UserUpdateRequestDTO {
     private UUID specialization;
 
     public TrainerUpdateRequestDTO(String username, String firstName, String lastName,
-            Boolean active, UUID specialization) {
+            boolean active, UUID specialization) {
         super(username, firstName, lastName, active);
         this.specialization = specialization;
     }

@@ -107,7 +107,7 @@ class TrainerServiceTest {
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> trainerService.setStatus("asror.r", true));
-        assertEquals("'asror.r' is already true", exception.getMessage());
+        assertEquals("'asror.r's status already set true", exception.getMessage());
 
         verify(userDAO, never()).update(any(User.class));
     }

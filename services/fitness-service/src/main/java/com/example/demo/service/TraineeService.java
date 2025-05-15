@@ -140,7 +140,7 @@ public class TraineeService
     }
 
     @Transactional
-    public void setStatus(String username, Boolean status) {
+    public void setStatus(String username, boolean status) {
         Trainee trainee = dao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(
                         TRAINEE_NOT_FOUND_WITH_USERNAME.formatted(username)));

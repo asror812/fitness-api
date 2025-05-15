@@ -44,6 +44,9 @@ class TrainingTypeControllerTest {
     @Autowired
     private Gson gson;
 
+
+    private final String endpoint = "/api/v1/fitness/training-types";
+
     @Test
     void getAll_ShouldReturn_200() throws Exception {
 
@@ -52,7 +55,7 @@ class TrainingTypeControllerTest {
                 new TrainingTypeResponseDTO(UUID.randomUUID(), "Cardio"));
         when(trainingTypeService.getAll()).thenReturn(mockResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/training-types")
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -67,7 +70,7 @@ class TrainingTypeControllerTest {
     void createTrainingType() throws Exception {
         TrainingTypeCreateDTO createDTO = new TrainingTypeCreateDTO("Swimming");
 
-         mockMvc.perform(MockMvcRequestBuilders.post("/training-types")
+         mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
