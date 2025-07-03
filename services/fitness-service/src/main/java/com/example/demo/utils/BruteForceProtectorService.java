@@ -37,15 +37,14 @@ public class BruteForceProtectorService {
             return false;
         }
 
-        if (info.getCount() >= maxFailureCounts
-                && LocalDateTime.now().isAfter(info.getDateTime().plusSeconds(blockTime))) {
+        if (LocalDateTime.now().isAfter(info.getDateTime().plusSeconds(blockTime))) {
 
             LOGGER.info("User '{}' is now unblocked after timeout.", username);
             FAILURE_COUNTS.remove(username);
             return false;
         }
 
-        LOGGER.warn("User '{}' has reached max login attempts. Account is blocked until {}.", username,
+        LOGGER.warn("User '{}' is blocked until {}.", username,
                 info.getDateTime().plusSeconds(blockTime));
         return true;
     }

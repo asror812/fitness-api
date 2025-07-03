@@ -1,4 +1,4 @@
-package com.example.demo.cucumber;
+package com.example.demo.cucumber.component;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingTypeDAO;
 import com.example.demo.dto.request.TrainerSignUpRequestDTO;
 import com.example.demo.dto.request.TrainerUpdateRequestDTO;
@@ -44,9 +42,6 @@ public class TrainerSteps {
     private TrainerUpdateRequestDTO updateRequestDTO;
 
     @Autowired
-    private TrainerDAO dao;
-
-    @Autowired
     private TrainingTypeDAO dTypeDAO;
 
     @Given("existing trainer username")
@@ -66,7 +61,8 @@ public class TrainerSteps {
 
     @Given("valid trainer update data")
     public void valid_update_data() {
-        UUID id = dTypeDAO.create(new TrainingType("swimming-2", Collections.emptyList(), Collections.emptyList())).getId();
+        UUID id = dTypeDAO.create(new TrainingType("swimming-2", Collections.emptyList(), Collections.emptyList()))
+                .getId();
 
         updateRequestDTO = new TrainerUpdateRequestDTO(username, "asror", "R", true, id);
     }

@@ -18,8 +18,6 @@ class ActiveMQConfigTest {
 
     @BeforeEach
     void setUp() {
-        config = new ActiveMQConfig();
-
         config.brokerUrl = "tcp://localhost:61616";
         config.username = "admin";
         config.password = "admin";

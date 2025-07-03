@@ -7,16 +7,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JacksonConfigTest {
+class JacksonConfigTest {
 
     @Test
-    void objectMapper_shouldRegisterJavaTimeModule_andExcludeNulls() {
+    void objectMapperConfig() {
         JacksonConfig config = new JacksonConfig();
 
         ObjectMapper objectMapper = config.objectMapper();
 
         assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion().getValueInclusion())
                 .isEqualTo(JsonInclude.Include.NON_NULL);
-
     }
 }

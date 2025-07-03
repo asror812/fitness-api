@@ -1,4 +1,4 @@
-package com.example.demo.cucumber;
+package com.example.demo.cucumber.component;
 
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.ResultActions;

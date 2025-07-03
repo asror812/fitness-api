@@ -21,6 +21,7 @@ public class TrainerMapper
         GenericMapper<Trainer, TrainerSignUpRequestDTO, TrainerResponseDTO, TrainerUpdateRequestDTO> {
 
     private final ModelMapper modelMapper;
+
     private final TrainingTypeDAO dao;
 
     @Override

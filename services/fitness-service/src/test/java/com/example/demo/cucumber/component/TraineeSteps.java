@@ -1,4 +1,4 @@
-package com.example.demo.cucumber;
+package com.example.demo.cucumber.component;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TraineeUpdateRequestDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
@@ -30,9 +28,6 @@ public class TraineeSteps {
 
     @Autowired
     private ObjectMapper objectMaper;
-
-    @Autowired
-    private TraineeDAO dao;
 
     @Autowired
     private TraineeService traineeService;
@@ -87,7 +82,7 @@ public class TraineeSteps {
     public void deleteTraineeByUsername(String url) throws Exception {
         url = url + username;
 
-        try{
+        try {
 
             ResultActions response = mockMvc.perform(delete(url).contentType(MediaType.APPLICATION_JSON));
             stepContext.setResponse(response);
@@ -99,7 +94,8 @@ public class TraineeSteps {
 
     @When("trainee sends a PUT request to update {string}")
     public void trainee_sends_a_put_request_to_update(String url) throws Exception {
-        ResultActions response = mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON).content(objectMaper.writeValueAsString(updateRequestDTO)));
+        ResultActions response = mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMaper.writeValueAsString(updateRequestDTO)));
 
         stepContext.setResponse(response);
     }
@@ -111,5 +107,4 @@ public class TraineeSteps {
         stepContext.setResponse(response);
     }
 
-    
 }

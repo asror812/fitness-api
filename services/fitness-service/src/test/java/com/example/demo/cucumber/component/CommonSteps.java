@@ -1,4 +1,4 @@
-package com.example.demo.cucumber;
+package com.example.demo.cucumber.component;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

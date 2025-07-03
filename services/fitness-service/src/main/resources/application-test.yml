@@ -13,7 +13,6 @@ spring:
     user: admin
     password: password
 
-
 eureka:
   client:
     enabled: false

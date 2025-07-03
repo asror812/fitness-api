@@ -29,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
     private static final String TOO_MANY_REQUESTS = "You have exceeded the maximum number of login attempts. Please try again after some time";
     private final BruteForceProtectorService bruteForceProtectorService;
 
+    @Override
+    @Transactional
     public SignUpResponseDTO register(SignUpRequestDTO requestDTO) {
         String username = usernameGeneratorService.generateUsername(requestDTO.getFirstName(),
                 requestDTO.getLastName());
@@ -38,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
         return new SignUpResponseDTO(username, password, token);
     }
 
+    @Override
     @Transactional
     public void changePassword(ChangePasswordRequestDTO requestDTO) {
         String username = requestDTO.getUsername();
@@ -51,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
         userDAO.update(user);
     }
 
+    @Override
     public SignInResponseDTO login(SignInRequestDTO requestDTO) {
         String username = requestDTO.getUsername();
         String oldPassword = requestDTO.getPassword();

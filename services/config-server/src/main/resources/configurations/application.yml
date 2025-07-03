@@ -12,7 +12,7 @@ spring:
 
 jms:
   listener:
-    acknowledge-mode: session    
-  pub-sub-domain: false 
+    acknowledge-mode: session
+  pub-sub-domain: false
   workload_queue:
     update: main-a-queue

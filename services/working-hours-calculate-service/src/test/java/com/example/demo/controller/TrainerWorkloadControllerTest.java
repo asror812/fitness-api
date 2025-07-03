@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.demo.dao.TrainerWorkloadRepository;
 import com.example.demo.model.TrainerWorkload;
+import com.example.demo.security.JwtService;
 import com.example.demo.service.TrainerWorkloadService;
 
 
@@ -27,14 +28,18 @@ class TrainerWorkloadControllerTest {
     @MockitoBean
     private TrainerWorkloadRepository repository;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    private final String endpoint = "/api/v1/workloads";
+
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     void getMonthlyWorkload_Shouldreturn_200() throws Exception {
-
         when(workloadService.getTrainerWorkload("asror.r")).thenReturn(new TrainerWorkload());
-        mockMvc.perform(MockMvcRequestBuilders.get("/workload/{username}", "asror.r")
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint + "/{username}", "asror.r")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }

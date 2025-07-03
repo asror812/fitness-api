@@ -25,7 +25,7 @@ public class ActiveMQConfig {
 
     @Value("${spring.activemq.user}") String password;
 
-    @Autowired ObjectMapper mapper;
+    ObjectMapper mapper;
 
     @Bean
     public ConnectionFactory connectionFactory() {

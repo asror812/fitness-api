@@ -26,19 +26,10 @@ public class JwtService {
         Date now = new Date();
         Date expiration = Date.from(now.toInstant().plusSeconds(this.duration));
 
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(now)
-                .expiration(expiration)
-                .signWith(secretKey)
-                .compact();
+        return Jwts.builder().subject(username).issuedAt(now).expiration(expiration).signWith(secretKey).compact();
     }
 
     public Claims claims(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
 }

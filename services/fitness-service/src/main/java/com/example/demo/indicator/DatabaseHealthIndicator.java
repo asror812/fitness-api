@@ -3,8 +3,6 @@ package com.example.demo.indicator;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
@@ -13,8 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabaseHealthIndicator implements HealthIndicator{
    
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource;
+
+    public DatabaseHealthIndicator(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public Health health() {

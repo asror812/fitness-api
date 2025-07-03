@@ -17,6 +17,3 @@ spring:
           uri: lb:http://WORKLOAD-SERVICE
           predicates:
             - Path=/api/v1/workloads/**
-
-
-       

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/fitness/training-types")
+@RequestMapping("/api/v1/3fitness/training-types")
 public class TrainingTypeController {
     private final TrainingTypeService trainingTypeService;
 
