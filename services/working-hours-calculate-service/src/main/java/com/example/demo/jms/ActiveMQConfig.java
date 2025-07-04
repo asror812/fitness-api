@@ -3,7 +3,6 @@ package com.example.demo.jms;
 import java.util.Arrays;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +14,10 @@ import org.springframework.jms.support.converter.MessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.jms.ConnectionFactory;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
+@RequiredArgsConstructor
 public class ActiveMQConfig {
 
     @Value("${spring.activemq.broker-url}") String brokerUrl;
@@ -25,7 +26,7 @@ public class ActiveMQConfig {
 
     @Value("${spring.activemq.user}") String password;
 
-    ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     @Bean
     public ConnectionFactory connectionFactory() {

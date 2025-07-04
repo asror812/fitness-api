@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  activemq:
+    broker-url: none
+    user: none
+    password: none
+
+jms:
+  workload_queue:
+    update: none

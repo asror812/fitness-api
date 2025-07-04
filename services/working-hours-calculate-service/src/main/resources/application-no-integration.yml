@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  activemq:
+    broker-url: none
+    user: none
+    password: none
+
+jms:
+  workload_queue:
+    update: none
+
+  data:
+    mongodb:
+      host: localhost
+      username: asror
+      password: asror
+      database: epam
+      authentication-database: admin
