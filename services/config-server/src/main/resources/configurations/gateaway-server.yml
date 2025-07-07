@@ -17,3 +17,10 @@ spring:
           uri: lb:http://WORKLOAD-SERVICE
           predicates:
             - Path=/api/v1/workloads/**
+
+eureka:
+  instance:
+    hostname: gateway-server
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka

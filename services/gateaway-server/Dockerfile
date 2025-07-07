@@ -7,11 +7,9 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar report.jar
-COPY .env .env
+COPY --from=build /app/target/*.jar gateaway.jar
 
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "report.jar"]
+EXPOSE 8083
+ENTRYPOINT ["java", "-jar", "gateaway.jar" ]
