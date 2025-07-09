@@ -17,10 +17,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.example.demo.dto.request.TrainingTypeCreateDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.TrainingTypeService;
+import com.google.gson.Gson;
 
 @WebMvcTest(TrainingTypeController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -38,6 +41,12 @@ class TrainingTypeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private Gson gson;
+
+
+    private final String endpoint = "/api/v1/fitness/training-types";
+
     @Test
     void getAll_ShouldReturn_200() throws Exception {
 
@@ -46,7 +55,7 @@ class TrainingTypeControllerTest {
                 new TrainingTypeResponseDTO(UUID.randomUUID(), "Cardio"));
         when(trainingTypeService.getAll()).thenReturn(mockResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/training-types")
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -55,5 +64,17 @@ class TrainingTypeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].trainingTypeName").value("Cardio"));
 
         verify(trainingTypeService, times(1)).getAll();
+    }
+
+    @Test
+    void createTrainingType() throws Exception {
+        TrainingTypeCreateDTO createDTO = new TrainingTypeCreateDTO("Swimming");
+
+         mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
+                        .content(gson.toJson(createDTO)))
+                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 }

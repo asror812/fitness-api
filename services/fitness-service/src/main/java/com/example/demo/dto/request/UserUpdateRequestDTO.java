@@ -23,6 +23,6 @@ public class UserUpdateRequestDTO {
    private String lastName;
 
    @NotNull(message = "Active status must not be null")
-   private Boolean active;
+   private boolean active;
 
 }

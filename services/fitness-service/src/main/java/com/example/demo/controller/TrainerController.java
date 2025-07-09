@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/trainers")
+@RequestMapping("/api/v1/fitness/trainers")
 @RequiredArgsConstructor
 public class TrainerController {
 
@@ -24,7 +24,7 @@ public class TrainerController {
 
     @GetMapping("/profiles/{username}")
     public ResponseEntity<TrainerResponseDTO> getProfile(@PathVariable String username) {
-        return ResponseEntity.ok(trainerService.findByUsername(username).orElse(null));
+        return ResponseEntity.ok(trainerService.findByUsername(username));
     }
 
     @PutMapping
@@ -32,6 +32,5 @@ public class TrainerController {
         TrainerUpdateResponseDTO update = trainerService.update(requestDTO);
         return new ResponseEntity<>(update, HttpStatus.OK);
     }
-
 
 }

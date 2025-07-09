@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.demo.model.TrainingType;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +30,7 @@ class TrainingTypeDAOImplTest {
     private EntityManager entityManager;
 
     @Test
-    void findByName_ShouldReturn() {
+    void findByName_Success() {
         String name = "qwerty";
 
         when(entityManager.createQuery(anyString(), eq(TrainingType.class))).thenReturn(typedQuery);
@@ -41,14 +42,13 @@ class TrainingTypeDAOImplTest {
     }
 
     @Test
-    void findByName_ResourceNotFoundException() {
+    void findByName_NoResult() {
         String name = "qwerty";
         when(entityManager.createQuery(anyString(), eq(TrainingType.class))).thenReturn(typedQuery);
         when(typedQuery.setParameter("type", name)).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(null);
+        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
 
-        Optional<TrainingType> byName = trainingTypeDAO.findByName("qwerty");
-        assertTrue(byName.isEmpty());
+        assertEquals(Optional.empty(), trainingTypeDAO.findByName("qwerty"));
     }
 
     @Test

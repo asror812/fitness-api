@@ -17,9 +17,12 @@ import com.example.demo.dto.request.SignInRequestDTO;
 import com.example.demo.dto.request.SignUpRequestDTO;
 import com.example.demo.dto.response.SignInResponseDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
-import com.example.demo.exceptions.InvalidCredentialsException;
+import com.example.demo.exception.InvalidCredentialsException;
+import com.example.demo.exception.TooManyRequestsException;
 import com.example.demo.model.User;
 import com.example.demo.security.JwtService;
+import com.example.demo.utils.BruteForceProtectorService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +39,9 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private BruteForceProtectorService bruteForceProtectorService;
 
     @Mock
     private JwtService jwtService;
@@ -85,5 +91,11 @@ class AuthServiceTest {
         assertEquals("asror.r", register.getUsername());
     }
 
+    @Test
+    void login_ShouldThrowTooManyRequestsException() {
+        SignInRequestDTO requestDTO = new SignInRequestDTO("asror.r", "123456788");
+        when(bruteForceProtectorService.isBlocked("asror.r")).thenReturn(true);
 
+        assertThrows(TooManyRequestsException.class, () -> authService.login(requestDTO));
+    }
 }

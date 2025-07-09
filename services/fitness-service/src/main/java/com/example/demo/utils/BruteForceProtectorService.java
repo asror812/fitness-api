@@ -1,18 +1,13 @@
 package com.example.demo.utils;
 
-import com.example.demo.exceptions.ErrorResponseDTO;
-import com.example.demo.exceptions.ErrorResponseWriteException;
-import com.google.gson.Gson;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import com.example.demo.exception.TooManyRequestsException;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,52 +22,55 @@ public class BruteForceProtectorService {
     @Value("${security.failure.duration:300}")
     private Integer blockTime;
 
-
-    private static final String ERROR_RESPONSE_WRITE_STRING = "Error writing error response";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(BruteForceProtectorService.class);
-    private static final Map<String, IpAddressInfo> failureCountsWithIp = new ConcurrentHashMap<>();
-    private final Gson gson;
+    protected static final Map<String, FailureCount> FAILURE_COUNTS = new ConcurrentHashMap<>();
+    private static final String TOO_MANY_REQUESTS = "You have exceeded the maximum number of login attempts. Please try again after some time";
 
-    public void incrementFailureCount(String ip, HttpServletResponse response) {
-        IpAddressInfo info = failureCountsWithIp.get(ip);
-
-        if (info != null) {
-            LOGGER.info("Ip: {} Date: {} Count: {}", ip, failureCountsWithIp.get(ip).getDateTime(), failureCountsWithIp.get(ip).getCount());
-        }
+    public boolean isBlocked(String username) {
+        FailureCount info = FAILURE_COUNTS.get(username);
 
         if (info == null) {
-            failureCountsWithIp.put(ip, new IpAddressInfo(1, LocalDateTime.now()));
-        } else if (info.getCount() == maxFailureCounts - 1) {
-            info.setCount(info.getCount() + 1);
-            info.setDateTime(LocalDateTime.now());
-            failureCountsWithIp.put(ip, info);
-            sendErrorResponse(response, "Please try after %s".formatted(info.getDateTime().plusSeconds(blockTime)));
-
-        } else if (maxFailureCounts.equals(info.getCount())) {
-            if (LocalDateTime.now().isAfter(info.getDateTime().plusSeconds(blockTime))) {
-                sendErrorResponse(response, "Please try after %s".formatted(info.getDateTime().plusSeconds(blockTime)));
-            }
-            info.setDateTime(LocalDateTime.now());
-            info.setCount(1);
-        } else if (info.getCount() >= 1) {
-            info.setCount(info.getCount() + 1);
-            failureCountsWithIp.put(ip, info);
+            return false;
         }
+
+        if (info.getCount() < maxFailureCounts) {
+            return false;
+        }
+
+        if (LocalDateTime.now().isAfter(info.getDateTime().plusSeconds(blockTime))) {
+
+            LOGGER.info("User '{}' is now unblocked after timeout.", username);
+            FAILURE_COUNTS.remove(username);
+            return false;
+        }
+
+        LOGGER.warn("User '{}' is blocked until {}.", username,
+                info.getDateTime().plusSeconds(blockTime));
+        return true;
     }
 
+    public void resetAttempts(String username) {
+        FAILURE_COUNTS.remove(username);
+    }
 
-    private void sendErrorResponse(HttpServletResponse response, String message) {
-        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(HttpStatus.TOO_MANY_REQUESTS.value(), message);
-        try {
-            response.getWriter().write(gson.toJson(errorResponse));
-            response.getWriter().flush();
-            response.getWriter().close();
-            response.flushBuffer();
-        } catch (IOException e) {
-            throw new ErrorResponseWriteException(ERROR_RESPONSE_WRITE_STRING);
+    public void addFailedAttempt(String username) {
+        FailureCount info = FAILURE_COUNTS.get(username);
+
+        if (info == null) {
+            FAILURE_COUNTS.put(username, new FailureCount(1, LocalDateTime.now()));
+            LOGGER.info("First failed login attempt for user: {}", username);
+        }
+
+        else if (info.getCount() < maxFailureCounts) {
+            info.setCount(info.getCount() + 1);
+            info.setDateTime(LocalDateTime.now());
+            LOGGER.info("Failed login attempt {} for user: {}", info.getCount(), username);
+        }
+
+        else {
+            LOGGER.warn("User '{}' has reached max login attempts. Account is blocked until {}.", username,
+                    info.getDateTime().plusSeconds(blockTime));
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
         }
     }
 }

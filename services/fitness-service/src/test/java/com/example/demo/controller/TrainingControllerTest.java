@@ -23,7 +23,7 @@ import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.TrainingService;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(TrainingController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -36,7 +36,7 @@ class TrainingControllerTest {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private TrainingService trainingService;
@@ -44,16 +44,19 @@ class TrainingControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+
+    private final String endpoint = "/api/v1/fitness/trainings";
+
     @Test
     void addTraining_ShouldReturn_200() throws Exception {
         TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO("a", "a", "Swimming-1", new Date(),
                 1.5);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/trainings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
-                        .content(gson.toJson(createDTO)))
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
+                .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
@@ -63,9 +66,9 @@ class TrainingControllerTest {
                 .thenReturn(getAllTraineeTrainings());
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/trainings/trainee/{username}", "asror.r")
-                        .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
-                        .accept(MediaType.APPLICATION_JSON))
+                .get(endpoint + "/trainee/{username}", "asror.r")
+                .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(1));
 
@@ -84,9 +87,9 @@ class TrainingControllerTest {
                 .thenReturn(getAllTrainerTrainings());
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/trainings/trainer/{username}", "asror.r")
-                        .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
-                        .accept(MediaType.APPLICATION_JSON))
+                .get(endpoint + "/trainer/{username}", "asror.r")
+                .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(2));
     }

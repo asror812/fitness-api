@@ -1,0 +1,159 @@
+package com.example.demo.security;
+
+import com.example.demo.dao.UserDAO;
+import com.example.demo.dto.response.ErrorResponseDTO;
+import com.example.demo.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class JwtAuthenticationFilterTest {
+
+    private JwtService jwtService;
+    private UserDAO userDAO;
+    private ObjectMapper objectMapper;
+    private JwtAuthenticationFilter filter;
+
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+    private FilterChain filterChain;
+
+    @BeforeEach
+    void setUp() {
+        jwtService = mock(JwtService.class);
+        userDAO = mock(UserDAO.class);
+        objectMapper = new ObjectMapper();
+
+        filter = new JwtAuthenticationFilter(jwtService, userDAO, objectMapper);
+
+        request = mock(HttpServletRequest.class);
+        response = mock(HttpServletResponse.class);
+        filterChain = mock(FilterChain.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void shouldReturnUnauthorized_NoAuthorizationHeader() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn(null);
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Missing or invalid Authorization header", error.getMessage());
+        assertNotNull(error.getTimestamp());
+    }
+
+    @Test
+    void shouldReturnUnauthorized_JwtInvalid() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn("Bearer bad-token");
+        when(jwtService.claims("bad-token")).thenThrow(new JwtException("Invalid"));
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Invalid or expired token", error.getMessage());
+        assertNotNull(error.getTimestamp());
+    }
+
+    @Test
+    void shouldReturnUnauthorized_UsernameMissing() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn(null);
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtService.claims("token")).thenReturn(claims);
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Invalid username", error.getMessage());
+        assertNotNull(error.getTimestamp());
+    }
+
+    @Test
+    void shouldAuthenticateAndContinueFilterChain_ValidToken() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn("validUser");
+
+        User user = mock(User.class);
+        when(user.getAuthorities()).thenReturn(null);
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtService.claims("token")).thenReturn(claims);
+        when(userDAO.findByUsername("validUser")).thenReturn(Optional.of(user));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(filterChain).doFilter(request, response);
+
+        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+        assertEquals(user, SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
+    @Test
+    void shouldReturnUnauthorized_UserNotFound() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn("nonExistentUser");
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtService.claims("token")).thenReturn(claims);
+        when(userDAO.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
+
+        StringWriter sw = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(sw));
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorResponseDTO error = objectMapper.readValue(sw.toString(), ErrorResponseDTO.class);
+        assertEquals("Authentication failed", error.getMessage());
+    }
+
+    @Test
+    void shouldNotFilter_forExcludedPaths() throws Exception {
+        when(request.getServletPath()).thenReturn("/api/v1/fitness/auth/login");
+        assertTrue(filter.shouldNotFilter(request));
+
+        when(request.getServletPath()).thenReturn("/api/v1/fitness/management/info");
+        assertTrue(filter.shouldNotFilter(request));
+    }
+}

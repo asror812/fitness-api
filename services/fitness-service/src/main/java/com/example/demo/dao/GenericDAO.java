@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GenericDAO<E> {
     E create(E entity);
+
     void update(E entity);
+
     Optional<E> findById(UUID id);
 }

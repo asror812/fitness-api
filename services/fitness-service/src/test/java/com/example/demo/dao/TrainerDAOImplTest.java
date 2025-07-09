@@ -21,6 +21,7 @@ import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,12 +39,12 @@ class TrainerDAOImplTest {
     private Trainer trainer;
 
     @BeforeEach
-    public void initialize() {
-        trainer = new Trainer(new User(), new TrainingType(), Collections.emptyList(), Collections.emptyList());
+    void initialize() {
+        trainer = new Trainer(new User(), new TrainingType(), Collections.emptyList(), Collections.emptySet());
     }
 
     @Test
-    void findByUsername() {
+    void findByUsername_Success() {
         String username = "qwerty";
         when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQuery);
         when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
@@ -51,15 +52,26 @@ class TrainerDAOImplTest {
         when(typedQuery.getSingleResult()).thenReturn(trainer);
 
         Optional<Trainer> byUsername = trainerDAO.findByUsername(username);
-       
+
         assertTrue(byUsername.isPresent());
+    }
+
+    @Test
+    void findByUsername_NoResult() {
+        String username = "qwerty";
+        when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
+
+        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
+
+        assertEquals(Optional.empty(), trainerDAO.findByUsername(username));
     }
 
     @Test
     void getAll() {
         when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(List.of(trainer));
-        
+
         List<Trainer> all = trainerDAO.getAll();
 
         assertNotNull(all);

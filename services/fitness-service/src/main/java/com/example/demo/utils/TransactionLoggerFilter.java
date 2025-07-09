@@ -39,7 +39,6 @@ public class TransactionLoggerFilter extends OncePerRequestFilter {
                     transactionID, response.getStatus(), duration);
 
         } finally {
-
             MDC.remove(TRANSACTION_ID);
         }
 

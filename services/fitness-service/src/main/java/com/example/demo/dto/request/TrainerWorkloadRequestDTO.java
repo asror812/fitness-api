@@ -1,24 +1,29 @@
 package com.example.demo.dto.request;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
+@ToString
 public class TrainerWorkloadRequestDTO {
-
     private String trainerUsername;
+
     private String trainerFirstName;
+
     private String trainerLastName;
-    private boolean isActive;
-    private Date trainingDate;
+
+    private LocalDate trainingDate;
+
     private Double duration;
+
+    private ActionType actionType;
 }

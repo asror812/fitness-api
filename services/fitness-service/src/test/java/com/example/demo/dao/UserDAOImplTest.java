@@ -1,5 +1,6 @@
 package com.example.demo.dao;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.demo.model.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +29,7 @@ class UserDAOImplTest {
     private UserDAOImpl userDAO;
 
     @Test
-    void findByUsername() {
+    void findByUsername_Success() {
         String username = "qwerty";
         when(entityManager.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
         when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
@@ -38,7 +40,17 @@ class UserDAOImplTest {
     }
 
     @Test
-    void findByUsernameAndPassword() {
+    void findByUsername_NoResult() {
+        String username = "qwerty";
+        when(entityManager.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
+
+        assertEquals(Optional.empty(), userDAO.findByUsername(username));
+    }
+
+    @Test
+    void findByUsernameAndPassword_Success() {
         String username = "qwerty";
         String password = "1234567890";
 
@@ -51,4 +63,19 @@ class UserDAOImplTest {
 
         assertTrue(byUsername.isPresent());
     }
+
+    @Test
+    void findByUsernameAndPassword_NoResut() {
+        String username = "qwerty";
+        String password = "1234567890";
+
+        when(entityManager.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
+        when(typedQuery.setParameter("password", password)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
+
+        assertEquals(Optional.empty(), userDAO.findByUsernameAndPassword(username, password));
+    }
+
+
 }

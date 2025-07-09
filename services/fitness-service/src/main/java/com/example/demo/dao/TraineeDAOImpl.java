@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public class TraineeDAOImpl extends AbstractHibernateDAO<Trainee> implements TraineeDAO {
-    private static final String HQL_FIND_TRAINEE_BY_USERNAME = "FROM Trainee WHERE user.username = :username"; 
+    private static final String HQL_FIND_TRAINEE_BY_USERNAME = "FROM Trainee WHERE user.username = :username";
     private static final String NO_TRAINEE_FOUND_WITH_USERNAME = "No Trainer found with username {}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TraineeDAOImpl.class);

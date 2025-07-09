@@ -41,10 +41,10 @@ class TraineeDAOImplTest {
     private Trainee trainee;
 
     @BeforeEach
-    public void initialize() {
+    void initialize() {
         trainee = new Trainee(
                 new Date(), "T", new User("asror", "r", "asror.r", "1234567890", true),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptySet());
     }
 
     @Test
@@ -53,18 +53,18 @@ class TraineeDAOImplTest {
         verify(entityManager, times(1)).remove(trainee);
     }
 
-     @Test
-     void findByUsername_NoResultException() {
-         String username = "qwerty";
-         when(entityManager.createQuery(anyString(), eq(Trainee.class))).thenReturn(typedQuery);
-         when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
-         
-         when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
+    @Test
+    void findByUsername_NoResultException() {
+        String username = "qwerty";
+        when(entityManager.createQuery(anyString(), eq(Trainee.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
 
-         Optional<Trainee> result = traineeDAO.findByUsername(username);
-         assertTrue(result.isEmpty());
-     }
-    
+        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
+
+        Optional<Trainee> result = traineeDAO.findByUsername(username);
+        assertTrue(result.isEmpty());
+    }
+
     @Test
     void findByUsername_ShouldReturn_Trainee() {
         String username = "testUser";

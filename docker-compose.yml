@@ -1,6 +1,6 @@
 services:
   postgresql:
-    container_name: ms_pg_sql
+    container_name: ms_postgres_db
     image: postgres
     environment:
       POSTGRES_USER: asror
@@ -9,7 +9,7 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5555:5432"  # Expose container PostgreSQL on port 5555
+      - "5433:5432"
     networks:
       - microservices-net
     restart: unless-stopped
@@ -24,18 +24,10 @@ services:
     volumes:
       - pgadmin:/var/lib/pgadmin
     ports:
-      - "5055:80"
+      - "5050:80"
     networks:
       - microservices-net
     restart: unless-stopped
-
-  zipkin:
-    container_name: zipkin
-    image: openzipkin/zipkin
-    ports:
-      - "9411:9411"
-    networks:
-      - microservices-net
 
   mongodb:
     image: mongo
@@ -43,49 +35,124 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongo:/data
+      - mongo:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=asror
       - MONGO_INITDB_ROOT_PASSWORD=asror
+    
+    networks:
+      - microservices-net
+    restart: unless-stopped
 
   mongo-express:
     image: mongo-express
     container_name: mongo_express
-    restart: always
     ports:
       - 8081:8081
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=asror
       - ME_CONFIG_MONGODB_ADMINPASSWORD=asror
       - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - microservices-net
+    restart: unless-stopped
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+  activemq:
+    image: islandora/activemq:4
+    container_name: activemq
     ports:
-      - "22181:2181"
+      - "8161:8161"
+      - "61616:61616"
+    environment:
+      ACTIVEMQ_USER: admin
+      ACTIVEMQ_PASSWORD: password
+      ACTIVEMQ_WEB_ADMIN_NAME: admin
+      ACTIVEMQ_WEB_ADMIN_PASSWORD: password
+      ACTIVEMQ_WEB_ADMIN_ROLES: admin
+    volumes:
+      - activemq:/opt/activemq/data
     networks:
       - microservices-net
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: ms_kafka
+    restart: unless-stopped
+
+  fitness-service:
+    build: ./services/fitness-service
+    container_name: fitness-service
     ports:
-      - "9092:9092"
+      - "8082:8082"
+
     depends_on:
-      - zookeeper
-    environment:
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      - postgresql
+      - activemq
+      - discovery-server
+      - config-server
+    volumes:
+      - ./logs/fitness:/app/logs
     networks:
       - microservices-net
+    restart: unless-stopped
+  
+  config-server:
+    build: ./services/config-server
+    container_name: config-server
+    volumes:
+      - ./services/config-server/src/main/resources/configurations:/app/configurations
+    ports:
+      - "8888:8888"
+
+    depends_on:
+      - discovery-server
+    networks:
+      - microservices-net
+    restart: unless-stopped
+    
+  discovery-server:
+    build: ./services/discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+    
+  gateaway-server:
+    build: ./services/gateaway-server
+    container_name: gateaway-server
+    ports:
+      - "8083:8083"
+  
+    depends_on:
+      - discovery-server
+      - config-server
+    
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+
+  workload-calculator-service:
+    build: ./services/workload-calculator-service
+    container_name: workload-service
+    ports:
+      - "8080:8080"
+  
+    depends_on:
+      - discovery-server
+      - config-server
+    volumes:
+      - ./logs/workload:/app/logs
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+
+
+
+
+
+
 
 networks:
   microservices-net:
@@ -95,3 +162,4 @@ volumes:
   postgres:
   pgadmin:
   mongo:
+  activemq:

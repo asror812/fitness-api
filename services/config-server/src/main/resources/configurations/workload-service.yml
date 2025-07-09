@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      host: mongodb
+      username: asror
+      password: asror
+      database: epam
+      authentication-database: admin
+
+eureka:
+  instance:
+    hostname: workload-service
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka

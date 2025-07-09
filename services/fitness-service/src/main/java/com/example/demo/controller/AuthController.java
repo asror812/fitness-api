@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.dto.request.ChangePasswordRequestDTO;
 import com.example.demo.dto.request.SignInRequestDTO;
 import com.example.demo.dto.request.TraineeSignUpRequestDTO;
 import com.example.demo.dto.request.TrainerSignUpRequestDTO;
 import com.example.demo.dto.response.SignInResponseDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
-import com.example.demo.metric.RequestCountInSignUpMetrics;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.TraineeService;
 import com.example.demo.service.TrainerService;
@@ -23,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/fitness/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -31,19 +29,14 @@ public class AuthController {
     private final TrainerService trainerService;
     private final AuthService authService;
 
-    private final RequestCountInSignUpMetrics requestCountInSignUpMetrics;
-
     @PostMapping("/trainees/sign-up")
     public ResponseEntity<SignUpResponseDTO> signUpTrainee(@Valid @RequestBody TraineeSignUpRequestDTO requestDTO) {
-        requestCountInSignUpMetrics.increment();
-
         SignUpResponseDTO register = traineeService.register(requestDTO);
         return new ResponseEntity<>(register, HttpStatus.CREATED);
     }
 
     @PostMapping("/trainers/sign-up")
     public ResponseEntity<SignUpResponseDTO> signUpTrainer(@Valid @RequestBody TrainerSignUpRequestDTO requestDTO) {
-        requestCountInSignUpMetrics.increment();
         SignUpResponseDTO register = trainerService.register(requestDTO);
         return new ResponseEntity<>(register, HttpStatus.CREATED);
     }

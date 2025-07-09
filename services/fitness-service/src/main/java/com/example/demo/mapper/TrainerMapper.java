@@ -21,6 +21,7 @@ public class TrainerMapper
         GenericMapper<Trainer, TrainerSignUpRequestDTO, TrainerResponseDTO, TrainerUpdateRequestDTO> {
 
     private final ModelMapper modelMapper;
+
     private final TrainingTypeDAO dao;
 
     @Override
@@ -32,7 +33,7 @@ public class TrainerMapper
     public void toEntity(TrainerUpdateRequestDTO updateDto, Trainer trainer) {
         trainer.getUser().setFirstName(updateDto.getFirstName());
         trainer.getUser().setLastName(updateDto.getLastName());
-        trainer.getUser().setActive(updateDto.getActive());
+        trainer.getUser().setActive(updateDto.isActive());
 
         TrainingType specialization = dao.findById(updateDto.getSpecialization())
                 .orElseThrow(() -> new EntityNotFoundException(

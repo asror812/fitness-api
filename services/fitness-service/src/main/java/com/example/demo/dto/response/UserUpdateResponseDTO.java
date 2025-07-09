@@ -11,7 +11,7 @@ public class UserUpdateResponseDTO extends UserResponseDTO {
 
 	private String username;
 
-	public UserUpdateResponseDTO(String username, String firstName, String lastName, Boolean active) {
+	public UserUpdateResponseDTO(String username, String firstName, String lastName, boolean active) {
         super(firstName, lastName , active);
 		this.username = username;
     }

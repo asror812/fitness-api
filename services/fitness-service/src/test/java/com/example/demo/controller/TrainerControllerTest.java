@@ -2,10 +2,11 @@ package com.example.demo.controller;
 
 import static org.mockito.Mockito.when;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.example.demo.utils.BruteForceProtectorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,11 +22,10 @@ import com.example.demo.dto.request.TrainerUpdateRequestDTO;
 import com.example.demo.dto.response.TrainerResponseDTO;
 import com.example.demo.dto.response.TrainingTypeResponseDTO;
 import com.example.demo.dto.response.UserResponseDTO;
-import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.TrainerService;
-import com.google.gson.Gson;
 
 @WebMvcTest(TrainerController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -46,9 +46,9 @@ class TrainerControllerTest {
     private BruteForceProtectorService bruteForceProtectorService;
 
     @Autowired
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
-    private final String endpoint = "/trainers";
+    private final String endpoint = "/api/v1/fitness/trainers";
 
     @Test
     void getProfile_ShouldReturn_200() throws Exception {
@@ -56,7 +56,7 @@ class TrainerControllerTest {
                 new UserResponseDTO("asror", "r", true),
                 new TrainingTypeResponseDTO(UUID.randomUUID(), "Swimming"));
 
-        when(trainerService.findByUsername("asror.r")).thenReturn(Optional.of(responseDTO));
+        when(trainerService.findByUsername("asror.r")).thenReturn(responseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get(endpoint + "/profiles/{username}", "asror.r")
@@ -70,7 +70,7 @@ class TrainerControllerTest {
     @Test
     void getProfile_ShouldReturn_404() throws Exception {
         when(trainerService.findByUsername("asror.r"))
-                .thenThrow(new ResourceNotFoundException("Trainer with username asror.r not found"));
+                .thenThrow(new EntityNotFoundException("Trainer with username asror.r not found"));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get(endpoint + "/profiles/{username}", "asror.r")
@@ -91,7 +91,7 @@ class TrainerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + jwtService.generateToken("q.q"))
                 .accept(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(updateDTO)))
+                .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -105,7 +105,7 @@ class TrainerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + jwtService.generateToken("a.a"))
                 .accept(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(updateDTO)))
+                .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

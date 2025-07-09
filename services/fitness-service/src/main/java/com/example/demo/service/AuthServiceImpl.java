@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dto.request.ChangePasswordRequestDTO;
@@ -8,9 +9,11 @@ import com.example.demo.dto.request.SignInRequestDTO;
 import com.example.demo.dto.request.SignUpRequestDTO;
 import com.example.demo.dto.response.SignInResponseDTO;
 import com.example.demo.dto.response.SignUpResponseDTO;
-import com.example.demo.exceptions.InvalidCredentialsException;
+import com.example.demo.exception.InvalidCredentialsException;
+import com.example.demo.exception.TooManyRequestsException;
 import com.example.demo.model.User;
 import com.example.demo.security.JwtService;
+import com.example.demo.utils.BruteForceProtectorService;
 import com.example.demo.utils.PasswordGeneratorUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +21,26 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private final UserDAO userDAO;
     private final UsernameGeneratorService usernameGeneratorService;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
+    private static final String INCORRECT_USERNAME_AND_PASSWORD = "Username or password is incorrect.: %s - %s";
+    private static final String TOO_MANY_REQUESTS = "You have exceeded the maximum number of login attempts. Please try again after some time";
+    private final BruteForceProtectorService bruteForceProtectorService;
 
-    private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password: %s | %s";
-
+    @Override
+    @Transactional
     public SignUpResponseDTO register(SignUpRequestDTO requestDTO) {
         String username = usernameGeneratorService.generateUsername(requestDTO.getFirstName(),
                 requestDTO.getLastName());
         String token = jwtService.generateToken(username);
-        String password = passwordEncoder.encode(PasswordGeneratorUtil.generate());
+        String password = PasswordGeneratorUtil.generate();
 
         return new SignUpResponseDTO(username, password, token);
     }
 
+    @Override
     @Transactional
     public void changePassword(ChangePasswordRequestDTO requestDTO) {
         String username = requestDTO.getUsername();
@@ -41,22 +48,33 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userDAO.findByUsernameAndPassword(username, oldPassword)
                 .orElseThrow(() -> new InvalidCredentialsException(
-                        INVALID_USERNAME_OR_PASSWORD.formatted(username, oldPassword)));
+                        INCORRECT_USERNAME_AND_PASSWORD.formatted(username, oldPassword)));
 
         user.setPassword(requestDTO.getNewPassword());
         userDAO.update(user);
     }
 
+    @Override
     public SignInResponseDTO login(SignInRequestDTO requestDTO) {
         String username = requestDTO.getUsername();
         String oldPassword = requestDTO.getPassword();
 
-        userDAO.findByUsernameAndPassword(username, oldPassword)
-                .orElseThrow(() -> new InvalidCredentialsException(
-                        INVALID_USERNAME_OR_PASSWORD.formatted(username, oldPassword)));
+        if (bruteForceProtectorService.isBlocked(username)) {
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        }
+
+        Optional<User> existingUser = userDAO.findByUsernameAndPassword(username, oldPassword);
+
+        if (existingUser.isEmpty()) {
+            bruteForceProtectorService.addFailedAttempt(username);
+            throw new InvalidCredentialsException(
+                    INCORRECT_USERNAME_AND_PASSWORD.formatted(username, oldPassword));
+        }
+
+        bruteForceProtectorService.resetAttempts(username);
 
         String token = jwtService.generateToken(requestDTO.getUsername());
-
         return new SignInResponseDTO(token);
     }
+
 }

@@ -1,13 +1,14 @@
 package com.example.demo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,22 +18,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 import com.example.demo.dao.TraineeDAO;
 import com.example.demo.dao.TrainerDAO;
 import com.example.demo.dao.TrainingDAO;
 import com.example.demo.dto.request.TrainingCreateRequestDTO;
 import com.example.demo.dto.response.TrainingResponseDTO;
+import com.example.demo.exception.EntityNotFoundException;
+import com.example.demo.jms.TrainerWorkloadJmsProducer;
 import com.example.demo.mapper.TrainingMapper;
+import com.example.demo.metric.TrainingCreationRequestCounterMetric;
 import com.example.demo.model.Trainee;
 import com.example.demo.model.Trainer;
 import com.example.demo.model.Training;
 import com.example.demo.model.TrainingType;
 import com.example.demo.model.User;
-
 import io.jsonwebtoken.lang.Collections;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings()
 class TrainingServiceTest {
 
     @Mock
@@ -50,13 +55,19 @@ class TrainingServiceTest {
     @Mock
     private TrainingMapper mapper;
 
+    @Mock
+    private TrainerWorkloadJmsProducer workloadClient;
+
+    @Mock
+    private TrainingCreationRequestCounterMetric trainingCreationRequestCounterMetric;
+
     private Trainer trainer;
     private Trainee trainee;
     private User user;
     private TrainingType trainingType;
 
     @BeforeEach
-    public void initialize() {
+    void initialize() {
         user = new User("asror", "r", "asror.r", "password1234", true);
         trainee = new Trainee();
         trainee.setUser(user);
@@ -65,11 +76,11 @@ class TrainingServiceTest {
 
         trainingType = new TrainingType("Swimming", Collections.emptyList(), Collections.emptyList());
         user.setUsername("abror.r");
-        trainer = new Trainer(user, trainingType, new ArrayList<>(), new ArrayList<>());
+        trainer = new Trainer(user, trainingType, new ArrayList<>(), new HashSet<>());
     }
 
     @Test
-    void create_ShouldBe_Ok() {
+    void create_Success() {
         TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
                 "asror.r", "abror.r", "Swimming", new Date(),
                 1.5);
@@ -80,6 +91,36 @@ class TrainingServiceTest {
         trainingService.create(createDTO);
 
         verify(trainingDAO, times(1)).create(any(Training.class));
+    }
+
+    @Test
+    void create_Trainee_EntityNotFoundException() {
+        TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
+                "asror.r", "abror.r", "Swimming", new Date(),
+                1.5);
+
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.empty());
+        
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainingService.create(createDTO));
+
+        assertEquals("Trainee with username asror.r not found", ex.getMessage());
+    }
+    
+    @Test
+    void create_Trainer_EntityNotFoundException() {
+        TrainingCreateRequestDTO createDTO = new TrainingCreateRequestDTO(
+                "asror.r", "abror.r", "Swimming", new Date(),
+                1.5);
+
+        when(traineeDAO.findByUsername("asror.r")).thenReturn(Optional.of(trainee));
+        when(trainerDAO.findByUsername("abror.r")).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                () -> trainingService.create(createDTO));
+
+        assertEquals("Trainer with username abror.r not found", ex.getMessage());
     }
 
     @Test
