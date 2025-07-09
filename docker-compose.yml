@@ -115,7 +115,8 @@ services:
     networks:
       - microservices-net
     restart: unless-stopped
-  
+
+    
   gateaway-server:
     build: ./services/gateaway-server
     container_name: gateaway-server
@@ -129,6 +130,7 @@ services:
     networks:
       - microservices-net
     restart: unless-stopped
+
 
   workload-calculator-service:
     build: ./services/workload-calculator-service

@@ -17,9 +17,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-
-      
-security:
-  jwt:
-    duration: 86400
-    signing-key: fitness-rest-application-dev-secret-key
+eureka:
+  instance:
+    hostname: fitness-service
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka

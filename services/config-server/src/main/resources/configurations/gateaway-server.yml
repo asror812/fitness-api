@@ -20,7 +20,7 @@ spring:
 
 eureka:
   instance:
-    hostname: gateway-server
+    hostname: gateaway-server
   client:
     service-url:
       defaultZone: http://discovery-server:8761/eureka

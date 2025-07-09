@@ -15,7 +15,3 @@ spring:
       enabled: true
       path: /h2-console
 
-security:
-  jwt:
-    duration: 86400
-    signing-key: fitness-rest-application-local-secret-key

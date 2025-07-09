@@ -1,10 +1,12 @@
 spring:
   jpa:
     open-in-view: false
+
 management:
   endpoint:
     health:
       show-details: always
+
   endpoints:
     web:
       base-path: /api/v1/fitness/management
@@ -21,19 +23,24 @@ app:
       - DELETE
       - PATCH
 
-resilience4j:
-  circuitbreaker:
-    instances:
-      workloadService:
-        failureRateThreshold: 50
-        slowCallRateThreshold: 60
-        slowCallDurationThreshold: 2s
-        permittedNumberOfCallsInHalfOpenState: 2
-        maxWaitDurationInHalfOpenState: 5s
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        waitDurationInOpenState: 10s
-        automaticTransitionFromOpenToHalfOpenEnabled: true
+security:
+  jwt:
+    duration: 86400
+    signing-key: fitness-rest-application-local-secret-key
+
+    
+#resilience4j:
+#  circuitbreaker:
+##      workloadService:
+#        failureRateThreshold: 50
+#        slowCallRateThreshold: 60
+#        slowCallDurationThreshold: 2s
+#        permittedNumberOfCallsInHalfOpenState: 2
+##        maxWaitDurationInHalfOpenState: 5s
+#        slidingWindowSize: 10
+#        minimumNumberOfCalls: 5
+#        waitDurationInOpenState: 10s
+#        automaticTransitionFromOpenToHalfOpenEnabled: true
 
 
 #service:
@@ -41,9 +48,3 @@ resilience4j:
 #    url: http://localhost:8080/api/v1/workloads/
 
 
-eureka:
-  instance:
-    hostname: fitness-service
-  client:
-    service-url:
-      defaultZone: http://discovery-server:8761/eureka
