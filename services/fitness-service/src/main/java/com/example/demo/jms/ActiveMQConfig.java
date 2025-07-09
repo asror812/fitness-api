@@ -29,7 +29,7 @@ public class ActiveMQConfig {
     @Value("${spring.activemq.password}")
     String password;
 
-    ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     @Bean
     ConnectionFactory connectionFactory() {

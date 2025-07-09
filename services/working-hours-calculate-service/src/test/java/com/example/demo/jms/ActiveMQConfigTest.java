@@ -1,7 +1,5 @@
 package com.example.demo.jms;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
@@ -20,18 +18,12 @@ class ActiveMQConfigTest {
 
     private ActiveMQConfig config;
 
-    private ObjectMapper mapper;
-
 
     @BeforeEach
     void setUp() {
-        config = new ActiveMQConfig();
-
         config.brokerUrl = "tcp://localhost:61616";
         config.username = "admin";
         config.password = "admin";
-        mapper = new ObjectMapper();
-        config.mapper = mapper;
     }
 
     @Test
