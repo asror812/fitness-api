@@ -1,6 +1,16 @@
 spring:
-  config:
-    import: optional:configserver:http://config-server:8888
-
   application:
     name: discovery-server
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: discovery-server
+
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+  
