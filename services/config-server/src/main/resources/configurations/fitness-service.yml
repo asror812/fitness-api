@@ -36,6 +36,14 @@ resilience4j:
         automaticTransitionFromOpenToHalfOpenEnabled: true
 
 
-service:
-  trainer-workload:
-    url: http://localhost:8080/api/v1/workloads/
+#service:
+#  trainer-workload:
+#    url: http://localhost:8080/api/v1/workloads/
+
+
+eureka:
+  instance:
+    hostname: fitness-service
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka

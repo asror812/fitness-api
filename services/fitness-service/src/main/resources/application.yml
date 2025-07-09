@@ -1,9 +1,10 @@
 spring:
-#  config:
-#    import: optional:configserver:http://localhost:8888
-#  application:
-#    name: fitness-service
+  config:
+    import: optional:configserver:http://config-server:8888
+
+  application:
+    name: fitness-service
 
   profiles:
     active:
-    - no-integration
+      - dev

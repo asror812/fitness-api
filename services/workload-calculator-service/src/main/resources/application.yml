@@ -3,4 +3,10 @@ spring:
     import: optional:configserver:http://config-server:8888
 
   application:
-    name: discovery-server
+    name: workload-service
+
+
+
+#  profiles:
+#    active:
+#   - no-integration

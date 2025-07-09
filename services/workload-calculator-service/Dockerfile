@@ -10,7 +10,7 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar main.jar
+COPY --from=build /app/target/*.jar report.jar
 COPY .env .env
-    
-ENTRYPOINT ["java", "-jar", "main.jar" ]
+
+ENTRYPOINT ["java", "-jar", "report.jar"]
