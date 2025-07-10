@@ -126,6 +126,8 @@ services:
     depends_on:
       - discovery-server
       - config-server
+      - fitness-service
+      - workload-calculator-service
     
     networks:
       - microservices-net

@@ -1,6 +1,28 @@
+server:
+  port: 8083
+
 spring:
-  config:
-    import: optional:configserver:http://config-server:8888
-    
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: fitness-service
+          uri: lb:http://FITNESS-SERVICE
+          predicates:
+            - Path=/api/v1/fitness/**
+
+        - id: workload-service
+          uri: lb:http://WORKLOAD-SERVICE
+          predicates:
+            - Path=/api/v1/workloads/**
+
+eureka:
+  instance:
+    hostname: gateaway-server
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka
   application:
     name: gateaway-server
