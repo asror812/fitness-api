@@ -11,5 +11,4 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar gateaway.jar
 
-EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "gateaway.jar" ]
