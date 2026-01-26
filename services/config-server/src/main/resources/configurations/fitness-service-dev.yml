@@ -1,17 +1,17 @@
 server:
-    port: 8082
+    port: ${FITNESS_SERVICE_PORT}
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgresql:5432/postgres
-    username: asror
-    password: asror
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -20,6 +20,7 @@ spring:
 eureka:
   instance:
     hostname: fitness-service
+
   client:
     service-url:
       defaultZone: http://discovery-server:8761/eureka

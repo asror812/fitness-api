@@ -4,15 +4,15 @@ server:
 spring:
   data:
     mongodb:
-      host: mongodb
-      username: asror
-      password: asror
-      database: epam
-      authentication-database: admin
+      uri: ${MONGO_URI}
 
+token:
+  duration: ${TOKEN_DURATION}
+  secret-key: ${SECRET_KEY}
+  
 eureka:
   instance:
     hostname: workload-service
   client:
     service-url:
-      defaultZone: http://discovery-server:8761/eureka
+      defaultZone: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE

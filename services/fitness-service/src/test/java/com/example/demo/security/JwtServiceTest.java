@@ -14,19 +14,7 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp() {
-        System.setProperty("JWT_DURATION", "3600");
-        System.setProperty("JWT_SECRET_KEY", "12345678901234567890123456789012");
-
-        jwtService = new JwtService() {
-            @Override
-            public void init() {
-                this.duration = Long.parseLong(System.getProperty("JWT_DURATION"));
-                this.secretKey = io.jsonwebtoken.security.Keys.hmacShaKeyFor(
-                        System.getProperty("JWT_SECRET_KEY").getBytes());
-            }
-        };
-
-        jwtService.init();
+        // todo
     }
 
     @Test

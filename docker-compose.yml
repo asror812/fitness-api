@@ -1,83 +1,69 @@
 services:
+
   postgresql:
-    container_name: ms_postgres_db
+    container_name: postgres
     image: postgres
     environment:
-      POSTGRES_USER: asror
-      POSTGRES_PASSWORD: asror
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /data/postgres
-    volumes:
-      - postgres:/data/postgres
     ports:
       - "5433:5432"
-    networks:
-      - microservices-net
-    restart: unless-stopped
-
-  pgadmin:
-    container_name: ms_pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    
     volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
+      - postgres:/data/postgres
+
     networks:
       - microservices-net
+
     restart: unless-stopped
 
   mongodb:
     image: mongo
-    container_name: mongo_db
+    container_name: mongo
     ports:
       - 27017:27017
+      
     volumes:
       - mongo:/data/db
+
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=asror
-      - MONGO_INITDB_ROOT_PASSWORD=asror
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     
     networks:
       - microservices-net
-    restart: unless-stopped
 
-  mongo-express:
-    image: mongo-express
-    container_name: mongo_express
-    ports:
-      - 8081:8081
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=asror
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=asror
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-    networks:
-      - microservices-net
     restart: unless-stopped
 
   activemq:
     image: islandora/activemq:4
     container_name: activemq
+    env_file:
+      - .env
     ports:
       - "8161:8161"
       - "61616:61616"
+
     environment:
-      ACTIVEMQ_USER: admin
-      ACTIVEMQ_PASSWORD: password
-      ACTIVEMQ_WEB_ADMIN_NAME: admin
-      ACTIVEMQ_WEB_ADMIN_PASSWORD: password
-      ACTIVEMQ_WEB_ADMIN_ROLES: admin
+      ACTIVEMQ_USER: ${ACTIVEMQ_USER}
+      ACTIVEMQ_PASSWORD: ${ACTIVEMQ_PASSWORD}
+      ACTIVEMQ_WEB_ADMIN_NAME: ${ACTIVEMQ_WEB_ADMIN_NAME}
+      ACTIVEMQ_WEB_ADMIN_PASSWORD: ${ACTIVEMQ_WEB_ADMIN_PASSWORD}
+      ACTIVEMQ_WEB_ADMIN_ROLES: ${ACTIVEMQ_WEB_ADMIN_ROLES}
     volumes:
       - activemq:/opt/activemq/data
+
     networks:
       - microservices-net
+
     restart: unless-stopped
 
   fitness-service:
     build: ./services/fitness-service
     container_name: fitness-service
+    env_file:
+      - .env
     ports:
       - "8082:8082"
 
@@ -86,22 +72,28 @@ services:
       - activemq
       - discovery-server
       - config-server
+
     volumes:
       - ./logs/fitness:/app/logs
     networks:
+
       - microservices-net
     restart: unless-stopped
   
   config-server:
     build: ./services/config-server
     container_name: config-server
-    volumes:
-      - ./services/config-server/src/main/resources/configurations:/app/configurations
+    env_file:
+      - .env
     ports:
       - "8888:8888"
 
+    volumes:
+      - ./services/config-server/src/main/resources/configurations:/app/configurations
+
     depends_on:
       - discovery-server
+
     networks:
       - microservices-net
     restart: unless-stopped
@@ -135,24 +127,21 @@ services:
   workload-calculator-service:
     build: ./services/workload-calculator-service
     container_name: workload-service
+    env_file:
+      - .env
     ports:
       - "8080:8080"
   
     depends_on:
       - discovery-server
       - config-server
+
     volumes:
       - ./logs/workload:/app/logs
+
     networks:
       - microservices-net
     restart: unless-stopped
-
-
-
-
-
-
-
 
 networks:
   microservices-net:

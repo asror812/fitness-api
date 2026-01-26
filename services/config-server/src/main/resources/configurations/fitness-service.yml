@@ -1,7 +1,3 @@
-spring:
-  jpa:
-    open-in-view: false
-
 management:
   endpoint:
     health:
@@ -12,6 +8,7 @@ management:
       base-path: /api/v1/fitness/management
       exposure:
         include: "prometheus,health,info"
+
 app:
   cors:
     allowed-origins:
@@ -23,10 +20,9 @@ app:
       - DELETE
       - PATCH
 
-security:
-  jwt:
-    duration: 86400
-    signing-key: fitness-rest-application-local-secret-key
+token:
+  duration: ${TOKEN_DURATION}
+  secret-key: ${SECRET_KEY}
 
     
 #resilience4j:

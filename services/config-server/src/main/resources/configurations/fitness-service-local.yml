@@ -5,6 +5,7 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+    
   jpa:
     show-sql: true
     hibernate:
