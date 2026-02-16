@@ -109,22 +109,22 @@ services:
     restart: unless-stopped
 
     
-  gateaway-server:
-    build: ./services/gateaway-server
-    container_name: gateaway-server
+  gateway-server:
+    build: ./services/gateway-server
+    container_name: gateway-server
     ports:
       - "8083:8083"
-  
+
     depends_on:
       - discovery-server
       - config-server
-    
+      - auth-service
+
     networks:
       - microservices-net
     restart: unless-stopped
 
-
-  workload-calculator-service:
+  workload-service:
     build: ./services/workload-calculator-service
     container_name: workload-service
     env_file:
@@ -143,12 +143,32 @@ services:
       - microservices-net
     restart: unless-stopped
 
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth-service
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+  
+    depends_on:
+      - postgresql
+      - activemq
+      - discovery-server
+      - config-server
+
+    volumes:
+      - ./logs/auth:/app/logs
+
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
 networks:
   microservices-net:
     driver: bridge
 
 volumes:
   postgres:
-  pgadmin:
   mongo:
   activemq:

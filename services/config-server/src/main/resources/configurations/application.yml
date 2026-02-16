@@ -16,3 +16,13 @@ jms:
     update: ${WORKLOAD_QUEUE_UPDATE}
 
 
+token:
+  duration: ${TOKEN_DURATION}
+  secret-key: ${SECRET_KEY}
+
+outbox:
+  publisher:
+    delay-ms: 5000
+
+
+

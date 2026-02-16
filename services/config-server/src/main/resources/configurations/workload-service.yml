@@ -5,14 +5,10 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI}
-
-token:
-  duration: ${TOKEN_DURATION}
-  secret-key: ${SECRET_KEY}
   
 eureka:
   instance:
     hostname: workload-service
   client:
     service-url:
-      defaultZone: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}

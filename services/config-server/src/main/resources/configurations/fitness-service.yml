@@ -1,3 +1,8 @@
+spring:  
+  profiles:
+    active:
+      - dev
+
 management:
   endpoint:
     health:
@@ -19,10 +24,6 @@ app:
       - PUT
       - DELETE
       - PATCH
-
-token:
-  duration: ${TOKEN_DURATION}
-  secret-key: ${SECRET_KEY}
 
     
 #resilience4j:

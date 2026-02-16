@@ -10,6 +10,6 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar main.jar
+COPY --from=build /app/target/*.jar fitness.jar
     
 ENTRYPOINT ["java", "-jar", "main.jar" ]
