@@ -28,18 +28,21 @@ public class OutboxPublisher {
     public void publish() {
         OffsetDateTime now = OffsetDateTime.now();
 
-        var events = outboxEventRepository.pickBatchForSend(now, PageRequest.of(0, 50));
+        var events = outboxEventRepository.pickBatchForSend(
+                Status.NEW,
+                now,
+                PageRequest.of(0, 50));
 
         for (OutboxEvent e : events) {
             try {
                 switch (e.getEventType()) {
                     case EventType.TRAINEE_CREATE_REQUESTED -> {
-                        TraineeCreateReqDto dto = objectMapper.readValue(e.getPayload(), TraineeCreateReqDto.class);
+                        TraineeCreateReqDto dto = objectMapper.treeToValue(e.getPayload(), TraineeCreateReqDto.class);
                         producer.publishCreateTrainee(dto, e.getId(), dto.getUserId());
                     }
 
                     case EventType.TRAINER_CREATE_REQUESTED -> {
-                        TrainerCreateReqDto dto = objectMapper.readValue(e.getPayload(), TrainerCreateReqDto.class);
+                        TrainerCreateReqDto dto = objectMapper.treeToValue(e.getPayload(), TrainerCreateReqDto.class);
                         producer.publishCreateTrainer(dto, e.getId(), dto.getUserId());
                     }
 

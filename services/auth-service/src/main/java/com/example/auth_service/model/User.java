@@ -53,4 +53,9 @@ public class User extends BaseEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(r -> (GrantedAuthority) r::name).toList();
     }
+
+    @Override
+    public String getUsername() {
+        return super.getId().toString();
+    }
 }

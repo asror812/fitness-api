@@ -9,6 +9,6 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar auth.jar
+COPY --from=build /app/target/*.jar auth_service.jar
 
-ENTRYPOINT ["java", "-jar", "report.jar"]
+ENTRYPOINT ["java", "-jar", "auth_service.jar"]

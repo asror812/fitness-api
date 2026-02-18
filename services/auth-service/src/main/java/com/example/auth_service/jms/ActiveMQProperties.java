@@ -1,23 +1,20 @@
 package com.example.auth_service.jms;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Component
 @ConfigurationProperties(prefix = "spring.activemq")
 @Getter
 @Setter
 public class ActiveMQProperties {
-    private final String brokerUrl;
 
-    private final String user;
+    private String user;
 
-    private final String password;
+    private String password;
 
-    public ActiveMQProperties(String brokerUrl, String user, String password) {
-        this.brokerUrl = brokerUrl;
-        this.user = user;
-        this.password = password;
-    }
+    private String brokerUrl;
 }

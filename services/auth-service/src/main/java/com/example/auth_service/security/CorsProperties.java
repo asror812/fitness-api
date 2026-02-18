@@ -4,20 +4,18 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Setter
-@Getter
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
 @ConfigurationProperties(prefix = "app.cors")
+@Getter
+@Setter
 public class CorsProperties {
 
     private List<String> allowedOrigins;
 
     private List<String> allowedMethods;
-
-    public CorsProperties(List<String> allowedOrigins, List<String> allowedMethods) {
-        this.allowedOrigins = allowedOrigins;
-        this.allowedMethods = allowedMethods;
-    }
 
 }

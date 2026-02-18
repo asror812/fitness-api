@@ -1,4 +1,4 @@
-package com.example.auth_service.utils;
+/* package com.example.auth_service.utils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,4 +43,4 @@ public class TransactionLoggerFilter extends OncePerRequestFilter {
         }
 
     }
-}
+} */

@@ -8,23 +8,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class JmsPublisher {
 
-    @Value("${jms.workload_queue.update}")
-    private String updateTrainerWorkloadQueue;
+    @Value("${jms.queues.workload_update_request_queue}")
+    private String updateTrainerWorkloadRequestQueue;
 
-    @Value("${jms.create_trainee_queue}")
-    private String createTraineeQueue;
+    @Value("${jms.queues.create_trainee_request_queue}")
+    private String createTraineeRequestQueue;
 
-    @Value("${jms.create_trainer_queue}")
-    private String createTrainerQueue;
+    @Value("${jms.queues.create_trainer_request_queue}")
+    private String createTrainerRequestQueue;
 
     public static final String HDR_EVENT_ID = "eventId";
     public static final String HDR_EVENT_TYPE = "eventType";
@@ -34,15 +34,15 @@ public class JmsPublisher {
     private final ObjectMapper objectMapper;
 
     public void publishUpdateWorkload(Object dto, UUID eventId, UUID userId) {
-        publish(updateTrainerWorkloadQueue, EventType.WORKLOAD_UPDATE_REQUESTED, dto, eventId, userId);
+        publish(updateTrainerWorkloadRequestQueue, EventType.WORKLOAD_UPDATE_REQUESTED, dto, eventId, userId);
     }
 
     public void publishCreateTrainee(Object dto, UUID eventId, UUID userId) {
-        publish(createTraineeQueue, EventType.TRAINEE_CREATE_REQUESTED, dto, eventId, userId);
+        publish(createTraineeRequestQueue, EventType.TRAINEE_CREATE_REQUESTED, dto, eventId, userId);
     }
 
     public void publishCreateTrainer(Object dto, UUID eventId, UUID userId) {
-        publish(createTrainerQueue, EventType.TRAINER_CREATE_REQUESTED, dto, eventId, userId);
+        publish(createTrainerRequestQueue, EventType.TRAINER_CREATE_REQUESTED, dto, eventId, userId);
     }
 
     private void publish(String queue,

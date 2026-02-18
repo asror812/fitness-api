@@ -11,7 +11,9 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.example.auth_service.model.User;
@@ -20,17 +22,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${token.duration}")
-    private Long duration;
-
-    @Value("${token.security-key}")
-    private String secret;
+    private final TokenProperties tokenProperties;
 
     public String generateToken(User user) {
         Date now = new Date();
-        Date expiration = Date.from(now.toInstant().plusSeconds(this.duration));
+        Date expiration = Date.from(now.toInstant().plusSeconds(tokenProperties.getDuration()));
 
         Map<String, Object> claims = new HashMap<>();
 
@@ -87,9 +86,14 @@ public class JwtService {
     }
 
     private SecretKey signingKey() {
-        byte[] decode = Base64.getDecoder().decode(secret);
+        byte[] decode = Base64.getDecoder().decode(tokenProperties.getKey());
 
         return Keys.hmacShaKeyFor(decode);
+    }
+
+    public boolean isValidToken(String token, UserDetails userDetails) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isValidToken'");
     }
 
 }

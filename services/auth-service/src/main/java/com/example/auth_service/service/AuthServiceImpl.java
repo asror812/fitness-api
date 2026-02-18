@@ -9,7 +9,6 @@ import com.example.auth_service.dto.request.TrainerSignUpRequestDTO;
 import com.example.auth_service.dto.response.SignInResponseDTO;
 import com.example.auth_service.dto.response.SignUpResponseDTO;
 import com.example.auth_service.exception.InvalidCredentialsException;
-import com.example.auth_service.exception.JsonSerializationException;
 import com.example.auth_service.exception.TooManyRequestsException;
 import com.example.auth_service.jms.dto.TraineeCreateReqDto;
 import com.example.auth_service.jms.outbox.EventType;
@@ -21,7 +20,7 @@ import com.example.auth_service.model.User;
 import com.example.auth_service.security.JwtService;
 import com.example.auth_service.utils.BruteForceProtectorService;
 import com.example.auth_service.utils.PasswordGeneratorUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
@@ -117,13 +116,9 @@ public class AuthServiceImpl implements AuthService {
         TraineeCreateReqDto reqDto = new TraineeCreateReqDto(requestDTO.getDateOfBirth(), requestDTO.getAddress(),
                 user.getId());
 
-        String payloadJson;
+        JsonNode payloadJson;
 
-        try {
-            payloadJson = objectMapper.writeValueAsString(reqDto);
-        } catch (JsonProcessingException e) {
-            throw new JsonSerializationException("Failed to serialize TraineeCreateReqDto to JSON", reqDto, e);
-        }
+        payloadJson = objectMapper.valueToTree(reqDto);
 
         OutboxEvent event = OutboxEvent.builder()
                 .aggregateId(user.getId())
