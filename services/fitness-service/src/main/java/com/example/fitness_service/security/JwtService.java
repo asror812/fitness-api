@@ -5,23 +5,21 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${token.duration}")
-    protected Long duration;
-
-    @Value("${token.security-key}")
-    protected String secret;
+    private final TokenProperties properties;
 
     public String generateToken(String username) {
         Date now = new Date();
-        Date expiration = Date.from(now.toInstant().plusSeconds(this.duration));
+        Date expiration = Date.from(now.toInstant().plusSeconds(properties.getDuration()));
 
         return Jwts.builder()
                 .subject(username)
@@ -39,8 +37,8 @@ public class JwtService {
                 .getPayload();
     }
 
-    private SecretKey signingKey(){
-        byte[] decode = Base64.getDecoder().decode(secret);
+    private SecretKey signingKey() {
+        byte[] decode = Base64.getDecoder().decode(properties.getKey());
 
         return Keys.hmacShaKeyFor(decode);
     }

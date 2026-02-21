@@ -1,34 +1,31 @@
 package com.example.fitness_service.mapper;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import com.example.fitness_service.dto.request.TrainingCreateRequestDTO;
 import com.example.fitness_service.dto.response.TraineeTrainingResponseDTO;
 import com.example.fitness_service.dto.response.TrainerTrainingResponseDTO;
 import com.example.fitness_service.dto.response.TrainingResponseDTO;
 import com.example.fitness_service.model.Training;
-import lombok.RequiredArgsConstructor;
 
-@Component
-@RequiredArgsConstructor
-public class TrainingMapper {
+@Mapper(componentModel = "spring")
+public interface TrainingMapper {
 
-    private final ModelMapper modelMapper;
+    @Mapping(target = "datetimeCreated", ignore = true)
+    @Mapping(target = "datetimeUpdated", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "trainer", ignore = true)
+    @Mapping(target = "trainee", ignore = true)
+    @Mapping(target = "trainingType", ignore = true)
+    public Training toEntity(TrainingCreateRequestDTO createDto);
 
-    public Training toEntity(TrainingCreateRequestDTO createDto) {
-        return modelMapper.map(createDto, Training.class);
-    }
+    public TrainingResponseDTO toResponseDTO(Training training);
 
-    public TrainingResponseDTO toResponseDTO(Training training) {
-        return modelMapper.map(training, TrainingResponseDTO.class);
-    }
+    @Mapping(target = "traineeId", ignore = true)
+    public TrainerTrainingResponseDTO toTrainerTrainingResponseDTO(Training training);
 
-    public TrainerTrainingResponseDTO toTrainerTrainingResponseDTO(Training training) {
-        return modelMapper.map(training, TrainerTrainingResponseDTO.class);
-    }
-
-    public TraineeTrainingResponseDTO toTraineeTrainingResponseDTO(Training training) {
-        return modelMapper.map(training, TraineeTrainingResponseDTO.class);
-    }
+    @Mapping(target = "trainerId", ignore = true)
+    public TraineeTrainingResponseDTO toTraineeTrainingResponseDTO(Training training);
 
 }

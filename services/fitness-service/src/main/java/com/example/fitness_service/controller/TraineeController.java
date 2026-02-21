@@ -1,6 +1,5 @@
 package com.example.fitness_service.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.fitness_service.dto.response.TraineeResponseDTO;
-import com.example.fitness_service.dto.response.TrainerResponseDTO;
 import com.example.fitness_service.service.TraineeService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,10 +37,10 @@ public class TraineeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/not-assigned-trainers")
+/*     @GetMapping("/{id}/not-assigned-trainers")
     public ResponseEntity<List<TrainerResponseDTO>> getNotAssignedTrainers(@PathVariable UUID id) {
         return new ResponseEntity<>(traineeService.getNotAssignedTrainers(id), HttpStatus.OK);
-    }
+    } */
 
 /*     // TODO: CHECK
     @PutMapping("/{username}/trainers")

@@ -1,4 +1,4 @@
-package com.example.fitness_service.dto.response;
+package com.example.fitness_service.jms.dto;
 
 import java.util.UUID;
 
@@ -9,9 +9,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class TrainingTypeResponseDTO {
-    private UUID id;
-    private String name;
+@AllArgsConstructor
+public class TrainerRegisterEvent {
+
+    private UUID userId;
+
+    private UUID specialization;
 }

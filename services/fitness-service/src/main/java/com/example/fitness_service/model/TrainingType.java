@@ -20,8 +20,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TrainingType extends BaseEntity {
 
-    @Column(name = "training_type_name", nullable = false)
-    private String trainingTypeName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @OneToMany(mappedBy = "specialization")
     private List<Trainer> trainers = new ArrayList<>();
@@ -32,7 +32,7 @@ public class TrainingType extends BaseEntity {
 
     @Override
     public String toString() {
-        return "TrainingType [trainingTypeName=" + trainingTypeName + "]";
+        return "TrainingType [trainingTypeName=" + name + "]";
     }
 
 }

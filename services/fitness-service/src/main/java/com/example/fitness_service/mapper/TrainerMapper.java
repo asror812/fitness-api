@@ -1,50 +1,27 @@
-package com.example.fitness_service.mapper;
+/* package com.example.fitness_service.mapper;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import com.example.fitness_service.dao.TrainingTypeRepostiory;
 import com.example.fitness_service.dto.request.TrainerSignUpRequestDTO;
 import com.example.fitness_service.dto.request.TrainerUpdateRequestDTO;
 import com.example.fitness_service.dto.response.TrainerResponseDTO;
 import com.example.fitness_service.dto.response.TrainerUpdateResponseDTO;
 import com.example.fitness_service.model.Trainer;
-import com.example.fitness_service.model.TrainingType;
 
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+@Mapper(componentModel = "spring")
+public interface TrainerMapper {
 
-@Component
-@RequiredArgsConstructor
-public class TrainerMapper
-        implements
-        GenericMapper<Trainer, TrainerSignUpRequestDTO, TrainerResponseDTO, TrainerUpdateRequestDTO> {
+    @Mapping(target = "datetimeCreated", ignore = true)
+    @Mapping(target = "datetimeUpdated", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    public Trainer toEntity(TrainerSignUpRequestDTO createDto);
 
-    private final ModelMapper modelMapper;
-    private final TrainingTypeRepostiory trainingTypeRepostiory;
+    public void toEntity(TrainerUpdateRequestDTO updateDto, Trainer trainer);
 
-    @Override
-    public Trainer toEntity(TrainerSignUpRequestDTO createDto) {
-        return modelMapper.map(createDto, Trainer.class);
-    }
+    public TrainerResponseDTO toResponseDTO(Trainer trainer);
 
-    @Override
-    public void toEntity(TrainerUpdateRequestDTO updateDto, Trainer trainer) {
-
-        TrainingType specialization = trainingTypeRepostiory.findById(updateDto.getSpecialization())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "No Training type found with id %s".formatted(updateDto.getSpecialization())));
-
-        trainer.setSpecialization(specialization);
-    }
-
-    @Override
-    public TrainerResponseDTO toResponseDTO(Trainer trainer) {
-        return modelMapper.map(trainer, TrainerResponseDTO.class);
-    }
-
-    public TrainerUpdateResponseDTO toUpdateResponseDTO(Trainer trainer) {
-        return modelMapper.map(trainer, TrainerUpdateResponseDTO.class);
-    }
+    public TrainerUpdateResponseDTO toUpdateResponseDTO(Trainer trainer);
 
 }
+ */

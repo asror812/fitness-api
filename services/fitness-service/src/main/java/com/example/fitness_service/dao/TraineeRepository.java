@@ -9,5 +9,5 @@ import com.example.fitness_service.model.Trainee;
 
 @Repository
 public interface TraineeRepository extends JpaRepository<Trainee, UUID> {
-
+    boolean existsByUserId(UUID userId);
 }

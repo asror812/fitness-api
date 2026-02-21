@@ -12,6 +12,12 @@ public class JacksonConfig {
     
     @Bean
     ObjectMapper objectMapper() {
-        return new ObjectMapper().registerModule(new JavaTimeModule()).setSerializationInclusion(Include.NON_NULL);
+        return new ObjectMapper()
+            .registerModule(
+                new JavaTimeModule()
+            )
+            .setSerializationInclusion(
+                Include.NON_NULL
+            );
     }
 }

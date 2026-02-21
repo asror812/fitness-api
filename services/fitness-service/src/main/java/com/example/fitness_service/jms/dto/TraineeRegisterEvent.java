@@ -1,5 +1,6 @@
-package com.example.fitness_service.dto.response;
+package com.example.fitness_service.jms.dto;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +12,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainerResponseDTO {
+public class TraineeRegisterEvent {
+
     private UUID userId;
-    private TrainingTypeResponseDTO specialization;
+
+    private LocalDate dateOfBirth;
+
+    private String address;
+
 }

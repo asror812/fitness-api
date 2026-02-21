@@ -8,5 +8,5 @@ import java.util.*;
 
 @Repository
 public interface TrainerRepository extends JpaRepository<Trainer, UUID>{
-
+    boolean existsByUserId(UUID userId);
 }
