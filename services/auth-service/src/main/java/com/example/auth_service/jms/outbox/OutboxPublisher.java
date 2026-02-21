@@ -6,9 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.example.auth_service.dto.event.TraineeRegisterEvent;
+import com.example.auth_service.dto.event.TrainerRegisterEvent;
 import com.example.auth_service.jms.JmsPublisher;
-import com.example.auth_service.jms.dto.TraineeCreateReqDto;
-import com.example.auth_service.jms.dto.TrainerCreateReqDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
@@ -36,14 +36,19 @@ public class OutboxPublisher {
         for (OutboxEvent e : events) {
             try {
                 switch (e.getEventType()) {
-                    case EventType.TRAINEE_CREATE_REQUESTED -> {
-                        TraineeCreateReqDto dto = objectMapper.treeToValue(e.getPayload(), TraineeCreateReqDto.class);
-                        producer.publishCreateTrainee(dto, e.getId(), dto.getUserId());
+                    case EventType.TRAINEE_REGISTER_REQUESTED -> {
+                        TraineeRegisterEvent dto = objectMapper.treeToValue(e.getPayload(), TraineeRegisterEvent.class);
+                        producer.publishUserRegistered(dto, e.getId(), e.getCorrelationId(), dto.getUserId());
                     }
 
-                    case EventType.TRAINER_CREATE_REQUESTED -> {
-                        TrainerCreateReqDto dto = objectMapper.treeToValue(e.getPayload(), TrainerCreateReqDto.class);
-                        producer.publishCreateTrainer(dto, e.getId(), dto.getUserId());
+                    case EventType.TRAINER_REGISTER_REQUESTED -> {
+                        TrainerRegisterEvent dto = objectMapper.treeToValue(e.getPayload(), TrainerRegisterEvent.class);
+                        producer.publishUserRegistered(dto, e.getId(), e.getCorrelationId(), dto.getUserId());
+                    }
+
+                    case EventType.WORKLOAD_UPDATE_REQUESTED -> {
+                        // objectMapper.readValue(e.getPayload(), Object.class);
+                        // TO DO
                     }
 
                     default -> throw new IllegalStateException("Unknown event: " + e.getEventType());

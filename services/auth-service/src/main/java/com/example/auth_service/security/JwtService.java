@@ -12,10 +12,7 @@ import javax.crypto.SecretKey;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import com.example.auth_service.model.User;
 
 import io.jsonwebtoken.Claims;
@@ -57,7 +54,7 @@ public class JwtService {
                 .toList());
     }
 
-    public boolean isTokenValid(String token, UUID id) {
+    public boolean isValidToken(String token, UUID id) {
         final UUID userId = extractUserId(token);
         return (userId.equals(id) && !isTokenExpired(token));
     }
@@ -89,11 +86,6 @@ public class JwtService {
         byte[] decode = Base64.getDecoder().decode(tokenProperties.getKey());
 
         return Keys.hmacShaKeyFor(decode);
-    }
-
-    public boolean isValidToken(String token, UserDetails userDetails) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isValidToken'");
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.auth_service.jms.dto;
+package com.example.auth_service.dto.event;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -8,16 +8,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class TraineeCreateReqDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class TraineeRegisterEvent {
+
+    private UUID userId;
 
     private LocalDate dateOfBirth;
 
     private String address;
-
-    private UUID userId;
 
 }

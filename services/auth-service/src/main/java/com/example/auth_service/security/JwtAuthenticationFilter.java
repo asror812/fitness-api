@@ -1,10 +1,9 @@
 package com.example.auth_service.security;
 
 import java.io.IOException;
-import com.example.auth_service.service.UserService;
+import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.auth_service.service.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,17 +13,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final UserService userService;
 
     @Override
@@ -33,10 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        LOGGER.error("Hello world1!");
-
         if (request.getRequestURI().contains("/api/v1/auth/")) {
-            LOGGER.error("Hello world2!");
             filterChain.doFilter(request, response);
             return;
         }
@@ -50,12 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        String username = jwtService.extractUsername(token);
+        UUID id = jwtService.extractUserId(token);
 
-        if (username == null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(username);
+        if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userService.loadUserByUsername(id.toString());
 
-            if (jwtService.isValidToken(token, userDetails)) {
+            if (jwtService.isValidToken(token, id)) {
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

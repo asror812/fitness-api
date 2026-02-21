@@ -3,6 +3,9 @@ package com.example.auth_service.jms.outbox;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.persistence.Column;
@@ -42,7 +45,11 @@ public class OutboxEvent {
     @Enumerated(value = EnumType.STRING)
     private EventType eventType;
 
+    @Column(name = "correlation_id", nullable = false)
+    private UUID correlationId;
+
     @Column(columnDefinition = "jsonb", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode payload;
 
     @Column(nullable = false)
@@ -60,4 +67,5 @@ public class OutboxEvent {
 
     @Column(name = "sent_at")
     private OffsetDateTime sentAt;
+
 }

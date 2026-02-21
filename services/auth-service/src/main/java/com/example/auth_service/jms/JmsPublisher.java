@@ -1,5 +1,7 @@
 package com.example.auth_service.jms;
 
+import com.example.auth_service.dto.event.TraineeRegisterEvent;
+import com.example.auth_service.dto.event.TrainerRegisterEvent;
 import com.example.auth_service.exception.JsonSerializationException;
 import com.example.auth_service.jms.outbox.EventType;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,14 +19,11 @@ import java.util.UUID;
 @Slf4j
 public class JmsPublisher {
 
-    @Value("${jms.queues.workload_update_request_queue}")
-    private String updateTrainerWorkloadRequestQueue;
+    @Value("${jms.topics.workload_update}")
+    private String updateTrainerWorkload;
 
-    @Value("${jms.queues.create_trainee_request_queue}")
-    private String createTraineeRequestQueue;
-
-    @Value("${jms.queues.create_trainer_request_queue}")
-    private String createTrainerRequestQueue;
+    @Value("${jms.topics.user_register}")
+    private String createTrainee;
 
     public static final String HDR_EVENT_ID = "eventId";
     public static final String HDR_EVENT_TYPE = "eventType";
@@ -33,30 +32,31 @@ public class JmsPublisher {
     private final JmsTemplate jmsTemplate;
     private final ObjectMapper objectMapper;
 
-    public void publishUpdateWorkload(Object dto, UUID eventId, UUID userId) {
-        publish(updateTrainerWorkloadRequestQueue, EventType.WORKLOAD_UPDATE_REQUESTED, dto, eventId, userId);
+    public void publishUpdateWorkload(Object dto, UUID eventId, UUID correlationId, UUID userId) {
+        publish(updateTrainerWorkload, EventType.WORKLOAD_UPDATE_REQUESTED, dto, eventId, correlationId, userId);
     }
 
-    public void publishCreateTrainee(Object dto, UUID eventId, UUID userId) {
-        publish(createTraineeRequestQueue, EventType.TRAINEE_CREATE_REQUESTED, dto, eventId, userId);
+    public void publishUserRegistered(TraineeRegisterEvent dto, UUID eventId, UUID correlationId, UUID userId) {
+        publish(createTrainee, EventType.TRAINEE_REGISTER_REQUESTED, dto, eventId, correlationId, userId);
     }
 
-    public void publishCreateTrainer(Object dto, UUID eventId, UUID userId) {
-        publish(createTrainerRequestQueue, EventType.TRAINER_CREATE_REQUESTED, dto, eventId, userId);
+    public void publishUserRegistered(TrainerRegisterEvent dto, UUID eventId, UUID correlationId, UUID userId) {
+        publish(createTrainee, EventType.TRAINER_REGISTER_REQUESTED, dto, eventId, correlationId, userId);
     }
 
-    private void publish(String queue,
+    private void publish(String topic,
             EventType eventType,
             Object dto,
             UUID eventId,
+            UUID correlationId,
             UUID userId) {
 
         final String json = toJson(dto);
 
-        log.info("Publish -> queue={} eventType={} eventId={} userId={}",
-                queue, eventType, eventId, userId);
+        log.info("Publish -> topic={} eventType={} eventId={}  correlationId={} userId={}",
+                topic, eventType, eventId, correlationId, userId);
 
-        jmsTemplate.convertAndSend(queue, json, message -> {
+        jmsTemplate.convertAndSend(topic, json, message -> {
             message.setStringProperty(HDR_EVENT_ID, eventId.toString());
             message.setStringProperty(HDR_EVENT_TYPE, eventType.name());
 

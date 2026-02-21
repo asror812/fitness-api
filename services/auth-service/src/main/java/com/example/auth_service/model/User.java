@@ -58,4 +58,9 @@ public class User extends BaseEntity implements UserDetails {
     public String getUsername() {
         return super.getId().toString();
     }
+
+    public String getRealUsername() {
+        return username;
+
+    }
 }
